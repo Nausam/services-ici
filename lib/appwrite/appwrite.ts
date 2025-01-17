@@ -1,4 +1,3 @@
-import { MosqueAttendanceRecord, PrayerKey } from "@/types";
 import {
   Account,
   Avatars,
@@ -11,7 +10,7 @@ import {
   Permission,
   Role,
   Models,
-} from "appwrite";
+} from "node-appwrite";
 
 export const appwriteConfig = {
   endpoint: "https://cloud.appwrite.io/v1",
@@ -377,25 +376,6 @@ export const createMosqueAttendanceForEmployees = async (
     return attendanceEntries;
   } catch (error) {
     console.error("Error creating mosque attendance:", error);
-    throw error;
-  }
-};
-
-// Update attendance record for mosque assistants
-export const updateMosqueAttendanceRecord = async (
-  attendanceId: string,
-  updates: Partial<MosqueAttendanceRecord>
-) => {
-  try {
-    const response = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.mosqueAttendanceCollectionId,
-      attendanceId,
-      updates
-    );
-    return response;
-  } catch (error) {
-    console.error("Error updating mosque attendance record:", error);
     throw error;
   }
 };
