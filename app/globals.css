@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+
+
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 @font-face {
   font-family: "DAM_Madheeh";
   src: url("/fonts/DAM_Madheeh.otf") format("opentype");

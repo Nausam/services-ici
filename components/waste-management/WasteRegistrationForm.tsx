@@ -148,7 +148,7 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
               <FormItem>
                 <p className="font-dhivehi text-xl text-right">
                   {" "}
-                  އެޑްރެސް / ކުންފުނި / މުައައްސަސާ{" "}
+                  އެޑްރެސް / ކުންފުނި / މުއައްސަސާ{" "}
                 </p>
                 <FormControl>
                   <Input
@@ -186,9 +186,8 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
             name="contactNumber"
             render={({ field }) => (
               <FormItem>
-                <p className="font-dhivehi text-xl text-right">
-                  {" "}
-                  ފޯނު ނަންބަރު{" "}
+                <p dir="rtl" className="font-dhivehi text-xl text-right">
+                  ފޯނު ނަންބަރު
                 </p>
                 <FormControl>
                   <Input
@@ -232,7 +231,7 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
             disabled={isSubmitting}
             className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
           >
-            {isSubmitting ? "Submitting..." : " ރަޖިސްޓާ ކުރައްވާ "}
+            {isSubmitting ? "Submitting..." : " ރެޖިސްޓާ ކުރައްވާ "}
           </Button>
         </div>
       </form>

@@ -10,8 +10,8 @@ const WasteManagementRegistrationPage = () => {
           backgroundImage: "url('/assets/images/waste-bg.jpg')", // Replace with the path to your image
         }}
       >
-        <h1 className="relative z-10 text-cyan-900 lg:text-6xl md:text-5xl text-4xl font-dhivehi text-center bg-white/80 p-4 rounded-md shadow-md">
-          ކުނި އުކާލުމާއި ކުނި ނައްތާލުމަށް ރަޖިސްޓާ ކުރުން
+        <h1 className="relative z-10 text-cyan-900 lg:text-6xl md:text-5xl text-4xl font-dhivehi text-center backdrop-blur-lg p-4 rounded-md shadow-md">
+          ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުން
         </h1>
       </div>
       <div className="mt-10">
