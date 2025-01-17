@@ -5,6 +5,7 @@ import React from "react";
 
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Separator } from "@/components/ui/separator";
+import { TextEffect } from "@/components/ui/text-effect";
 
 const Home = () => {
   return (
@@ -26,18 +27,27 @@ const Home = () => {
         {/* Hero Section */}
         <section className="relative text-center py-16 text-white z-10">
           <div className="max-w-7xl mx-auto">
-            <h1 className="md:text-7xl xl:text-8xl text-5xl font-dhivehi leading-snug text-cyan-900">
+            {/* <h1 className="md:text-7xl xl:text-8xl text-5xl font-dhivehi leading-snug text-cyan-900">
               ރ. އިންނަމާދޫ ކައުންސިލްގެ ހިދުމަތް ޕޯޓަލް
-            </h1>
+            </h1> */}
+
+            <TextEffect
+              className="md:text-7xl xl:text-8xl text-5xl font-dhivehi leading-snug text-cyan-900"
+              per="char"
+              as="h1"
+              preset="fade-in-blur"
+            >
+              ރ. އިންނަމާދޫ ކައުންސިލް
+            </TextEffect>
           </div>
         </section>
 
         {/* Services Section */}
         <section className="mt-10 relative z-10 px-4 sm:px-6 md:px-8 lg:px-12">
           <div className="max-w-7xl mx-auto ">
-            <h3 className="text-4xl md:text-6xl font-dhivehi text-cyan-900 mb-10 text-center">
+            {/* <h3 className="text-4xl md:text-6xl font-dhivehi text-cyan-900 mb-10 text-center">
               ހިދުމަތްތައް
-            </h3>
+            </h3> */}
 
             <AnimatedGroup
               className="grid gap-8 sm:grid-cols-1 md:grid-cols-1"
