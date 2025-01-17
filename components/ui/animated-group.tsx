@@ -1,19 +1,19 @@
-'use client';
-import { ReactNode } from 'react';
-import { motion, Variants } from 'motion/react';
-import React from 'react';
+"use client";
+import { ReactNode, JSX } from "react";
+import { motion, Variants } from "motion/react";
+import React from "react";
 
 export type PresetType =
-  | 'fade'
-  | 'slide'
-  | 'scale'
-  | 'blur'
-  | 'blur-slide'
-  | 'zoom'
-  | 'flip'
-  | 'bounce'
-  | 'rotate'
-  | 'swing';
+  | "fade"
+  | "slide"
+  | "scale"
+  | "blur"
+  | "blur-slide"
+  | "zoom"
+  | "flip"
+  | "bounce"
+  | "rotate"
+  | "swing";
 
 export type AnimatedGroupProps = {
   children: ReactNode;
@@ -70,15 +70,15 @@ const presetVariants: Record<
   blur: {
     container: defaultContainerVariants,
     item: {
-      hidden: { opacity: 0, filter: 'blur(4px)' },
-      visible: { opacity: 1, filter: 'blur(0px)' },
+      hidden: { opacity: 0, filter: "blur(4px)" },
+      visible: { opacity: 1, filter: "blur(0px)" },
     },
   },
-  'blur-slide': {
+  "blur-slide": {
     container: defaultContainerVariants,
     item: {
-      hidden: { opacity: 0, filter: 'blur(4px)', y: 20 },
-      visible: { opacity: 1, filter: 'blur(0px)', y: 0 },
+      hidden: { opacity: 0, filter: "blur(4px)", y: 20 },
+      visible: { opacity: 1, filter: "blur(0px)", y: 0 },
     },
   },
   zoom: {
@@ -88,7 +88,7 @@ const presetVariants: Record<
       visible: {
         opacity: 1,
         scale: 1,
-        transition: { type: 'spring', stiffness: 300, damping: 20 },
+        transition: { type: "spring", stiffness: 300, damping: 20 },
       },
     },
   },
@@ -99,7 +99,7 @@ const presetVariants: Record<
       visible: {
         opacity: 1,
         rotateX: 0,
-        transition: { type: 'spring', stiffness: 300, damping: 20 },
+        transition: { type: "spring", stiffness: 300, damping: 20 },
       },
     },
   },
@@ -110,7 +110,7 @@ const presetVariants: Record<
       visible: {
         opacity: 1,
         y: 0,
-        transition: { type: 'spring', stiffness: 400, damping: 10 },
+        transition: { type: "spring", stiffness: 400, damping: 10 },
       },
     },
   },
@@ -121,7 +121,7 @@ const presetVariants: Record<
       visible: {
         opacity: 1,
         rotate: 0,
-        transition: { type: 'spring', stiffness: 200, damping: 15 },
+        transition: { type: "spring", stiffness: 200, damping: 15 },
       },
     },
   },
@@ -132,7 +132,7 @@ const presetVariants: Record<
       visible: {
         opacity: 1,
         rotate: 0,
-        transition: { type: 'spring', stiffness: 300, damping: 8 },
+        transition: { type: "spring", stiffness: 300, damping: 8 },
       },
     },
   },
@@ -143,8 +143,8 @@ function AnimatedGroup({
   className,
   variants,
   preset,
-  as = 'div',
-  asChild = 'div',
+  as = "div",
+  asChild = "div",
 }: AnimatedGroupProps) {
   const selectedVariants = preset
     ? presetVariants[preset]
@@ -152,14 +152,14 @@ function AnimatedGroup({
   const containerVariants = variants?.container || selectedVariants.container;
   const itemVariants = variants?.item || selectedVariants.item;
 
-  const MotionComponent = motion.create(as as keyof JSX.IntrinsicElements);
+  const MotionComponent = motion(as as React.ElementType);
 
-  const MotionChild = motion.create(asChild as keyof JSX.IntrinsicElements);
+  const MotionChild = motion(asChild as React.ElementType);
 
   return (
     <MotionComponent
-      initial='hidden'
-      animate='visible'
+      initial="hidden"
+      animate="visible"
       variants={containerVariants}
       className={className}
     >
