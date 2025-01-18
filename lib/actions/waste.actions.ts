@@ -14,40 +14,6 @@ type CreateRegistrationParams = {
   category: string;
 };
 
-// CREATE FINS
-export const createRegistration = async ({
-  fullName,
-  address,
-  contactNumber,
-  idCard,
-  category,
-}: CreateRegistrationParams) => {
-  try {
-    const { databases } = await createAdminClient();
-
-    const documentId = ID.unique();
-
-    const resgistration = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.wasteManagementFormsId,
-      documentId,
-      {
-        fullName,
-        address,
-        contactNumber,
-        idCard,
-        category,
-        // createdAt: new Date().toISOString(),
-      }
-    );
-
-    return parseStringify(resgistration);
-  } catch (error) {
-    console.error("Failed to register:", error);
-    throw new Error("Failed to register");
-  }
-};
-
 // UPLOAD PRODUCT IMAGE
 export const uploadImage = async (file: File): Promise<string> => {
   const { storage } = await createAdminClient();
@@ -74,5 +40,55 @@ export const uploadImage = async (file: File): Promise<string> => {
   } catch (error) {
     console.error("File upload failed:", error);
     throw new Error("Failed to upload file");
+  }
+};
+
+// CREATE WASTE MANAGEMENT SERVICE REGISTRATION REQUEST
+export const createRegistration = async ({
+  fullName,
+  address,
+  contactNumber,
+  idCard,
+  category,
+}: CreateRegistrationParams) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const documentId = ID.unique();
+
+    const resgistration = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.wasteManagementFormsId,
+      documentId,
+      {
+        fullName,
+        address,
+        contactNumber,
+        idCard,
+        category,
+      }
+    );
+
+    return parseStringify(resgistration);
+  } catch (error) {
+    console.error("Failed to register:", error);
+    throw new Error("Failed to register");
+  }
+};
+
+// GET ALL WASTE MANAGEMENT SERVICE REGISTRATIONS
+export const getAllRegistrations = async () => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const registrations = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.wasteManagementFormsId
+    );
+
+    return parseStringify(registrations.documents);
+  } catch (error) {
+    console.error("Failed to fetch registrations:", error);
+    throw new Error("Failed to fetch registrations");
   }
 };

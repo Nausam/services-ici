@@ -38,7 +38,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           className="relative w-full h-40 rounded-lg overflow-hidden bg-cover bg-center block md:hidden"
           style={{
             backgroundImage: `url('${image}')`,
-            backgroundSize: "120%", // Adds the zoom-in effect
+            backgroundSize: "120%",
           }}
         ></div>
       )}

@@ -7,6 +7,7 @@ import { parseStringify } from "@/lib/utils";
 import { cookies } from "next/headers";
 // import { avatarPlaceholderUrl } from "@/constants";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -20,9 +21,13 @@ const getUserByEmail = async (email: string) => {
   return result.total > 0 ? result.documents[0] : null;
 };
 
-export const handleError = (error: unknown, message: string) => {
-  console.log(error, message);
-  throw error;
+export const handleError = async (error: unknown, message: string) => {
+  if (error instanceof Error) {
+    console.error(`${message}:`, error.message);
+  } else {
+    console.error(`${message}:`, error);
+  }
+  throw new Error(message);
 };
 
 export const sendEmailOTP = async ({ email }: { email: string }) => {
@@ -133,6 +138,8 @@ export const signInUser = async ({ email }: { email: string }) => {
     // User exists, send OTP
     if (existingUser) {
       await sendEmailOTP({ email });
+
+      revalidatePath("/");
       return parseStringify({ accountId: existingUser.accountId });
     }
 
