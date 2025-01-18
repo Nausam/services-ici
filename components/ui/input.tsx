@@ -5,9 +5,9 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
     // Function to restrict input to Dhivehi characters
     const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const regex = /^[ހ-ް ]+$/; // Allow Dhivehi characters and spaces
+      const regex = /^[ހ-ް 0-9]+$/; // Allow Dhivehi characters and spaces
       if (!regex.test(event.target.value)) {
-        event.target.value = event.target.value.replace(/[^ހ-ް ]/g, ""); // Remove non-Dhivehi characters
+        event.target.value = event.target.value.replace(/[^ހ-ް 0-9]/g, ""); // Remove non-Dhivehi characters
       }
     };
 

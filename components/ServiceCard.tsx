@@ -23,7 +23,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   image,
 }) => {
   return (
-    <div className="flex flex-col bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg rounded-xl p-8 max-w-3xl mx-auto hover:shadow-xl transition-shadow duration-300 md:mt-10 gap-6 md:flex-row-reverse">
+    <div className="flex border flex-col bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg rounded-xl p-8 max-w-3xl mx-auto hover:shadow-xl transition-shadow duration-300 mt-5 md:mt-10 gap-6 md:flex-row-reverse">
       {/* Optional Image */}
       {image && (
         <div
@@ -60,13 +60,13 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </div>
             </div>
           )}
-          <h3 className="text-3xl font-bold font-dhivehi text-cyan-900 leading-tight mt-5">
+          <h3 className="md:text-3xl text-2xl font-bold font-dhivehi text-cyan-900 leading-tight mt-5">
             {title}
           </h3>
         </div>
 
         {/* Description */}
-        <p className="text-lg font-dhivehi text-slate-600 mb-6">
+        <p className="md:text-lg text-md font-dhivehi text-slate-600 mb-6">
           {description}
         </p>
 
