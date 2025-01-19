@@ -33,7 +33,7 @@ const Services = () => {
             },
           }}
         >
-          <h3 className="text-3xl md:text-5xl font-dhivehi text-cyan-900 text-center">
+          <h3 className="text-xl md:text-5xl font-dhivehi text-cyan-900 text-center">
             ރެޖިސްޓާކުރުން
           </h3>
           <ServiceCard
