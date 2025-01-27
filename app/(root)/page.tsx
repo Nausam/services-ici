@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div>
       <div
-        className="bg-gradient-to-b from-blue-100 to-blue-50  overflow-hidden relative h-screen"
+        className="bg-gradient-to-b from-blue-100 to-blue-50  overflow-hidden relative h-full"
         dir="rtl"
       >
         {/* Faded Gradient Glow Effect */}
