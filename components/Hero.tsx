@@ -5,23 +5,13 @@ const Hero = () => {
   return (
     <section className="relative text-center md:py-5 mt-20">
       <div className="max-w-7xl mx-auto">
-        <TextEffect
-          className="md:text-7xl xl:text-8xl text-5xl font-dhivehi leading-snug text-cyan-900"
-          per="char"
-          as="h1"
-          preset="fade-in-blur"
-        >
+        <h1 className="md:text-7xl xl:text-8xl text-5xl font-dhivehi leading-snug text-cyan-900">
           ރ. އިންނަމާދޫ ކައުންސިލް
-        </TextEffect>
+        </h1>
 
-        <TextEffect
-          className="text-xl md:text-4xl md:mt-10 mt-5 font-dhivehi leading-snug text-cyan-900"
-          per="char"
-          as="h1"
-          preset="fade-in-blur"
-        >
+        <h2 className="text-xl md:text-4xl md:mt-10 mt-5 font-dhivehi leading-snug text-cyan-900">
           ސެލްފް ސާރވިސް ޕޯޓަލްއަށް މަރުހަބާ!
-        </TextEffect>
+        </h2>
 
         <p className="mt-10  font-dhivehi text-cyan-900 leading-relaxed"></p>
       </div>

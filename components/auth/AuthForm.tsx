@@ -140,7 +140,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
           {errorMessage && <p className="error-message">*{errorMessage}</p>}
 
-          {/* <div className="body-2 flex justify-center">
+          <div className="body-2 flex justify-center">
             <p className="text-slate-600">
               {type === "sign-in"
                 ? "Don't have an account?"
@@ -153,7 +153,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
               {" "}
               {type === "sign-in" ? "Sign Up" : "Sign In"}
             </Link>
-          </div> */}
+          </div>
         </form>
       </Form>
 
