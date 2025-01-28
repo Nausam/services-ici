@@ -33,7 +33,7 @@ const Header = () => {
             alt="Council Logo"
             width={80}
             height={80}
-            className="mr-3"
+            className="mr-3 w-auto h-auto"
           />
           <h1 className="text-2xl font-dhivehi text-cyan-900 hidden md:flex">
             އިންނަމާދޫ ކައުންސިލް
@@ -43,7 +43,10 @@ const Header = () => {
         {/* Buttons */}
         <div className="flex items-center gap-4">
           {loading ? (
-            <div className="bg-slate-500 animate-pulse h-12 w-48 rounded-lg"></div>
+            <div className="flex gap-4">
+              <div className="bg-slate-400 animate-pulse h-12 w-24 rounded-lg"></div>
+              <div className="bg-slate-400 animate-pulse h-12 w-20 rounded-lg"></div>
+            </div>
           ) : currentUser ? (
             <>
               {isAdmin && (
