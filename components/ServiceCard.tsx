@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 type ServiceCardProps = {
   title: string;
@@ -22,6 +25,29 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   category,
   image,
 }) => {
+  const { toast } = useToast();
+
+  // Function to check if the due date has passed
+  const isDuePassed = (dueDate?: string) => {
+    if (!dueDate) return false;
+    const due = new Date(dueDate).getTime();
+    const today = new Date().getTime();
+    return today > due;
+  };
+
+  // Handle button click
+  const handleClick = (e: React.MouseEvent) => {
+    if (isDuePassed(dueDate)) {
+      e.preventDefault(); // Prevent navigation if due
+      toast({
+        title: "ރެޖިސްޓްރީ ކުރުމުގެ މުއްދަތުވަނީ ހަމަވެފަ",
+        description:
+          "އިތުރަށް ރަޖިސްޓްރީކުރަން ބޭނުންފުޅުވާނަމަ ކައުންސިލާއި ގުޅުއްވައިގެން ކުރިއަށް ގެންދަވާ",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="md:mb-0 mb-5 flex border flex-col bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg rounded-xl p-8 max-w-3xl mx-auto hover:shadow-xl transition-shadow duration-300 mt-5 md:mt-10 gap-6 md:flex-row-reverse">
       {/* Optional Image */}
@@ -72,7 +98,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {/* Button */}
         <div className="flex justify-start text-right">
-          <Link href={link}>
+          <Link href={link} onClick={handleClick}>
             <Button
               type="submit"
               size="lg"

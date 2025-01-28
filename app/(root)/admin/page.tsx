@@ -3,7 +3,7 @@ import ServiceTable from "@/components/admin/ServiceTable";
 
 const Admin = () => {
   return (
-    <section className="min-h-scren p-8 container mx-auto">
+    <section className="h-screen p-8 container mx-auto">
       <div className="mt-8">
         <div>
           <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">

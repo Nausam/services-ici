@@ -80,10 +80,9 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
 
         if (newRegistration) {
           form.reset();
-          // router.push(`/shop/${newRegistration.id}`);
-          // alert("Product created successfully!");
+          router.push("/");
           toast({
-            title: ` ކުނި އުކާލުމާއި ކުނި ނައްތާލުމުގެ ހިދުމަތަށް ${newRegistration.fullName} ރަޖިސްޓްރީ ކުރެވިއްޖެ`,
+            title: ` ކުނި އުކާލުމާއި ކުނި ނައްތާލުމުގެ ހިދުމަތަށް ${newRegistration.address} ރަޖިސްޓްރީ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
@@ -231,7 +230,7 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
             disabled={isSubmitting}
             className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
           >
-            {isSubmitting ? "Submitting..." : " ރެޖިސްޓާ ކުރައްވާ "}
+            {isSubmitting ? "ރެޖިސްޓާ ކުރަނީ..." : "ރެޖިސްޓާ ކުރައްވާ"}
           </Button>
         </div>
       </form>
