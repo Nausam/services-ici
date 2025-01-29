@@ -33,7 +33,7 @@ const Header = () => {
             alt="Council Logo"
             width={80}
             height={80}
-            className="mr-3 object-contain"
+            className="mr-3"
             priority
           />
           <h1 className="text-2xl font-dhivehi text-cyan-900 hidden md:flex">
