@@ -27,13 +27,13 @@ const Header = () => {
     >
       <nav className="container mx-auto flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center max-w-xs h-auto">
           <Image
             src="/assets/icons/logo-small.png"
             alt="Council Logo"
             width={80}
             height={80}
-            className="mr-3 w-auto h-auto"
+            className="mr-3 w-auto h-auto object-contain"
           />
           <h1 className="text-2xl font-dhivehi text-cyan-900 hidden md:flex">
             އިންނަމާދޫ ކައުންސިލް
