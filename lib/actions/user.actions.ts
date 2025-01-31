@@ -141,7 +141,8 @@ export const signInUser = async ({ email }: { email: string }) => {
     if (existingUser) {
       await sendEmailOTP({ email });
 
-      revalidatePath("/");
+      // revalidatePath("/");
+      window.location.href = "/";
       return parseStringify({ accountId: existingUser.accountId });
     }
 

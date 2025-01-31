@@ -18,11 +18,9 @@ const Header = () => {
     }
   };
 
-  console.log(currentUser);
-
   return (
     <header
-      className="bg-gradient-to-r from-blue-100 to-blue-50 backdrop-blur-md py-4 px-6 z-50 sticky top-0"
+      className="bg-gradient-to-r from-blue-100 to-blue-50 backdrop-blur-md  px-6 z-50 sticky top-0 shadow-sm"
       dir="rtl"
     >
       <nav className="container mx-auto flex justify-between items-center">
@@ -33,10 +31,9 @@ const Header = () => {
             alt="Council Logo"
             width={80}
             height={80}
-            className="mr-3"
             priority
           />
-          <h1 className="text-2xl font-dhivehi text-cyan-900 hidden md:flex">
+          <h1 className="mr-3 text-2xl font-dhivehi text-cyan-900 hidden md:flex">
             އިންނަމާދޫ ކައުންސިލް
           </h1>
         </Link>
@@ -45,8 +42,8 @@ const Header = () => {
         <div className="flex items-center gap-4">
           {loading ? (
             <div className="flex gap-4">
-              <div className="bg-slate-400 animate-pulse h-12 w-24 rounded-lg"></div>
-              <div className="bg-slate-400 animate-pulse h-12 w-20 rounded-lg"></div>
+              <div className="bg-slate-300 animate-pulse h-12 w-24 rounded-lg"></div>
+              <div className="bg-slate-300 animate-pulse h-12 w-20 rounded-lg"></div>
             </div>
           ) : currentUser ? (
             <>

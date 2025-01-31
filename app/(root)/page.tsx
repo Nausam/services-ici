@@ -1,7 +1,10 @@
 import React from "react";
 
 import Hero from "@/components/Hero";
-import Services from "@/components/Services";
+import Registrations from "@/components/registrations";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Competitions from "@/components/competitions";
 
 const Home = () => {
   return (
@@ -25,7 +28,35 @@ const Home = () => {
         <Hero />
 
         {/* Services Section */}
-        <Services />
+
+        <div className="flex items-center justify-center w-full mt-10">
+          <Tabs
+            dir="rtl"
+            defaultValue="registrations"
+            className="flex flex-col items-center justify-center w-full"
+          >
+            <TabsList>
+              <TabsTrigger
+                value="registrations"
+                className="font-dhivehi text-2xl"
+              >
+                ރެޖިސްޓާކުރުން
+              </TabsTrigger>
+              <TabsTrigger
+                value="competitions"
+                className="font-dhivehi text-2xl"
+              >
+                މުބާރާތްތައް
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="competitions" className="w-full">
+              <Competitions />
+            </TabsContent>
+            <TabsContent value="registrations" className="w-full">
+              <Registrations />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

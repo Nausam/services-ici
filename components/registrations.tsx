@@ -2,7 +2,7 @@ import React from "react";
 import ServiceCard from "./ServiceCard";
 import { AnimatedGroup } from "./ui/animated-group";
 
-const Services = () => {
+const Registrations = () => {
   return (
     <section className="mt-20 relative z-10 px-4 sm:px-6 md:px-8 lg:px-12 mb-10">
       <div className="max-w-7xl mx-auto">
@@ -22,4 +22,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default Registrations;
