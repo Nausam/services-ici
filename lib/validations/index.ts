@@ -17,11 +17,11 @@ export const createQuranCompetitionRegistrationSchema = z.object({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   contactNumber: z.string().min(1, "Contact number is required"),
 
-  parentName: z.string().min(1, "Parent name is required"),
-  parentAddress: z.string().min(1, "Parent address is required"),
-  relationship: z.string().min(1, "Relationship is required"),
-  parentIdCardNumber: z.string().min(1, "Parent ID card number is required"),
-  parentContactNumber: z.string().min(1, "Parent contact number is required"),
+  parentName: z.string().optional(),
+  parentAddress: z.string().optional(),
+  relationship: z.string().optional(),
+  parentIdCardNumber: z.string().optional(),
+  parentContactNumber: z.string().optional(),
 
   bankAccountName: z.string().min(1, "Bank account name is required"),
   bankAccountNumber: z.string().min(1, "Bank account number is required"),

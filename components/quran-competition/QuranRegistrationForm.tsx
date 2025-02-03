@@ -7,6 +7,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ import { FileUploader } from "../waste-management/FileUploader";
 import QDropdown from "./QDropDown";
 import { Checkbox } from "../ui/checkbox";
 import { createQuranCompetitionRegistration } from "@/lib/actions/quranCompetition.actions";
+import BDropdown from "./BDropdown";
 
 type ProductFormProps = {
   type: "Create" | "Update";
@@ -75,7 +77,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           form.reset();
           router.push("/");
           toast({
-            title: ` އިންނަމާދޫ ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތުގައި     ${newRegistration.fullName} ރަޖިސްޓްރީ ކުރެވިއްޖެ`,
+            title: ` އިންނަމާދޫ ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތުގައި     ${newRegistration.fullName} ރަޖިސްޓާ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
@@ -102,9 +104,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         className="flex flex-col gap-8 bg-white shadow-lg p-8 rounded-lg"
         dir="rtl"
       >
-        <p className="font-dhivehi text-xl text-right text-cyan-700">
+        <p className="font-dhivehi text-xl text-right text-red-600">
           {" "}
-          ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
+          ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އިތުރު
+          މަޢުލޫމާތު ހޯއްދެވުމަށް 9892099
         </p>
 
         {/* Baiverivaa faraathuge */}
@@ -300,7 +303,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       {...field}
                       value={
-                        field.value.startsWith("A")
+                        field.value?.startsWith("A")
                           ? field.value
                           : `A${field.value}`
                       } // Always starts with "A"
@@ -366,28 +369,6 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                 </FormItem>
               )}
             />
-
-            {/* Date of Birth */}
-            {/* <FormField
-              control={form.control}
-              name="dateOfBirth"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
-                    {" "}
-                    އުފަން ތާރީހް{" "}
-                  </p>
-                  <FormControl>
-                    <Input
-                      placeholder=" އުފަން ތާރީހް "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
 
             {/* Contact Number */}
             <FormField
@@ -657,11 +638,11 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right">
-                    {" "}
-                    އެކައުންޓް ނަން
+                    އެކައުންޓް ނަން (އިނގިރޭސިން)
                   </p>
                   <FormControl>
                     <Input
+                      allowAllLanguages
                       placeholder=" އެކައުންޓް ނަން "
                       {...field}
                       className="rounded-md font-dhivehi border-gray-300  text-right"
@@ -703,11 +684,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     ބޭންކުގެ ނަން
                   </p>
                   <FormControl>
-                    <Input
-                      placeholder=" ބޭންކުގެ ނަން "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
+                    <BDropdown />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -718,35 +695,42 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
 
         {/* Agreement */}
         <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
-            6. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
-            އިޤްރާރު
-          </p>
-          <div className="flex gap-4">
-            <FormField
-              control={form.control}
-              name="agreeToTerms"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-4 mt-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                    />
-                  </FormControl>
-                  {/* <FormLabel className="font-dhivehi text-lg text-right">
-                    ފާހަގަ ޖައްސަވާ
-                  </FormLabel> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
-              މި ފޯމްގައިވާ ހުރިހައި މަޢުލޫމާތުތަކަކީ ތެދު މަޢުލޫމާތުކަމަށާއި،
-              މުބާރާތުގެ ޤަވާއިދު ކިޔައި އެއަށް ހުރުމަތްތެރިކޮށް ހިތުމަށް
-              އަޅުގަނޑު އިޤްރާރުވަމެވެ.{" "}
+          <div className="flex flex-col gap-4">
+            <p className="font-dhivehi text-2xl text-right text-cyan-700">
+              6. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
+              އިޤްރާރު
             </p>
+
+            <div>
+              <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
+                މި ފޯމްގައިވާ ހުރިހައި މަޢުލޫމާތުތަކަކީ ތެދު މަޢުލޫމާތުކަމަށާއި،
+                މުބާރާތުގެ ޤަވާއިދު ކިޔައި އެއަށް ހުރުމަތްތެރިކޮށް ހިތުމަށް
+                އަޅުގަނޑު އިޤްރާރުވަމެވެ.{" "}
+              </p>
+              <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
+                (18 އަހަރުން ދަށުގެ ބައިވެރިއެއްނަމަ މިއިޤްރާރުގައި ނަން ޖަހައި
+                އެއްބަސްވާނީ ބެލެނިވެރިޔާެއެވެ.)
+              </p>
+              <FormField
+                control={form.control}
+                name="agreeToTerms"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-4 mt-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                      />
+                    </FormControl>
+                    <FormLabel className="font-dhivehi text-lg text-right">
+                      އިޤްރާރުވަމެވެ.
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Agreeyer Name */}

@@ -14,11 +14,11 @@ export type QuranCompetitionRegistration = {
   dateOfBirth: string;
   contactNumber: string;
 
-  parentName: string;
-  parentAddress: string;
-  relationship: string;
-  parentIdCardNumber: string;
-  parentContactNumber: string;
+  parentName?: string;
+  parentAddress?: string;
+  relationship?: string;
+  parentIdCardNumber?: string;
+  parentContactNumber?: string;
 
   bankAccountName: string;
   bankAccountNumber: string;
