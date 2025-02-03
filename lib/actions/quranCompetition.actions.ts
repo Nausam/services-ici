@@ -75,3 +75,35 @@ export const getAllQuranCompetitionRegistrations = async () => {
     throw new Error("Failed to fetch registrations");
   }
 };
+
+// Function to get a Quran competition registration by ID Card Number
+export const getQuranRegistrationById = async (
+  idCardNumber: string | string[] | undefined
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // Check if idCardNumber is a valid string
+    if (!idCardNumber || Array.isArray(idCardNumber)) {
+      throw new Error("Invalid ID card number provided.");
+    }
+
+    // Fetch the participant based on the ID card number
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quranCompetitionId,
+      [Query.equal("idCardNumber", [idCardNumber])] // Query expects an array
+    );
+
+    // Check if the participant exists
+    if (response.total === 0) {
+      throw new Error("Participant not found");
+    }
+
+    // Return the first matched document
+    return response.documents[0];
+  } catch (error) {
+    console.error("Failed to fetch registration:", error);
+    throw new Error("Failed to fetch participant details");
+  }
+};
