@@ -40,7 +40,7 @@ const Home = () => {
                 value="registrations"
                 className="font-dhivehi text-2xl"
               >
-                ރެޖިސްޓާކުރުން
+                ޚިދުމަތްތައް
               </TabsTrigger>
               <TabsTrigger
                 value="competitions"

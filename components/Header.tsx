@@ -48,19 +48,21 @@ const Header = () => {
           ) : currentUser ? (
             <>
               {isAdmin && (
-                <button
-                  onClick={handleSignOut}
-                  className="bg-rose-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-500 transition duration-300 font-dhivehi text-lg"
-                >
-                  ލޮގް-އައުޓް
-                </button>
-              )}
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleSignOut}
+                    className="bg-rose-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-500 transition duration-300 font-dhivehi text-lg"
+                  >
+                    ލޮގް-އައުޓް
+                  </button>
 
-              <Link href="/admin">
-                <div className="bg-cyan-700 text-white px-6 py-2 rounded-lg shadow-md hover:bg-cyan-600 transition duration-300 font-dhivehi text-lg">
-                  އެޑްމިން
+                  <Link href="/admin">
+                    <div className="bg-cyan-700 text-white px-6 py-2 rounded-lg shadow-md hover:bg-cyan-600 transition duration-300 font-dhivehi text-lg">
+                      އެޑްމިން
+                    </div>
+                  </Link>
                 </div>
-              </Link>
+              )}
             </>
           ) : (
             <Link href="/sign-in">

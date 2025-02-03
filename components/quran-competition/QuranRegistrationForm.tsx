@@ -97,6 +97,21 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
     }
   };
 
+  // Function to handle PDF download
+  const handleDownloadRules = () => {
+    const link = document.createElement("a");
+    link.href = "/assets/files/Quran_Mubaaraathuge_Gavaidhu_2025.pdf";
+    link.download = "Quran_Mubaaraathuge_Gavaidhu_2025.pdf";
+    link.click();
+  };
+
+  const handleDownloadThari = () => {
+    const link = document.createElement("a");
+    link.href = "/assets/files/Thari_Booklet.pdf";
+    link.download = "Thari_Booklet.pdf";
+    link.click();
+  };
+
   return (
     <Form {...form}>
       <form
@@ -104,11 +119,30 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         className="flex flex-col gap-8 bg-white shadow-lg p-8 rounded-lg"
         dir="rtl"
       >
-        <p className="font-dhivehi text-xl text-right text-red-600">
-          {" "}
-          ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އިތުރު
-          މަޢުލޫމާތު ހޯއްދެވުމަށް 9892099
-        </p>
+        <div className="flex flex-col items-start">
+          <div className="flex gap-4">
+            <Button
+              type="button"
+              onClick={handleDownloadRules}
+              className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-4 py-2 rounded-md shadow-md font-dhivehi text-lg"
+            >
+              މުބާރާތުގެ ޤަވަޢިދު
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleDownloadThari}
+              className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-4 py-2 rounded-md shadow-md font-dhivehi text-lg"
+            >
+              ތަރި ބުކްލެޓް
+            </Button>
+          </div>
+          <p className="font-dhivehi text-xl text-right text-red-600 mt-5">
+            {" "}
+            ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އިތުރު
+            މަޢުލޫމާތު ހޯއްދެވުމަށް 9892099 އަށް ގުޅުއްވުން އެދެން!
+          </p>
+        </div>
 
         {/* Baiverivaa faraathuge */}
         <div className="mt-10">
@@ -778,8 +812,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         <div className="flex flex-col gap-6 mt-5">
           {/* Image Upload */}
           <p className="font-dhivehi text-xl text-right">
-            {" "}
-            ބައިބެރިވާ ފަރާތުގެ އައިޑީކާޑް{" "}
+            ބައިވެރިވާ ފަރާތުގެ އައިޑީކާޑު (ފޮޓޯ ނުވަތަ ޕީޑީއެފް ފައިލް)
           </p>
           <FormField
             control={form.control}

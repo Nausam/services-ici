@@ -40,9 +40,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     if (isDuePassed(dueDate)) {
       e.preventDefault(); // Prevent navigation if due
       toast({
-        title: "ރެޖިސްޓްރީ ކުރުމުގެ މުއްދަތުވަނީ ހަމަވެފަ",
-        description:
-          "އިތުރަށް ރަޖިސްޓްރީކުރަން ބޭނުންފުޅުވާނަމަ ކައުންސިލާއި ގުޅުއްވައިގެން ކުރިއަށް ގެންދަވާ",
+        title:
+          " ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުމަށް އަދި ހުޅުވައެއް ނުލައެވެ",
+        // description:
+        //   "އިތުރަށް ރަޖިސްޓްރީކުރަން ބޭނުންފުޅުވާނަމަ ކައުންސިލާއި ގުޅުއްވައިގެން ކުރިއަށް ގެންދަވާ",
         variant: "destructive",
       });
     }

@@ -15,7 +15,7 @@ const Competitions = () => {
           link="/competitions/register/quran-competition"
           buttonText=" ރެޖިސްޓާ "
           dueDate="March 01, 2025"
-          image="/assets/images/quran.jpg"
+          image="/assets/images/quran.png"
         />
       </div>
     </section>
