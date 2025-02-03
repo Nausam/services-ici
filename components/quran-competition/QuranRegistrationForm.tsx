@@ -215,18 +215,18 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             {/* Date of Birth */}
             <FormField
               control={form.control}
-              name="dateOfBirth"
+              name="dateOfBirth" // Assuming this is for date selection
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
-                    {" "}
-                    އުފަން ތާރީހް{" "}
+                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                    އުފަން ތާރީހް
                   </p>
                   <FormControl>
-                    <Input
-                      placeholder=" އުފަން ތާރީހް "
+                    <input
+                      type="date" // Native date picker
+                      placeholder="އުފަން ތާރީހް"
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     />
                   </FormControl>
                   <FormMessage />
@@ -412,156 +412,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           </div>
         </div>
 
-        {/* Bank Details */}
-        <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
-            3. ބޭންކު އެކައުންޓްގެ މަޢުލޫމާތު
-          </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
-            {/* Account Name */}
-            <FormField
-              control={form.control}
-              name="bankAccountName"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
-                    {" "}
-                    އެކައުންޓް ނަން
-                  </p>
-                  <FormControl>
-                    <Input
-                      placeholder=" އެކައުންޓް ނަން "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Account Number */}
-            <FormField
-              control={form.control}
-              name="bankAccountNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
-                    އެކައުންޓް ނަންބަރު
-                  </p>
-                  <FormControl>
-                    <Input
-                      placeholder=" އެކައުންޓް ނަންބަރު "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Bank Name */}
-            <FormField
-              control={form.control}
-              name="bankName"
-              render={({ field }) => (
-                <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
-                    ބޭންކުގެ ނަން
-                  </p>
-                  <FormControl>
-                    <Input
-                      placeholder=" ބޭންކުގެ ނަން "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-
-        {/* Agreement */}
-        <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
-            4. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
-            އިޤްރާރު
-          </p>
-          <div className="flex gap-4">
-            <FormField
-              control={form.control}
-              name="agreeToTerms"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-4 mt-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                    />
-                  </FormControl>
-                  {/* <FormLabel className="font-dhivehi text-lg text-right">
-                    ފާހަގަ ޖައްސަވާ
-                  </FormLabel> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
-              މި ފޯމްގައިވާ ހުރިހައި މަޢުލޫމާތުތަކަކީ ތެދު މަޢުލޫމާތުކަމަށާއި،
-              މުބާރާތުގެ ޤަވާއިދު ކިޔައި އެއަށް ހުރުމަތްތެރިކޮށް ހިތުމަށް
-              އަޅުގަނޑު އިޤްރާރުވަމެވެ.{" "}
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
-            {/* Agreeyer Name */}
-
-            <FormField
-              control={form.control}
-              name="agreeyerName"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right">ނަން</p>
-                  <FormControl>
-                    <Input
-                      placeholder=" ނަން "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Agreed Date */}
-            <FormField
-              control={form.control}
-              name="agreedDate"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right">ތާރީހް</p>
-                  <FormControl>
-                    <Input
-                      placeholder=" ތާރީހް "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-
         {/* Baiverivaa Gofi */}
         <div className="mt-10">
           <p className="font-dhivehi text-2xl text-right text-cyan-700">
-            5. ބައިވެރިވާން ބޭނުންވާ ގޮފި
+            3. ބައިވެރިވާން ބޭނުންވާ ގޮފި
           </p>
           <div className="mt-5">
             <p className="font-dhivehi text-2xl text-right">
@@ -677,7 +531,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         {/* Final Round Baiverivaa Gofi */}
         <div className="mt-10">
           <p className="font-dhivehi text-2xl text-right text-cyan-700">
-            6. ފައިނަލް ބުރަށް ހޮވިއްޖެނަމަ އިޙްތިޔާރުކުރައްވާ ކޮޅު
+            4. ފައިނަލް ބުރަށް ހޮވިއްޖެނަމަ އިޙްތިޔާރުކުރައްވާ ކޮޅު
           </p>
           <div className="mt-5">
             <p className="font-dhivehi text-2xl text-right">
@@ -787,6 +641,153 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                 ނިމޭކޮޅު
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Bank Details */}
+        <div className="mt-10">
+          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+            5. ބޭންކު އެކައުންޓްގެ މަޢުލޫމާތު
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
+            {/* Account Name */}
+            <FormField
+              control={form.control}
+              name="bankAccountName"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right">
+                    {" "}
+                    އެކައުންޓް ނަން
+                  </p>
+                  <FormControl>
+                    <Input
+                      placeholder=" އެކައުންޓް ނަން "
+                      {...field}
+                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Account Number */}
+            <FormField
+              control={form.control}
+              name="bankAccountNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                    އެކައުންޓް ނަންބަރު
+                  </p>
+                  <FormControl>
+                    <Input
+                      placeholder=" އެކައުންޓް ނަންބަރު "
+                      {...field}
+                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Bank Name */}
+            <FormField
+              control={form.control}
+              name="bankName"
+              render={({ field }) => (
+                <FormItem>
+                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                    ބޭންކުގެ ނަން
+                  </p>
+                  <FormControl>
+                    <Input
+                      placeholder=" ބޭންކުގެ ނަން "
+                      {...field}
+                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Agreement */}
+        <div className="mt-10">
+          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+            6. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
+            އިޤްރާރު
+          </p>
+          <div className="flex gap-4">
+            <FormField
+              control={form.control}
+              name="agreeToTerms"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-4 mt-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                    />
+                  </FormControl>
+                  {/* <FormLabel className="font-dhivehi text-lg text-right">
+                    ފާހަގަ ޖައްސަވާ
+                  </FormLabel> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
+              މި ފޯމްގައިވާ ހުރިހައި މަޢުލޫމާތުތަކަކީ ތެދު މަޢުލޫމާތުކަމަށާއި،
+              މުބާރާތުގެ ޤަވާއިދު ކިޔައި އެއަށް ހުރުމަތްތެރިކޮށް ހިތުމަށް
+              އަޅުގަނޑު އިޤްރާރުވަމެވެ.{" "}
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
+            {/* Agreeyer Name */}
+
+            <FormField
+              control={form.control}
+              name="agreeyerName"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right">ނަން</p>
+                  <FormControl>
+                    <Input
+                      placeholder=" ނަން "
+                      {...field}
+                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Agreed Date */}
+            <FormField
+              control={form.control}
+              name="agreedDate"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right">ތާރީހް</p>
+                  <FormControl>
+                    <input
+                      type="date" // Native date picker
+                      placeholder="ތާރީހް"
+                      {...field}
+                      className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
