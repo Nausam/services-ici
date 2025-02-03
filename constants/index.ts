@@ -1,3 +1,5 @@
+import { date } from "zod";
+
 // Format the time to display in the input field
 export const formatTimeForInput = (dateTime: string | null) => {
   if (!dateTime) return "";
@@ -20,4 +22,39 @@ export const registrationDefaultValues = {
   contactNumber: "",
   idCard: "",
   category: "",
+};
+
+export const QuranCompetitionregistrationDefaultValues = {
+  fullName: "",
+  idCardNumber: "",
+  address: "",
+  sex: "",
+  dateOfBirth: "",
+  contactNumber: "",
+
+  parentName: "",
+  parentAddress: "",
+  relationship: "",
+  parentIdCardNumber: "",
+  parentContactNumber: "",
+
+  bankAccountName: "",
+  bankAccountNumber: "",
+  bankName: "",
+
+  agreeToTerms: false,
+  agreeyerName: "",
+  agreedDate: "",
+
+  balaigenKiyevunFeshey: false,
+  balaigenKiyevunNimey: false,
+  nubalaaKiyevunFeshey: false,
+  nubalaaKiyevunNimey: false,
+
+  finalRoundNubalaaKiyevunFeshey: false,
+  finalRoundNubalaaKiyevunNimey: false,
+  finalRoundBalaigenKiyevunFeshey: false,
+  finalRoundBalaigenKiyevunNimey: false,
+
+  idCard: "",
 };

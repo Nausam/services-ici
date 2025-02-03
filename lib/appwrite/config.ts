@@ -7,4 +7,6 @@ export const appwriteConfig = {
     process.env.NEXT_PUBLIC_APPWRITE_WASTE_MANAGEMENT_COLLECTION!,
   secretKey: process.env.NEXT_APPWRITE_KEY!,
   bucketId: process.env.NEXT_PUBLIC_APPWRITE_BUCKET!,
+  quranCompetitionId:
+    process.env.NEXT_PUBLIC_APPWRITE_QURAN_COMPETITION_COLLECTION!,
 };

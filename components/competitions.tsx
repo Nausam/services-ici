@@ -12,7 +12,7 @@ const Competitions = () => {
         <ServiceCard
           title=" ޤުރުއާން މުބާރާތަށް ރެޖިސްޓާ ކުރުން "
           description=" އިންނަމާދޫ ކައުންސިލްގެ 08 ވަނަ ޤުރުއާން މުބާރާތަށް ރެޖިސްޓާ ކުރައްވާ! "
-          link="/services/register/waste-management"
+          link="/competitions/register/quran-competition"
           buttonText=" ރެޖިސްޓާ "
           dueDate="March 01, 2025"
           image="/assets/images/quran.jpg"
