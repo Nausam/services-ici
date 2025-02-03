@@ -18,6 +18,7 @@ const getUserByEmail = async (email: string) => {
     [Query.equal("email", [email])]
   );
 
+  console.log("Database Result:", result);
   return result.total > 0 ? result.documents[0] : null;
 };
 
@@ -137,12 +138,13 @@ export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);
 
+    console.log("Existing User:", existingUser);
+
     // User exists, send OTP
     if (existingUser) {
       await sendEmailOTP({ email });
 
-      // revalidatePath("/");
-      window.location.href = "/";
+      revalidatePath("/");
       return parseStringify({ accountId: existingUser.accountId });
     }
 
