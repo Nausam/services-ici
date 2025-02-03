@@ -2,42 +2,26 @@
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { createRegistration, uploadImage } from "@/lib/actions/waste.actions";
-import Image from "next/legacy/image";
-import {
-  createQuranCompetitionRegistrationSchema,
-  createRegistrationSchema,
-} from "@/lib/validations";
-import { QuranCompetitionRegistration, Registration } from "@/types";
-import {
-  QuranCompetitionregistrationDefaultValues,
-  registrationDefaultValues,
-} from "@/constants";
+import { uploadImage } from "@/lib/actions/waste.actions";
+
+import { createQuranCompetitionRegistrationSchema } from "@/lib/validations";
+import { QuranCompetitionRegistration } from "@/types";
+import { QuranCompetitionregistrationDefaultValues } from "@/constants";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import Dropdown from "../waste-management/Dropdown";
+
 import { FileUploader } from "../waste-management/FileUploader";
 import QDropdown from "./QDropDown";
 import { Checkbox } from "../ui/checkbox";
