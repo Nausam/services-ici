@@ -58,3 +58,20 @@ export const createQuranCompetitionRegistration = async (
     throw new Error("Failed to register");
   }
 };
+
+// GET ALL QURAN COMPETITION REGISTRATIONS
+export const getAllQuranCompetitionRegistrations = async () => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const quranCompetitionRegistrations = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quranCompetitionId
+    );
+
+    return parseStringify(quranCompetitionRegistrations.documents);
+  } catch (error) {
+    console.error("Failed to fetch registrations:", error);
+    throw new Error("Failed to fetch registrations");
+  }
+};

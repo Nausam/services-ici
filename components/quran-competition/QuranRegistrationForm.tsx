@@ -718,7 +718,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     ބޭންކުގެ ނަން
                   </p>
                   <FormControl>
-                    <BDropdown />
+                    <BDropdown
+                      value={field.value}
+                      onChangeHandler={(value) => field.onChange(value)}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
