@@ -71,7 +71,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
       if (type === "Create") {
         const newRegistration = await createQuranCompetitionRegistration({
           ...values,
-          idCard: values.idCard,
+          idCard,
         });
 
         if (newRegistration) {
@@ -764,7 +764,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               </p>
               <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
                 (18 އަހަރުން ދަށުގެ ބައިވެރިއެއްނަމަ މިއިޤްރާރުގައި ނަން ޖަހައި
-                އެއްބަސްވާނީ ބެލެނިވެރިޔާެއެވެ.)
+                އެއްބަސްވާނީ ބެލެނިވެރިޔާއެވެ.)
               </p>
               <FormField
                 control={form.control}
