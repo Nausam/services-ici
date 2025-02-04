@@ -71,7 +71,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
       if (type === "Create") {
         const newRegistration = await createQuranCompetitionRegistration({
           ...values,
-          idCard: values.idCard,
+          idCard,
         });
 
         if (newRegistration) {

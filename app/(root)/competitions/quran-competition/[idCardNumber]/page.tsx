@@ -67,20 +67,7 @@ const ParticipantDetails = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
       <div className="bg-white shadow-xl rounded-lg p-6 max-w-3xl w-full border border-cyan-200">
-        {/* {registration.idCard && (
-          <div className="mt-6 text-center font-dhivehi">
-            <h4 className="text-cyan-700 font-semibold">އައިޑީކާޑް</h4>
-            <Image
-              src={registration.idCard}
-              width={300}
-              height={200}
-              alt="ID Card"
-              className="mx-auto mt-2 max-w-xs rounded shadow-md"
-            />
-          </div>
-        )} */}
-
-        <h2 className="text-3xl font-bold text-cyan-700 mt-5 mb-4 text-center font-dhivehi">
+        <h2 className="text-4xl font-bold text-cyan-700 mt-5 mb-4 text-center font-dhivehi">
           {registration.fullName}
         </h2>
 
@@ -118,7 +105,7 @@ const ParticipantDetails = () => {
           )}
         </div>
 
-        <div className="mt-6 border-b p-4">
+        <div dir="rtl" className="mt-6 border-b p-4">
           <h3 className="text-2xl text-cyan-700 font-bold text-center mb-3 font-dhivehi">
             ފުރަތަމަ ރައުންޑުގައި ކިޔަވާ ގޮފި
           </h3>
@@ -129,14 +116,26 @@ const ParticipantDetails = () => {
                 : "❌ ބަލައިގެން ނިމޭ"}
             </p>
             <p>
+              {registration.balaigenKiyevunNimey
+                ? "✔️ ބަލައިގެން ފެށޭ"
+                : "❌ ބަލައިގެން ނިމޭ"}
+            </p>
+
+            <p>
               {registration.nubalaaKiyevunFeshey
+                ? "✔️ ނުބަލައި ފެށޭ"
+                : "❌ ނުބަލައި ނިމޭ"}
+            </p>
+
+            <p>
+              {registration.nubalaaKiyevunNimey
                 ? "✔️ ނުބަލައި ފެށޭ"
                 : "❌ ނުބަލައި ނިމޭ"}
             </p>
           </div>
         </div>
 
-        <div className="mt-6 border-b p-4">
+        <div dir="rtl" className="mt-6 border-b p-4">
           <h3 className="text-2xl text-cyan-700 font-bold text-center mb-3 font-dhivehi">
             ދެވަނަ ރައުންޑުގައި ކިޔަވާ ގޮފި
           </h3>
@@ -147,7 +146,17 @@ const ParticipantDetails = () => {
                 : "❌  ބަލައިގެން ނިމޭ"}
             </p>
             <p>
+              {registration.finalRoundBalaigenKiyevunNimey
+                ? "✔️  ބަލައިގެން ފެށޭ"
+                : "❌  ބަލައިގެން ނިމޭ"}
+            </p>
+            <p>
               {registration.finalRoundNubalaaKiyevunFeshey
+                ? "✔️  ނުބަލައި ފެށޭ"
+                : "❌  ނުބަލައި ނިމޭ"}
+            </p>
+            <p>
+              {registration.finalRoundNubalaaKiyevunNimey
                 ? "✔️  ނުބަލައި ފެށޭ"
                 : "❌  ނުބަލައި ނިމޭ"}
             </p>

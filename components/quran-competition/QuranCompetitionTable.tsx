@@ -5,9 +5,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getAllQuranCompetitionRegistrations } from "@/lib/actions/quranCompetition.actions";
 import Q_ParticipantCard from "./Q_ParticipantCard";
+import { QuranCompetitionRegistration } from "@/types";
 
 const QuranCompetitionDashboard = () => {
-  const [registrations, setRegistrations] = useState([]);
+  const [registrations, setRegistrations] = useState<
+    QuranCompetitionRegistration[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,21 +31,38 @@ const QuranCompetitionDashboard = () => {
   const downloadCSV = () => {
     if (registrations.length === 0) return;
 
-    const csvHeader =
-      "Full Name, ID Card Number, Address, Sex, DOB, Contact, Parent Name, Bank Name, Agreement\n";
+    // CSV Header in Dhivehi (Reversed Order)
+    const csvHeader = `
+އިޤްރާރު,ފައިނަލް ނުބަލައި ނިމޭ,ފައިނަލް ނުބަލައި ފެށޭ,ފައިނަލް ބަލައިގެން ނިމޭ,ފައިނަލް ބަލައިގެން ފެށޭ,ނުބަލައި ނިމޭ,ނުބަލައި ފެށޭ,ބަލައިގެން ނިމޭ,ބަލައިގެން ފެށޭ,އިޤްރާރު ކުރުން އަށްވަނީ,އިޤްރާރު ކުރި ތާރީހް,ބޭންކުގެ ނަން,ބޭންކު އެކައުންޓް ނަންބަރު,ބޭންކު އެކައުންޓް ނަން,ބެލެނިވެރިޔާގެ ފޯނު ނަންބަރު,ހުރިގާތް,ބެލެނިވެރިޔާގެ ދާއިމީ އެޑްރެސް,ބެލެނިވެރިޔާގެ އައިޑީކާޑް,ބެލެނިވެރިޔާގެ ނަން,ފޯނު ނަންބަރު,އުފަން ތާރީހް,ޖިންސު,ދާއިމީ އެޑްރެސް,އައިޑީކާޑް ނަންބަރު,ފުރިހަމަ ނަން\n`;
 
     const csvRows = registrations
       .map((reg: any) =>
         [
-          reg.fullName,
-          reg.idCardNumber,
-          reg.address,
-          reg.sex,
-          reg.dateOfBirth,
-          reg.contactNumber,
-          reg.parentName || "-",
+          reg.agreeToTerms ? "✔️ އިޤްރާރު ކުރެވިއްޖެ" : "❌ ނުކުރެވިއްޖެ",
+          reg.finalRoundNubalaaKiyevunNimey ? "✔️" : "❌",
+          reg.finalRoundNubalaaKiyevunFeshey ? "✔️" : "❌",
+          reg.finalRoundBalaigenKiyevunNimey ? "✔️" : "❌",
+          reg.finalRoundBalaigenKiyevunFeshey ? "✔️" : "❌",
+          reg.nubalaaKiyevunNimey ? "✔️" : "❌",
+          reg.nubalaaKiyevunFeshey ? "✔️" : "❌",
+          reg.balaigenKiyevunNimey ? "✔️" : "❌",
+          reg.balaigenKiyevunFeshey ? "✔️" : "❌",
+          reg.agreeyerName,
+          reg.agreedDate,
           reg.bankName,
-          reg.agreeToTerms ? "Yes" : "No",
+          reg.bankAccountNumber,
+          reg.bankAccountName,
+          reg.parentContactNumber || "-",
+          reg.relationship || "-",
+          reg.parentAddress || "-",
+          reg.parentIdCardNumber || "-",
+          reg.parentName || "-",
+          reg.contactNumber,
+          reg.dateOfBirth,
+          reg.sex,
+          reg.address,
+          reg.idCardNumber,
+          reg.fullName,
         ].join(",")
       )
       .join("\n");
