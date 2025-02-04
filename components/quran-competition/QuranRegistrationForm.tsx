@@ -28,6 +28,7 @@ import QDropdown from "./QDropDown";
 import { Checkbox } from "../ui/checkbox";
 import { createQuranCompetitionRegistration } from "@/lib/actions/quranCompetition.actions";
 import BDropdown from "./BDropdown";
+import QKeyStageDropDown from "./QKeyStageDropDown";
 
 type ProductFormProps = {
   type: "Create" | "Update";
@@ -291,15 +292,32 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                 </FormItem>
               )}
             />
+
+            {/* KeyStage */}
+            <FormField
+              control={form.control}
+              name="keyStage"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right"> ކީސްޓޭޖް </p>
+                  <FormControl>
+                    <QKeyStageDropDown
+                      value={field.value}
+                      onChangeHandler={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
         {/* Beleniveriyaage */}
         <div className="mt-10">
           <p className="font-dhivehi text-2xl text-right text-cyan-700">
-            {" "}
-            2. ބެލެނިވެރިޔާގެ މަޢުލޫމާތު - ހަމައެކަނި 18 އަހަރުން ދަށުގެ
-            ކުޑަކުދިންނަށް
+            2. ބެލެނިވެރިޔާގެ މަޢުލޫމާތު (ހަމައެކަނި 18 އަހަރުން ދަށުގެ
+            ކުޑަކުދިންނަށް)
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Full Name */}

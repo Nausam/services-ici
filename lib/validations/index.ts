@@ -16,6 +16,7 @@ export const createQuranCompetitionRegistrationSchema = z.object({
   sex: z.string().min(1, "Sex is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   contactNumber: z.string().min(1, "Contact number is required"),
+  keyStage: z.string().optional(),
 
   parentName: z.string().optional(),
   parentAddress: z.string().optional(),

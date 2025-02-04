@@ -13,6 +13,7 @@ export type QuranCompetitionRegistration = {
   sex: string;
   dateOfBirth: string;
   contactNumber: string;
+  keyStage?: string;
 
   parentName?: string;
   parentAddress?: string;

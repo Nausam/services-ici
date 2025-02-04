@@ -31,6 +31,7 @@ export const QuranCompetitionregistrationDefaultValues = {
   sex: "",
   dateOfBirth: "",
   contactNumber: "",
+  keyStage: "",
 
   parentName: "",
   parentAddress: "",
