@@ -60,9 +60,7 @@ const ParticipantDetails = () => {
   const infoSection = (label: string, value: any) => (
     <div dir="rtl" className="flex justify-between items-center border-b py-2">
       <p className="text-lg text-gray-800 font-dhivehi">{label}</p>
-      <p className="text-lg font-semibold text-gray-500">
-        {value || "ނުފެނުނު"}
-      </p>
+      <p className="text-lg font-semibold text-gray-500">{value || "ނެތް"}</p>
     </div>
   );
 
@@ -113,13 +111,10 @@ const ParticipantDetails = () => {
           )}
           {infoSection("ބޭންކުގެ ނަން", registration.bankName)}
           {infoSection("އިޤްރާރުވި ތާރީހް", registration.agreedDate)}
+          {infoSection("ކީސްޓޭޖް", registration.keyStage)}
           {infoSection(
-            "އިޤްރާރުގައި ސޮއިކުރި ފަރާތް",
+            " އިޤްރާރުގައި ސޮއިކުރި ފަރާތް ",
             registration.agreeyerName
-          )}
-          {infoSection(
-            "އިޤްރާރުގައި ސޮއިކުރި ",
-            registration.agreeToTerms ? "✔️" : "❌"
           )}
         </div>
 
