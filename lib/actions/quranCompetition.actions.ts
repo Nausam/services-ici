@@ -64,16 +64,27 @@ export const createQuranCompetitionRegistration = async (
 };
 
 // GET ALL QURAN COMPETITION REGISTRATIONS
-export const getAllQuranCompetitionRegistrations = async () => {
+export const getAllQuranCompetitionRegistrations = async (
+  limit: number,
+  offset: number
+) => {
   try {
     const { databases } = await createAdminClient();
 
     const quranCompetitionRegistrations = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.quranCompetitionId
+      appwriteConfig.quranCompetitionId,
+      [
+        // Appwrite's pagination queries
+        Query.limit(limit),
+        Query.offset(offset),
+      ]
     );
 
-    return parseStringify(quranCompetitionRegistrations.documents);
+    return {
+      documents: parseStringify(quranCompetitionRegistrations.documents),
+      total: quranCompetitionRegistrations.total,
+    };
   } catch (error) {
     console.error("Failed to fetch registrations:", error);
     throw new Error("Failed to fetch registrations");

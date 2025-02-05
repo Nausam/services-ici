@@ -145,9 +145,9 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           </p>
         </div>
 
-        {/* Baiverivaa faraathuge */}
+        {/* 1️⃣ Baiverivaa faraathuge */}
         <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+          <p className="font-dhivehi text-2xl text-right text-cyan-800">
             {" "}
             1. ބައިވެރިވާ ފަރާތުގެ މަޢުލޫމާތު
           </p>
@@ -158,7 +158,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
                     ފުރިހަމަ ނަން{" "}
                   </p>
@@ -166,7 +166,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ފުރިހަމަ ނަން "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className="rounded-md font-dhivehi border-gray-300  text-right "
                     />
                   </FormControl>
                   <FormMessage />
@@ -180,7 +180,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="idCardNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     އައިޑީކާޑް ނަންބަރު
                   </p>
                   <FormControl>
@@ -203,7 +203,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         field.onChange(`A${numericPart}`);
                       }}
                       placeholder="A123456"
-                      className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest"
+                      className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950"
                     />
                   </FormControl>
                   <FormMessage />
@@ -217,7 +217,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     ދާއިމީ އެޑްރެސް
                   </p>
                   <FormControl>
@@ -238,7 +238,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="sex"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right"> ޖިންސު </p>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    {" "}
+                    ޖިންސު{" "}
+                  </p>
                   <FormControl>
                     <QDropdown
                       value={field.value}
@@ -256,7 +259,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="dateOfBirth" // Assuming this is for date selection
               render={({ field }) => (
                 <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                  <p
+                    dir="rtl"
+                    className="font-dhivehi text-xl text-right text-cyan-950"
+                  >
                     އުފަން ތާރީހް
                   </p>
                   <FormControl>
@@ -264,7 +270,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                       type="date" // Native date picker
                       placeholder="އުފަން ތާރީހް"
                       {...field}
-                      className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 text-cyan-950"
                     />
                   </FormControl>
                   <FormMessage />
@@ -278,7 +284,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="contactNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                  <p
+                    dir="rtl"
+                    className="font-dhivehi text-xl text-right text-cyan-950"
+                  >
                     ފޯނު ނަންބަރު
                   </p>
                   <FormControl>
@@ -299,7 +308,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="keyStage"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right"> ކީސްޓޭޖް </p>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    {" "}
+                    ކީސްޓޭޖް{" "}
+                  </p>
                   <FormControl>
                     <QKeyStageDropDown
                       value={field.value}
@@ -313,9 +325,9 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           </div>
         </div>
 
-        {/* Beleniveriyaage */}
+        {/* 2️⃣ Beleniveriyaage */}
         <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+          <p className="font-dhivehi text-2xl text-right text-cyan-800">
             2. ބެލެނިވެރިޔާގެ މަޢުލޫމާތު (ހަމައެކަނި 18 އަހަރުން ދަށުގެ
             ކުޑަކުދިންނަށް)
           </p>
@@ -326,7 +338,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="parentName"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
                     ބެލެނިވެރިޔާގެ ނަން
                   </p>
@@ -348,7 +360,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="parentIdCardNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     އައިޑީކާޑް ނަންބަރު
                   </p>
                   <FormControl>
@@ -385,7 +397,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="parentAddress"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     ދާއިމީ އެޑްރެސް
                   </p>
                   <FormControl>
@@ -406,7 +418,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="relationship"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
                     ހުރިގާތްކަން{" "}
                   </p>
@@ -428,7 +440,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="parentContactNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                  <p
+                    dir="rtl"
+                    className="font-dhivehi text-xl text-right text-cyan-950"
+                  >
                     ފޯނު ނަންބަރު
                   </p>
                   <FormControl>
@@ -445,13 +460,13 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           </div>
         </div>
 
-        {/* Baiverivaa Gofi */}
+        {/* 3️⃣ Baiverivaa Gofi */}
         <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+          <p className="font-dhivehi text-2xl text-right text-cyan-800">
             3. ބައިވެރިވާން ބޭނުންވާ ގޮފި
           </p>
           <div className="mt-5">
-            <p className="font-dhivehi text-2xl text-right">
+            <p className="font-dhivehi text-2xl text-right text-cyan-950">
               ބަލައިގެން ކިޔެވުން
             </p>
             <div className="flex gap-2 mt-5">
@@ -474,7 +489,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ފެށޭކޮޅު
               </p>
             </div>
@@ -499,14 +514,14 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ނިމޭކޮޅު
               </p>
             </div>
           </div>
 
           <div className="mt-5">
-            <p className="font-dhivehi text-2xl text-right">
+            <p className="font-dhivehi text-2xl text-right text-cyan-950">
               ނުބަލައި ކިޔެވުން
             </p>
             <div className="flex gap-2 mt-5">
@@ -529,7 +544,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ފެށޭކޮޅު
               </p>
             </div>
@@ -554,20 +569,20 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ނިމޭކޮޅު
               </p>
             </div>
           </div>
         </div>
 
-        {/* Final Round Baiverivaa Gofi */}
+        {/* 4️⃣ Final Round Baiverivaa Gofi */}
         <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+          <p className="font-dhivehi text-2xl text-right text-cyan-800">
             4. ފައިނަލް ބުރަށް ހޮވިއްޖެނަމަ އިޙްތިޔާރުކުރައްވާ ކޮޅު
           </p>
           <div className="mt-5">
-            <p className="font-dhivehi text-2xl text-right">
+            <p className="font-dhivehi text-2xl text-right text-cyan-950">
               ބަލައިގެން ކިޔެވުން
             </p>
             <div className="flex gap-2 mt-5">
@@ -590,7 +605,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ފެށޭކޮޅު
               </p>
             </div>
@@ -615,14 +630,14 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ނިމޭކޮޅު
               </p>
             </div>
           </div>
 
           <div className="mt-5">
-            <p className="font-dhivehi text-2xl text-right">
+            <p className="font-dhivehi text-2xl text-right text-cyan-950">
               ނުބަލައި ކިޔެވުން
             </p>
             <div className="flex gap-2 mt-5">
@@ -645,7 +660,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ފެށޭކޮޅު
               </p>
             </div>
@@ -670,16 +685,16 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   </FormItem>
                 )}
               />
-              <p className="font-dhivehi text-xl text-right text-slate-700">
+              <p className="font-dhivehi text-xl text-right text-cyan-950">
                 ނިމޭކޮޅު
               </p>
             </div>
           </div>
         </div>
 
-        {/* Bank Details */}
+        {/* 5️⃣ Bank Details */}
         <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-700">
+          <p className="font-dhivehi text-2xl text-right text-cyan-800">
             5. ބޭންކު އެކައުންޓްގެ މަޢުލޫމާތު
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
@@ -689,7 +704,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="bankAccountName"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
                     އެކައުންޓް ނަން (އިނގިރޭސިން)
                   </p>
                   <FormControl>
@@ -711,7 +726,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="bankAccountNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                  <p
+                    dir="rtl"
+                    className="font-dhivehi text-xl text-right text-cyan-950"
+                  >
                     އެކައުންޓް ނަންބަރު
                   </p>
                   <FormControl>
@@ -732,7 +750,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="bankName"
               render={({ field }) => (
                 <FormItem>
-                  <p dir="rtl" className="font-dhivehi text-xl text-right">
+                  <p
+                    dir="rtl"
+                    className="font-dhivehi text-xl text-right text-cyan-950"
+                  >
                     ބޭންކުގެ ނަން
                   </p>
                   <FormControl>
@@ -748,21 +769,21 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           </div>
         </div>
 
-        {/* Agreement */}
+        {/* 6️⃣ Agreement */}
         <div className="mt-10">
           <div className="flex flex-col gap-4">
-            <p className="font-dhivehi text-2xl text-right text-cyan-700">
+            <p className="font-dhivehi text-2xl text-right text-cyan-800">
               6. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
               އިޤްރާރު
             </p>
 
             <div>
-              <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
+              <p className="font-dhivehi text-xl text-right mt-5 text-cyan-950">
                 މި ފޯމްގައިވާ ހުރިހައި މަޢުލޫމާތުތަކަކީ ތެދު މަޢުލޫމާތުކަމަށާއި،
                 މުބާރާތުގެ ޤަވާއިދު ކިޔައި އެއަށް ހުރުމަތްތެރިކޮށް ހިތުމަށް
                 އަޅުގަނޑު އިޤްރާރުވަމެވެ.{" "}
               </p>
-              <p className="font-dhivehi text-xl text-right mt-5 text-slate-700">
+              <p className="font-dhivehi text-xl text-right mt-5 text-cyan-950">
                 (18 އަހަރުން ދަށުގެ ބައިވެރިއެއްނަމަ މިއިޤްރާރުގައި ނަން ޖަހައި
                 އެއްބަސްވާނީ ބެލެނިވެރިޔާއެވެ.)
               </p>
@@ -778,7 +799,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
                       />
                     </FormControl>
-                    <FormLabel className="font-dhivehi text-lg text-right">
+                    <FormLabel className="font-dhivehi text-lg text-right text-cyan-950">
                       އިޤްރާރުވަމެވެ.
                     </FormLabel>
                     <FormMessage />
@@ -795,7 +816,9 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="agreeyerName"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">ނަން</p>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ނަން
+                  </p>
                   <FormControl>
                     <Input
                       placeholder=" ނަން "
@@ -814,7 +837,9 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               name="agreedDate"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right">ތާރީހް</p>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ތާރީހް
+                  </p>
                   <FormControl>
                     <input
                       type="date" // Native date picker
@@ -832,7 +857,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
 
         <div className="flex flex-col gap-6 mt-5">
           {/* Image Upload */}
-          <p className="font-dhivehi text-xl text-right">
+          <p className="font-dhivehi text-xl text-right text-cyan-950">
             ބައިވެރިވާ ފަރާތުގެ އައިޑީކާޑު (ފޮޓޯ ނުވަތަ ޕީޑީއެފް ފައިލް)
           </p>
           <FormField

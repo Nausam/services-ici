@@ -73,7 +73,12 @@ const ServiceTable = () => {
 
   if (loading) {
     return (
-      <p className="text-center text-gray-500">Loading service requests...</p>
+      <div className="flex justify-center h-screen items-center">
+        <div className="flex flex-col items-center gap-4">
+          {/* Spinner */}
+          <div className="w-16 h-16 border-4 border-cyan-600 border-dashed rounded-full animate-spin"></div>
+        </div>
+      </div>
     );
   }
 
@@ -84,8 +89,11 @@ const ServiceTable = () => {
   }
 
   return (
-    <div>
-      <div className="flex justify-end mb-4">
+    <div className="p-4 mt-10">
+      <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
+        ރެޖިސްޓްރޭޝަންސް
+      </h2>
+      <div className="flex justify-start mb-4 gap-4">
         <Button
           onClick={downloadCSV}
           className="bg-cyan-600 hover:bg-cyan-700 text-white"

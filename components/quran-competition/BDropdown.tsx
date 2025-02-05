@@ -26,15 +26,21 @@ type DropdownProps = {
 const BDropdown = ({ value, onChangeHandler }: DropdownProps) => {
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>
-      <SelectTrigger className="select-field flex justify-end font-dhivehi ">
+      <SelectTrigger className="select-field flex justify-end font-dhivehi text-cyan-950 font-semibold">
         <SelectValue className="text-slate-100" placeholder="ބޭންކް" />
       </SelectTrigger>
-      <SelectContent className="font-dhivehi  text-gray-500 text-right">
+      <SelectContent className="font-dhivehi  text-slate-600 text-right">
         <AlertDialog>
-          <SelectItem className="cursor-pointer" value="Bank of Maldives">
+          <SelectItem
+            className="cursor-pointer font-semibold"
+            value="Bank of Maldives"
+          >
             Bank of Maldives
           </SelectItem>
-          <SelectItem className="cursor-pointer" value="Maldives Islamic Bank">
+          <SelectItem
+            className="cursor-pointer font-semibold"
+            value="Maldives Islamic Bank"
+          >
             Maldives Islamic Bank
           </SelectItem>
         </AlertDialog>
