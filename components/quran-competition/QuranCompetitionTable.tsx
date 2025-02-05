@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import { getAllQuranCompetitionRegistrations } from "@/lib/actions/quranCompetition.actions";
 import Q_ParticipantCard from "./Q_ParticipantCard";
 import { QuranCompetitionRegistration } from "@/types";
+import JSZip from "jszip";
 
 const QuranCompetitionDashboard = () => {
   const [registrations, setRegistrations] = useState<
     QuranCompetitionRegistration[]
   >([]);
   const [loading, setLoading] = useState(true);
+
+  console.log(registrations);
 
   useEffect(() => {
     const fetchRegistrations = async () => {
@@ -81,6 +84,50 @@ const QuranCompetitionDashboard = () => {
     document.body.removeChild(link);
   };
 
+  const downloadIDCardsAsZip = async () => {
+    const zip = new JSZip();
+
+    const downloadFileAsBlob = async (url: string) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to download file");
+        return await response.blob();
+      } catch (error) {
+        console.error(`Error fetching file: ${url}`, error);
+        return null;
+      }
+    };
+
+    const downloadPromises = registrations.map(async (reg) => {
+      if (reg.idCard) {
+        const blob = await downloadFileAsBlob(reg.idCard);
+        if (blob) {
+          const fileExtension = reg.idCard.endsWith(".pdf") ? "pdf" : "jpg";
+          const fileName = `${reg.fullName.replace(
+            /\s+/g,
+            "_"
+          )}_IDCard.${fileExtension}`;
+          zip.file(fileName, blob);
+        }
+      }
+    });
+
+    try {
+      await Promise.all(downloadPromises); // Ensure all files are downloaded
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "Quran_Competition_IDCards.zip";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Failed to generate ZIP file:", error);
+    }
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -93,7 +140,13 @@ const QuranCompetitionDashboard = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-4 gap-4">
+        <Button
+          onClick={downloadIDCardsAsZip}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Download ID Cards (ZIP)
+        </Button>
         <Button
           onClick={downloadCSV}
           className="bg-cyan-600 hover:bg-cyan-700 text-white"
