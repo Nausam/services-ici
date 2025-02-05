@@ -19,6 +19,7 @@ import Link from "next/link";
 import { createAccount, signInUser } from "@/lib/actions/user.actions";
 import OtpModal from "@/components/auth/OTPModal";
 import { ShadInput } from "../ui/shad-input";
+import { toast } from "@/hooks/use-toast";
 
 type FormType = "sign-in" | "sign-up";
 
@@ -59,7 +60,16 @@ const AuthForm = ({ type }: { type: FormType }) => {
             })
           : await signInUser({ email: values.email });
 
-      setAccountId(user.accountId);
+      if (user.accountId) {
+        setAccountId(user.accountId);
+      } else {
+        // Show toast if user is not found
+        toast({
+          title:
+            "ތިޔަބޭނުންކުރި އީމެއިލް ރަނގަޅެއް ނޫން! އަދި އެއްފަހަރު ޗެކްކޮށްލުމަށްފަހު ކުރިއަށް ގެންދަވާ ",
+          variant: "destructive",
+        });
+      }
     } catch {
       setErrorMessage("Failed to create account. Please try again.");
     } finally {

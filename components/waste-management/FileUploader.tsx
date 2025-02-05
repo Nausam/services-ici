@@ -88,7 +88,7 @@ export function FileUploader({
 
   return (
     <div
-      className="items-center justify-center h-64 flex p-3 cursor-pointer flex-col overflow-hidden rounded-md border-2 border-dashed border-slate-600/30 bg-slate-100/50 hover:bg-slate-200/50 transition-all duration-300"
+      className="items-center justify-center h-64 flex p-3 cursor-pointer flex-col overflow-hidden rounded-md border-2 border-dashed border-cyan-600 bg-slate-100/50 hover:bg-cyan-600/10 transition-all duration-300"
       onDragOver={onDragOver}
       onDrop={onDropHandler}
     >
@@ -127,18 +127,18 @@ export function FileUploader({
             alt="file upload"
             className="invert"
           />
-          <h3 className="mb-2 mt-2 font-medium text-gray-700">
-            Drag photo or PDF here
+          <h3 className="mb-2 mt-2 font-dhivehi text-lg text-gray-700">
+            ފޮޓޯ ނުވަތަ ޕީޑީއެފް ފައިލް ޑްރެގް އެންޑް ޑްރޮޕް ކޮށްލާ
           </h3>
           <p className="text-sm text-gray-500 mb-4">
             SVG, PNG, JPG, PDF : Max 10MB
           </p>
           <Button
             type="button"
-            className="rounded-full bg-cyan-700 hover:bg-cyan-600 text-white"
+            className="rounded-full font-dhivehi text-md bg-cyan-700 hover:bg-cyan-600 text-white"
             onClick={() => document.getElementById("file-upload")?.click()} // Simulate click on hidden file input
           >
-            Select from computer
+            އައިޑީ ކާޑް ނަންގަވާ
           </Button>
         </label>
       )}

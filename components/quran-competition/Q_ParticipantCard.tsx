@@ -16,7 +16,7 @@ const Q_ParticipantCard = ({
   contactNumber,
 }: RegistrationCardProps) => {
   return (
-    <div className=" flex items-center justify-between border rounded-xl p-5 shadow-lg bg-white hover:shadow-2xl transition-all transform hover:scale-105  duration-300 ease-in-out">
+    <div className="flex items-center justify-between border rounded-xl p-5 shadow-lg bg-white hover:shadow-xl transition-all transform  duration-300 ease-in-out">
       <h2 className="font-dhivehi text-2xl text-cyan-800 font-bold mb-2">
         {fullName}
       </h2>
