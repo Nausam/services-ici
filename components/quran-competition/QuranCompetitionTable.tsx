@@ -176,21 +176,9 @@ const QuranCompetitionDashboard = () => {
   return (
     <div className="p-4 mt-10">
       <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
-        ޤުރުއާން މުބާރާތުގެ ބައިވެރިން
+        ޤުރުއާން މުބާރާތުގެ ބައިވެރިން ({totalItems})
       </h2>
       <div className="flex justify-start mb-4 gap-4">
-        <select
-          value={itemsPerPage}
-          onChange={handleItemsPerPageChange}
-          className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm hover:bg-cyan-50 transition duration-200 ease-in-out"
-        >
-          <option value={3}>ޕޭޖެއްގަ 3</option>
-          <option value={6}>ޕޭޖެއްގަ 6</option>
-          <option value={9}>ޕޭޖެއްގަ 9</option>
-          <option value={12}>ޕޭޖެއްގަ 12</option>
-          <option value={16}>ޕޭޖެއްގަ 16</option>
-        </select>
-
         <Button
           onClick={downloadIDCardsAsZip}
           className="bg-cyan-600 hover:bg-cyan-700 text-white"
@@ -205,9 +193,21 @@ const QuranCompetitionDashboard = () => {
         </Button>
       </div>
 
+      <select
+        value={itemsPerPage}
+        onChange={handleItemsPerPageChange}
+        className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out mt-10 cursor-pointer"
+      >
+        <option value={3}>ޕޭޖެއްގަ 3</option>
+        <option value={6}>ޕޭޖެއްގަ 6</option>
+        <option value={9}>ޕޭޖެއްގަ 9</option>
+        <option value={12}>ޕޭޖެއްގަ 12</option>
+        <option value={16}>ޕޭޖެއްގަ 16</option>
+      </select>
+
       <div
         dir="rtl"
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
       >
         {registrations.map((reg: any) => (
           <Q_ParticipantCard
