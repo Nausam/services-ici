@@ -10,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Button } from "@/components/ui/button";
 import { uploadImage } from "@/lib/actions/waste.actions";
 
@@ -130,13 +131,13 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               މުބާރާތުގެ ޤަވާޢިދު
             </Button>
 
-            {/* <Button
+            <Button
               type="button"
               onClick={handleDownloadThari}
               className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-4 py-2 rounded-md shadow-md font-dhivehi text-lg"
             >
               ތަރި ބުކްލެޓް
-            </Button> */}
+            </Button>
           </div>
           <p className="font-dhivehi text-xl text-right text-red-600 mt-5">
             {" "}
@@ -482,9 +483,6 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
                       />
                     </FormControl>
-                    {/* <FormLabel className="font-dhivehi text-lg text-right">
-                    ފާހަގަ ޖައްސަވާ
-                  </FormLabel> */}
                     <FormMessage />
                   </FormItem>
                 )}

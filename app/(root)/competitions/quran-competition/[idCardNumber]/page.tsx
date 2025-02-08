@@ -32,10 +32,11 @@ const ParticipantDetails = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-cyan-600 text-4xl font-semibold animate-pulse font-dhivehi">
-          ޕާޓިސިޕަންޓްގެ ތަފްޞީލް ލޯޑިންގް
-        </p>
+      <div className="flex justify-center h-full items-center">
+        <div className="flex flex-col items-center gap-4">
+          {/* Spinner */}
+          <div className="w-16 h-16 border-4 border-cyan-600 border-dashed rounded-full animate-spin"></div>
+        </div>
       </div>
     );
 
