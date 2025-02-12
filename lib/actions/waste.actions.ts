@@ -24,7 +24,7 @@ export const uploadImage = async (file: File): Promise<string> => {
     const permissions = [Permission.read(Role.any())];
 
     const bucketFile = await storage.createFile(
-      appwriteConfig.bucketId,
+      appwriteConfig.wasteManagementBucket,
       ID.unique(),
       inputFile,
       permissions
@@ -80,18 +80,57 @@ export const createRegistration = async ({
 };
 
 // GET ALL WASTE MANAGEMENT SERVICE REGISTRATIONS
-export const getAllRegistrations = async () => {
+export const getAllRegistrations = async (limit: number, offset: number) => {
   try {
     const { databases } = await createAdminClient();
 
     const registrations = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.wasteManagementFormsId
+      appwriteConfig.wasteManagementFormsId,
+      [
+        // Appwrite's pagination queries
+        Query.limit(limit),
+        Query.offset(offset),
+      ]
     );
 
-    return parseStringify(registrations.documents);
+    return {
+      documents: parseStringify(registrations.documents),
+      total: registrations.total,
+    };
   } catch (error) {
     console.error("Failed to fetch registrations:", error);
     throw new Error("Failed to fetch registrations");
+  }
+};
+
+export const getWasteRegistrationById = async (
+  idCardNumber: string | string[] | undefined
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // Check if idCardNumber is a valid string
+    if (!idCardNumber || Array.isArray(idCardNumber)) {
+      throw new Error("Invalid ID card number provided.");
+    }
+
+    // Fetch the participant based on the ID card number
+    const response = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.wasteManagementFormsId,
+      [Query.equal("idCardNumber", [idCardNumber])] // Query expects an array
+    );
+
+    // Check if the participant exists
+    if (response.total === 0) {
+      throw new Error("Participant not found");
+    }
+
+    // Return the first matched document
+    return response.documents[0];
+  } catch (error) {
+    console.error("Failed to fetch registration:", error);
+    throw new Error("Failed to fetch participant details");
   }
 };

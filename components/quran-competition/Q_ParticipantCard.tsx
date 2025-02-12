@@ -8,12 +8,14 @@ type RegistrationCardProps = {
   fullName: string;
   idCardNumber: string;
   contactNumber: string;
+  href: string;
 };
 
 const Q_ParticipantCard = ({
   fullName,
   idCardNumber,
   contactNumber,
+  href,
 }: RegistrationCardProps) => {
   return (
     <div className="flex items-center justify-between border rounded-xl p-5 shadow-lg bg-white hover:shadow-xl transition-all transform  duration-300 ease-in-out">
@@ -21,7 +23,7 @@ const Q_ParticipantCard = ({
         {fullName}
       </h2>
 
-      <Link href={`/competitions/quran-competition/${idCardNumber}`}>
+      <Link href={href}>
         <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-md shadow-md transition-colors duration-300 font-dhivehi">
           އިތުރު ތަފްސީލު
         </Button>

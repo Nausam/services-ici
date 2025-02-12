@@ -38,8 +38,8 @@ export default function RootLayout({
           <div className="font-dhivehi">
             <Toaster />
           </div>
-          <Footer />
         </UserProvider>
+        <Footer />
       </body>
     </html>
   );
