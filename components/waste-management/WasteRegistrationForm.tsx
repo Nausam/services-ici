@@ -83,7 +83,7 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
           form.reset();
           router.push("/");
           toast({
-            title: ` ކުނި އުކާލުމާއި ކުނި ނައްތާލުމުގެ ހިދުމަތަށް ${newRegistration.address} ރަޖިސްޓްރީ ކުރެވިއްޖެ`,
+            title: ` ކުނި އުކާލުމާއި ކުނި ނައްތާލުމުގެ ހިދުމަތަށް ${newRegistration.address} ރެޖިސްޓާ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }

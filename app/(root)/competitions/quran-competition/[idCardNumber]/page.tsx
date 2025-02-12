@@ -32,7 +32,7 @@ const ParticipantDetails = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center h-full items-center">
+      <div className="flex justify-center h-screen items-center">
         <div className="flex flex-col items-center gap-4">
           {/* Spinner */}
           <div className="w-16 h-16 border-4 border-cyan-600 border-dashed rounded-full animate-spin"></div>
@@ -66,13 +66,15 @@ const ParticipantDetails = () => {
   );
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
-      <div className="bg-white shadow-xl rounded-lg p-6 max-w-3xl w-full border border-cyan-200">
-        <h2 className="text-4xl font-bold text-cyan-700 mt-5 mb-4 text-center font-dhivehi">
-          {registration.fullName}
-        </h2>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center p-4">
+      <div className="bg-white shadow-lg rounded-xl overflow-hidden max-w-3xl w-full">
+        <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 p-6">
+          <h2 className="text-4xl font-bold text-white text-center font-dhivehi">
+            {registration.fullName}
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-dhivehi mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-dhivehi mt-10 p-6">
           {infoSection("އައިޑީކާޑް ނަންބަރު", registration.idCardNumber)}
           {infoSection("ދާއިމީ އެޑްރެސް", registration.address)}
           {infoSection("ފޯނު ނަންބަރު", registration.contactNumber)}
@@ -106,7 +108,7 @@ const ParticipantDetails = () => {
           )}
         </div>
 
-        <div dir="rtl" className="mt-6 border-b p-4">
+        <div dir="rtl" className="border-b p-4">
           <h3 className="text-2xl text-cyan-700 font-bold text-center mb-3 font-dhivehi">
             ފުރަތަމަ ރައުންޑުގައި ކިޔަވާ ގޮފި
           </h3>
