@@ -24,7 +24,7 @@ export const uploadImage = async (file: File): Promise<string> => {
     const permissions = [Permission.read(Role.any())];
 
     const bucketFile = await storage.createFile(
-      appwriteConfig.wasteManagementBucket,
+      appwriteConfig.bucketId,
       ID.unique(),
       inputFile,
       permissions
