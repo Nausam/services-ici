@@ -74,6 +74,7 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
           fullName: values.fullName,
           address: values.address,
           idCard,
+          idCardNumber: values.idCardNumber,
           contactNumber: values.contactNumber,
           category: values.category,
         });
@@ -109,20 +110,23 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
         className="flex flex-col gap-8 bg-white shadow-lg p-8 rounded-lg"
         dir="rtl"
       >
-        <p className="font-dhivehi text-xl text-right text-cyan-700">
+        <p className="font-dhivehi text-xl text-right text-red-600">
           {" "}
           ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
+        </p>
+        <p className="font-dhivehi text-xl text-right text-red-600">
+          ފަހިޕޭ މެދުވެރިކޮށް ފައިސާދެއްކޭނީ މި ފޯމުގައި ހިމަނާ ދ.ރ.އ. ކާޑް
+          ނަންބަރު ބޭނުންކޮށްގެން!
         </p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
           {/* Full Name */}
-
           <FormField
             control={form.control}
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <p className="font-dhivehi text-xl text-right">
+                <p className="font-dhivehi text-xl text-right text-cyan-950">
                   {" "}
                   ފުރިހަމަ ނަން{" "}
                 </p>
@@ -138,14 +142,53 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
             )}
           />
 
-          {/* Address */}
+          {/* ID Card */}
+          <FormField
+            control={form.control}
+            name="idCardNumber"
+            render={({ field }) => (
+              <FormItem>
+                <p className="font-dhivehi text-xl text-right text-cyan-950">
+                  އައިޑީކާޑް ނަންބަރު
+                </p>
+                <FormControl>
+                  <Input
+                    {...field}
+                    value={
+                      field.value &&
+                      typeof field.value === "string" &&
+                      field.value.startsWith("A")
+                        ? field.value
+                        : `A${field.value || ""}`
+                    }
+                    // Always starts with "A"
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
 
+                      // Remove non-digit characters after "A"
+                      const numericPart = inputValue
+                        .replace(/^A/, "")
+                        .replace(/\D/g, "");
+
+                      // Update the value with "A" prefix and numeric part
+                      field.onChange(`A${numericPart}`);
+                    }}
+                    placeholder="A123456"
+                    className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950"
+                  />
+                </FormControl>
+                <FormMessage className="font-dhivehi text-md" />
+              </FormItem>
+            )}
+          />
+
+          {/* Address */}
           <FormField
             control={form.control}
             name="address"
             render={({ field }) => (
               <FormItem>
-                <p className="font-dhivehi text-xl text-right">
+                <p className="font-dhivehi text-xl text-right text-cyan-950">
                   {" "}
                   އެޑްރެސް / ކުންފުނި / މުއައްސަސާ{" "}
                 </p>
@@ -167,7 +210,10 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
             name="category"
             render={({ field }) => (
               <FormItem>
-                <p className="font-dhivehi text-xl text-right"> ކެޓެގަރީ </p>
+                <p className="font-dhivehi text-xl text-right text-cyan-950">
+                  {" "}
+                  ކެޓެގަރީ{" "}
+                </p>
                 <FormControl>
                   <Dropdown
                     value={field.value}
@@ -185,7 +231,10 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
             name="contactNumber"
             render={({ field }) => (
               <FormItem>
-                <p dir="rtl" className="font-dhivehi text-xl text-right">
+                <p
+                  dir="rtl"
+                  className="font-dhivehi text-xl text-right text-cyan-950"
+                >
                   ފޯނު ނަންބަރު
                 </p>
                 <FormControl>
@@ -203,7 +252,9 @@ const WasteRegistrationForm = ({ type, registration }: ProductFormProps) => {
 
         <div className="flex flex-col gap-6">
           {/* Image Upload */}
-          <p className="font-dhivehi text-xl text-right">އައިޑީ ކާޑް</p>
+          <p className="font-dhivehi text-xl text-right text-cyan-950">
+            އައިޑީ ކާޑް
+          </p>
           <FormField
             control={form.control}
             name="idCard"

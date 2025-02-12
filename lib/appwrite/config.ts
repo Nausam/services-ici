@@ -9,4 +9,7 @@ export const appwriteConfig = {
   bucketId: process.env.NEXT_PUBLIC_APPWRITE_BUCKET!,
   quranCompetitionId:
     process.env.NEXT_PUBLIC_APPWRITE_QURAN_COMPETITION_COLLECTION!,
+  quizCompetitionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZ_COLLECTION!,
+  quizCompetitionAnswersId:
+    process.env.NEXT_PUBLIC_APPWRITE_QUIZ_ANSWERS_COLLECTION!,
 };

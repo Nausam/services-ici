@@ -6,6 +6,7 @@ export const createRegistrationSchema = z.object({
   address: z.string().min(1, "Address is required"),
   contactNumber: z.string().min(1, "Contact Number is required"),
   idCard: z.string().min(1, "ID card is required"),
+  idCardNumber: z.string().min(1, "ID card number is required"),
   category: z.string().min(1, "ID card is required"),
 });
 

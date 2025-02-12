@@ -3,6 +3,7 @@ export type Registration = {
   address: string;
   contactNumber: string;
   idCard: string;
+  idCardNumber: string;
   category: string;
 };
 
@@ -40,4 +41,10 @@ export type QuranCompetitionRegistration = {
   finalRoundBalaigenKiyevunNimey?: boolean;
 
   idCard: string;
+};
+
+export type QuizQuestion = {
+  date: string;
+  question: string;
+  options: string[];
 };

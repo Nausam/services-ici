@@ -11,6 +11,7 @@ type CreateRegistrationParams = {
   address: string;
   contactNumber: string;
   idCard: string;
+  idCardNumber: string;
   category: string;
 };
 
@@ -49,6 +50,7 @@ export const createRegistration = async ({
   address,
   contactNumber,
   idCard,
+  idCardNumber,
   category,
 }: CreateRegistrationParams) => {
   try {
@@ -65,6 +67,7 @@ export const createRegistration = async ({
         address,
         contactNumber,
         idCard,
+        idCardNumber,
         category,
       }
     );
