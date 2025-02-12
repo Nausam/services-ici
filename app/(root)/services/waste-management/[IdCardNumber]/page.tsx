@@ -19,7 +19,7 @@ const WasteParticipantDetails = () => {
         const data = await getWasteRegistrationById(idCardNumber);
         setRegistration(data);
       } catch (err) {
-        setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު.");
+        setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު");
         console.error(err);
       } finally {
         setLoading(false);
