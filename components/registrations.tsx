@@ -14,7 +14,7 @@ const Registrations = () => {
           description="ސާފު ތާހިރު ވެށްޓެއް ޤާއިމުކުރުމަށާއި، އަޅުގަނޑުމެންގެ މުޖުތަމަޢުއިން ރަނގަޅު ގޮތުގައި ކުނި ނައްތާލުމަށް އެހީތެރިވެދެއްވާ!"
           link="/services/register/waste-management"
           buttonText=" ރެޖިސްޓާ "
-          dueDate="February 01, 2025"
+          dueDate="2025-02-20T09:00:00Z"
           image="/assets/images/waste.jpg"
         />
       </div>

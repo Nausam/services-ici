@@ -14,9 +14,18 @@ const Competitions = () => {
           description=" އިންނަމާދޫ ކައުންސިލްގެ 08 ވަނަ ޤުރުއާން މުބާރާތަށް ރެޖިސްޓާ ކުރައްވާ! "
           link="/competitions/register/quran-competition"
           buttonText=" ރެޖިސްޓާ "
-          dueDate="February 14, 2025"
+          dueDate="2025-02-13T07:00:00Z"
           image="/assets/images/quran.png"
         />
+
+        {/* <ServiceCard
+          title=" ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1446 "
+          description=" އިންނަމާދޫ ކައުންސިލްގެ ރަމަޟާން މަހުގެ ދީނީ ސުވާލު މުބާރާތް 1446 "
+          link="/competitions/register/quiz-competition"
+          buttonText=" ޖަވާބުދެއްވާ "
+          dueDate="February 14, 2025"
+          image="/assets/images/quran.png"
+        /> */}
       </div>
     </section>
   );

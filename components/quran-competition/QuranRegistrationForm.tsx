@@ -131,13 +131,13 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               މުބާރާތުގެ ޤަވާޢިދު
             </Button>
 
-            <Button
+            {/* <Button
               type="button"
               onClick={handleDownloadThari}
               className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-4 py-2 rounded-md shadow-md font-dhivehi text-lg"
             >
               ތަރި ބުކްލެޓް
-            </Button>
+            </Button> */}
           </div>
           <p className="font-dhivehi text-xl text-right text-red-600 mt-5">
             {" "}

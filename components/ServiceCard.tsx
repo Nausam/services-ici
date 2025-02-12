@@ -30,22 +30,58 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   // Function to check if the due date has passed
   const isDuePassed = (dueDate?: string) => {
     if (!dueDate) return false;
+
+    // Parse the due date in UTC
     const due = new Date(dueDate).getTime();
-    const today = new Date().getTime();
-    return today > due;
+
+    // Get the current time (local machine time)
+    const now = new Date().getTime();
+
+    return now > due;
   };
 
-  // Handle button click
+  // Format due date with both date and time
+  const formatDueDate = (dueDate?: string) => {
+    if (!dueDate) return "";
+
+    const date = new Date(dueDate);
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Indian/Maldives", // Correct time zone for Maldives
+    };
+
+    return new Intl.DateTimeFormat("en-US", options).format(date);
+  };
+
+  /// Handle button click
   const handleClick = (e: React.MouseEvent) => {
     if (isDuePassed(dueDate)) {
-      e.preventDefault(); // Prevent navigation if due
-      toast({
-        title:
-          " ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުމަށް އަދި ހުޅުވައެއް ނުލައެވެ",
-        // description:
-        //   "އިތުރަށް ރަޖިސްޓްރީކުރަން ބޭނުންފުޅުވާނަމަ ކައުންސިލާއި ގުޅުއްވައިގެން ކުރިއަށް ގެންދަވާ",
-        variant: "destructive",
-      });
+      e.preventDefault(); // Prevent navigation if due date is passed
+      if (link == "/services/register/waste-management") {
+        toast({
+          title:
+            "ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުމުގެ މުއްދަތު ވަނީ ހަމަވެފަ",
+          variant: "destructive",
+        });
+      }
+      if (link == "/competitions/register/quran-competition") {
+        toast({
+          title:
+            "ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތަށް ރެޖިސްޓާ ކުރުމުގެ މުއްދަތު ވަނީ ހަމަވެފަ",
+          variant: "destructive",
+        });
+      }
+      // toast({
+      //   title:
+      //     "ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުމުގެ މުއްދަތު ވަނީ ހަމަވެފަ",
+      //   variant: "destructive",
+      // });
     }
   };
 
@@ -76,7 +112,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         <div className="flex flex-col items-start mb-6">
           {dueDate && (
             <div className="inline-flex items-center bg-slate-100 text-cyan-800 text-sm font-bold py-1 px-3 rounded-md whitespace-nowrap shadow-md">
-              {dueDate}
+              {formatDueDate(dueDate)}
               <div className="mr-2">
                 <Image
                   src="/assets/icons/hourglass.png"

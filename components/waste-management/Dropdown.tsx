@@ -29,7 +29,10 @@ const Dropdown = ({ value, onChangeHandler }: DropdownProps) => {
       <SelectTrigger className="select-field flex justify-end font-dhivehi ">
         <SelectValue className="text-slate-100" placeholder=" ކެޓެގަރީ " />
       </SelectTrigger>
-      <SelectContent className="font-dhivehi  text-gray-500 text-right">
+      <SelectContent
+        dir="rtl"
+        className="font-dhivehi  text-gray-500 text-right"
+      >
         <AlertDialog>
           <SelectItem className="cursor-pointer" value="ގޭބިސީ - 150ރ">
             ގޭބިސީ - 150ރ
