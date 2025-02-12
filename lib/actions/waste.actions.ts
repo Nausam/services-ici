@@ -80,16 +80,24 @@ export const createRegistration = async ({
 };
 
 // GET ALL WASTE MANAGEMENT SERVICE REGISTRATIONS
-export const getAllRegistrations = async () => {
+export const getAllRegistrations = async (limit: number, offset: number) => {
   try {
     const { databases } = await createAdminClient();
 
     const registrations = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.wasteManagementFormsId
+      appwriteConfig.wasteManagementFormsId,
+      [
+        // Appwrite's pagination queries
+        Query.limit(limit),
+        Query.offset(offset),
+      ]
     );
 
-    return parseStringify(registrations.documents);
+    return {
+      documents: parseStringify(registrations.documents),
+      total: registrations.total,
+    };
   } catch (error) {
     console.error("Failed to fetch registrations:", error);
     throw new Error("Failed to fetch registrations");

@@ -18,6 +18,8 @@ const Header = () => {
     }
   };
 
+  console.log(currentUser);
+
   return (
     <header
       className="bg-gradient-to-r from-blue-100 to-blue-50 backdrop-blur-md  px-6 z-50 sticky top-0 shadow-sm"

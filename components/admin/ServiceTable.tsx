@@ -1,81 +1,92 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import ServiceRow from "./ServiceRow";
-import { getAllRegistrations } from "@/lib/actions/waste.actions";
+
 import { Button } from "../ui/button";
+import { getAllRegistrations } from "@/lib/actions/waste.actions";
+import Q_ParticipantCard from "../quran-competition/Q_ParticipantCard";
 
 const ServiceTable = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+
+  const fetchServices = async (page: number) => {
+    setLoading(true);
+    try {
+      const offset = (page - 1) * itemsPerPage;
+      const { documents, total } = await getAllRegistrations(
+        itemsPerPage,
+        offset
+      );
+      setServices(documents);
+      setTotalItems(total);
+    } catch (error) {
+      console.error("Failed to fetch service requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const data = await getAllRegistrations();
-        console.log(data);
-        setServices(data);
-      } catch (error) {
-        console.error("Failed to fetch service requests:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchServices(currentPage);
+  }, [currentPage, itemsPerPage]);
 
-    fetchServices();
-  }, []);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
   const downloadCSV = () => {
     if (services.length === 0) return;
 
-    // Create CSV header
-    const csvHeader = "ފުރިހަމަ ނަން, އެޑްރެސް, ކެޓެގަރީ, ފޯނު ނަންބަރު\n";
+    const csvHeader =
+      "ފޯނު ނަންބަރު, އައިޑީކާޑް ނަންބަރު, ކެޓެގަރީ, އެޑްރެސް, ފުރިހަމަ ނަން\n";
 
-    // Map service data into CSV rows
     const csvRows = services
       .map((service: any) =>
         [
-          `"${service.fullName}"`,
-          `"${service.address}"`,
-          `"${service.category}"`,
           `"${service.contactNumber}"`,
+          `"${service.idCardNumber}"`,
+          `"${service.category}"`,
+          `"${service.address}"`,
+          `"${service.fullName}"`,
         ].join(",")
       )
       .join("\n");
 
-    // Combine header and rows
     const csvContent = csvHeader + csvRows;
-
-    // Add BOM for UTF-8 encoding
-    const bom = "\uFEFF";
-    const blob = new Blob([bom + csvContent], {
+    const blob = new Blob(["\uFEFF" + csvContent], {
       type: "text/csv;charset=utf-8;",
     });
     const url = URL.createObjectURL(blob);
 
-    // Trigger file download
     const link = document.createElement("a");
     link.href = url;
-    link.download = "service_requests.csv";
+    link.download = "waste_management.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleItemsPerPageChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setItemsPerPage(parseInt(e.target.value));
+    setCurrentPage(1);
   };
 
   if (loading) {
     return (
       <div className="flex justify-center h-screen items-center">
         <div className="flex flex-col items-center gap-4">
-          {/* Spinner */}
           <div className="w-16 h-16 border-4 border-cyan-600 border-dashed rounded-full animate-spin"></div>
         </div>
       </div>
@@ -91,7 +102,7 @@ const ServiceTable = () => {
   return (
     <div className="p-4 mt-10">
       <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
-        ރެޖިސްޓްރޭޝަންސް
+        ކުނި މެނޭޖްމަންޓް ({totalItems})
       </h2>
       <div className="flex justify-start mb-4 gap-4">
         <Button
@@ -102,36 +113,52 @@ const ServiceTable = () => {
         </Button>
       </div>
 
-      <Table
-        className="bg-white shadow-md rounded-lg overflow-hidden"
-        dir="rtl"
+      <select
+        value={itemsPerPage}
+        onChange={handleItemsPerPageChange}
+        className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out mt-10 cursor-pointer"
       >
-        <TableHeader>
-          <TableRow>
-            <TableHead className="font-dhivehi text-right text-xl text-cyan-900">
-              ފުރިހަމަ ނަން
-            </TableHead>
-            <TableHead className="font-dhivehi text-right text-xl text-cyan-900">
-              އެޑްރެސް
-            </TableHead>
-            <TableHead className="font-dhivehi text-right text-xl text-cyan-900">
-              ކެޓެގަރީ
-            </TableHead>
-            <TableHead className="font-dhivehi text-right text-xl text-cyan-900">
-              ފޯނު ނަންބަރު
-            </TableHead>
+        <option value={3}>ޕޭޖެއްގަ 3</option>
+        <option value={6}>ޕޭޖެއްގަ 6</option>
+        <option value={9}>ޕޭޖެއްގަ 9</option>
+        <option value={12}>ޕޭޖެއްގަ 12</option>
+        <option value={16}>ޕޭޖެއްގަ 16</option>
+      </select>
 
-            {/* <TableHead className="font-dhivehi text-right text-xl text-cyan-900">
-            ސްޓޭޓަސް
-          </TableHead> */}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {services.map((service: any, index) => (
-            <ServiceRow key={service.fullName + index} service={service} />
-          ))}
-        </TableBody>
-      </Table>
+      <div
+        dir="rtl"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-5"
+      >
+        {services.map((serv: any) => (
+          <Q_ParticipantCard
+            key={serv.idCardNumber}
+            fullName={serv.address}
+            idCardNumber={serv.idCardNumber}
+            contactNumber={serv.contactNumber}
+            href={`/services/waste-management/${serv.idCardNumber}`}
+          />
+        ))}
+      </div>
+
+      <div className="flex justify-center items-center gap-4 mt-10">
+        <Button
+          onClick={prevPage}
+          disabled={currentPage === 1}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Previous
+        </Button>
+        <span className="text-cyan-700 font-semibold">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={nextPage}
+          disabled={currentPage === totalPages}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

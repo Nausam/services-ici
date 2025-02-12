@@ -3,7 +3,7 @@ import React from "react";
 
 const WasteManagementRegistrationPage = () => {
   return (
-    <section className="max-w-7xl mx-auto ">
+    <section className="max-w-7xl mx-auto">
       <div
         className="relative flex justify-center items-center bg-cover bg-center h-40 md:h-60 lg:h-72"
         style={{

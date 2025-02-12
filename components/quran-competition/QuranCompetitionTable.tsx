@@ -215,6 +215,7 @@ const QuranCompetitionDashboard = () => {
             fullName={reg.fullName}
             idCardNumber={reg.idCardNumber}
             contactNumber={reg.contactNumber}
+            href={`/competitions/quran-competition/${reg.idCardNumber}`}
           />
         ))}
       </div>
