@@ -14,7 +14,7 @@ const Competitions = () => {
           description=" އިންނަމާދޫ ކައުންސިލްގެ 08 ވަނަ ޤުރުއާން މުބާރާތަށް ރެޖިސްޓާ ކުރައްވާ! "
           link="/competitions/register/quran-competition"
           buttonText=" ރެޖިސްޓާ "
-          dueDate="2025-02-13T07:00:00Z"
+          dueDate="2025-02-16T09:00:00Z"
           image="/assets/images/quran.png"
         />
 
