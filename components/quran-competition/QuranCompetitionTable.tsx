@@ -157,7 +157,8 @@ const QuranCompetitionDashboard = () => {
   const handleItemsPerPageChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setItemsPerPage(parseInt(e.target.value));
+    const value = parseInt(e.target.value);
+    setItemsPerPage(value === -1 ? totalItems : value);
     setCurrentPage(1);
   };
 
@@ -202,16 +203,17 @@ const QuranCompetitionDashboard = () => {
         <option value={6}>ޕޭޖެއްގަ 6</option>
         <option value={9}>ޕޭޖެއްގަ 9</option>
         <option value={12}>ޕޭޖެއްގަ 12</option>
-        <option value={16}>ޕޭޖެއްގަ 16</option>
+        <option value={15}>ޕޭޖެއްގަ 15</option>
+        <option value={-1}>ހުރިހާ</option>
       </select>
 
       <div
         dir="rtl"
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
       >
-        {registrations.map((reg: any) => (
+        {registrations.map((reg: any, index) => (
           <Q_ParticipantCard
-            key={reg.idCardNumber}
+            key={reg.idCardNumber + index}
             fullName={reg.fullName}
             idCardNumber={reg.idCardNumber}
             contactNumber={reg.contactNumber}

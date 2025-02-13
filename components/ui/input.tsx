@@ -10,9 +10,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     // Function to restrict input to Dhivehi characters unless allowAllLanguages is true
     const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!allowAllLanguages) {
-        const regex = /^[ހ-ް 0-9]+$/; // Allow Dhivehi characters and numbers
+        const regex = /^[ހ-ް%-. ﷲ0-9]+$/; // Allow Dhivehi characters and numbers
         if (!regex.test(event.target.value)) {
-          event.target.value = event.target.value.replace(/[^ހ-ް 0-9]/g, ""); // Remove non-Dhivehi characters
+          event.target.value = event.target.value.replace(
+            /[^ހ-ް%-. ﷲ0-9]/g,
+            ""
+          ); // Remove non-Dhivehi characters
         }
       }
     };
