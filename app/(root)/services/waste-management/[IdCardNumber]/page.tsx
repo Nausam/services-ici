@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { getWasteRegistrationById } from "@/lib/actions/waste.actions";
 
 const WasteParticipantDetails = () => {
-  const { idCardNumber } = useParams();
+  const { IdCardNumber } = useParams();
   const [registration, setRegistration] = useState<Models.Document | null>(
     null
   );
@@ -16,7 +16,7 @@ const WasteParticipantDetails = () => {
   useEffect(() => {
     const fetchRegistration = async () => {
       try {
-        const data = await getWasteRegistrationById(idCardNumber);
+        const data = await getWasteRegistrationById(IdCardNumber);
         setRegistration(data);
       } catch (err) {
         setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު");
@@ -27,7 +27,7 @@ const WasteParticipantDetails = () => {
     };
 
     fetchRegistration();
-  }, [idCardNumber]);
+  }, [IdCardNumber]);
 
   if (loading)
     return (
