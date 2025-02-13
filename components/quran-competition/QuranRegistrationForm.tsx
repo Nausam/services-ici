@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/form";
 
 import { Button } from "@/components/ui/button";
-import { uploadImage } from "@/lib/actions/waste.actions";
 
 import { createQuranCompetitionRegistrationSchema } from "@/lib/validations";
 import { QuranCompetitionRegistration } from "@/types";
@@ -27,7 +26,10 @@ import { toast } from "@/hooks/use-toast";
 import { FileUploader } from "../waste-management/FileUploader";
 import QDropdown from "./QDropDown";
 import { Checkbox } from "../ui/checkbox";
-import { createQuranCompetitionRegistration } from "@/lib/actions/quranCompetition.actions";
+import {
+  createQuranCompetitionRegistration,
+  uploadImage,
+} from "@/lib/actions/quranCompetition.actions";
 import BDropdown from "./BDropdown";
 import QKeyStageDropDown from "./QKeyStageDropDown";
 
