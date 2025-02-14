@@ -79,7 +79,8 @@ const ServiceTable = () => {
   const handleItemsPerPageChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setItemsPerPage(parseInt(e.target.value));
+    const value = parseInt(e.target.value);
+    setItemsPerPage(value === -1 ? totalItems : value);
     setCurrentPage(1);
   };
 
@@ -118,11 +119,12 @@ const ServiceTable = () => {
         onChange={handleItemsPerPageChange}
         className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out mt-10 cursor-pointer"
       >
-        <option value={3}>ޕޭޖެއްގަ 3</option>
-        <option value={6}>ޕޭޖެއްގަ 6</option>
-        <option value={9}>ޕޭޖެއްގަ 9</option>
+        <option value={4}>ޕޭޖެއްގަ 4</option>
+        <option value={8}>ޕޭޖެއްގަ 8</option>
         <option value={12}>ޕޭޖެއްގަ 12</option>
         <option value={16}>ޕޭޖެއްގަ 16</option>
+        <option value={20}>ޕޭޖެއްގަ 20</option>
+        <option value={-1}>ހުރިހާ</option>
       </select>
 
       <div
@@ -136,27 +138,29 @@ const ServiceTable = () => {
             idCardNumber={serv.idCardNumber}
             contactNumber={serv.contactNumber}
             href={`/services/waste-management/${serv.idCardNumber}`}
+            idCardUrl={serv.idCard}
           />
         ))}
       </div>
 
       <div className="flex justify-center items-center gap-4 mt-10">
         <Button
-          onClick={prevPage}
-          disabled={currentPage === 1}
-          className="bg-cyan-600 hover:bg-cyan-700 text-white"
-        >
-          Previous
-        </Button>
-        <span className="text-cyan-700 font-semibold">
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
           onClick={nextPage}
           disabled={currentPage === totalPages}
           className="bg-cyan-600 hover:bg-cyan-700 text-white"
         >
           Next
+        </Button>
+        <span className="text-cyan-700 font-semibold">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <Button
+          onClick={prevPage}
+          disabled={currentPage === 1}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Previous
         </Button>
       </div>
     </div>

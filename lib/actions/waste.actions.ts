@@ -3,7 +3,7 @@
 import { createAdminClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { ID, Permission, Query, Role } from "node-appwrite";
-import { constructFileUrl, parseStringify } from "@/lib/utils";
+import { constructFileUrlWaste, parseStringify } from "@/lib/utils";
 import { InputFile } from "node-appwrite/file";
 
 type CreateRegistrationParams = {
@@ -32,7 +32,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 
     const fileDocument = {
       name: bucketFile.name,
-      url: constructFileUrl(bucketFile.$id),
+      url: constructFileUrlWaste(bucketFile.$id),
       size: bucketFile.sizeOriginal,
       bucketFileId: bucketFile.$id,
     };
