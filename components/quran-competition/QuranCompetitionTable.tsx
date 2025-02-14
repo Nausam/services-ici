@@ -218,6 +218,7 @@ const QuranCompetitionDashboard = () => {
             idCardNumber={reg.idCardNumber}
             contactNumber={reg.contactNumber}
             href={`/competitions/quran-competition/${reg.idCardNumber}`}
+            idCardUrl={reg.idCard}
           />
         ))}
       </div>
