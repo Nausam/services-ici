@@ -5,25 +5,52 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
+import {
+  deleteHomeCompetitionsCard,
+  updateCardVisibility,
+} from "@/lib/actions/home.actions";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type ServiceCardProps = {
+  id: string;
   title: string;
   description: string;
   link: string;
   buttonText: string;
-  dueDate?: string; // Optional due date
-  category?: string; // Optional category
-  image?: string; // Optional image URL
+  dueDate?: string;
+  category?: string;
+  image?: string;
+  imageId?: string;
+  hidden?: boolean;
+  isAdmin?: boolean;
+  onVisibilityToggle?: () => void;
+  onDelete?: () => void;
 };
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
+  id,
   title,
   description,
   link,
   buttonText,
   dueDate,
-  category,
   image,
+  hidden,
+  isAdmin = false,
+  onVisibilityToggle,
+  onDelete,
+  imageId,
 }) => {
   const { toast } = useToast();
 
@@ -85,14 +112,63 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     }
   };
 
+  // Handle card visibility toggle
+  const handleToggleVisibility = async () => {
+    try {
+      const newVisibility = !hidden; // Toggle visibility state
+      await updateCardVisibility(id, newVisibility); // Call backend API
+      toast({
+        title: `Card ${newVisibility ? "hidden" : "visible"} successfully`,
+        variant: "default",
+      });
+
+      // Update local state for instant feedback
+      if (onVisibilityToggle) {
+        onVisibilityToggle();
+      } else {
+        // Fallback: Update `hidden` locally if no parent callback provided
+        hidden = newVisibility;
+      }
+    } catch (error) {
+      console.error("Error toggling visibility:", error);
+      toast({
+        title: "Failed to update card visibility",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // If the card is hidden and the user is not an admin, do not render it
+  if (hidden && !isAdmin) return null;
+
+  // Handle card delete
+  const handleDelete = async () => {
+    try {
+      await deleteHomeCompetitionsCard(id, imageId || "");
+      toast({
+        title: "Card deleted successfully.",
+        variant: "default",
+      });
+      if (onDelete) onDelete(); // Notify parent to refresh
+    } catch (error) {
+      console.error("Error deleting card:", error);
+      toast({
+        title: "Failed to delete card.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <div className="md:mb-0 mb-5 flex border flex-col bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg rounded-xl p-8 max-w-3xl mx-auto hover:shadow-xl transition-shadow duration-300 mt-5 md:mt-10 gap-6 md:flex-row-reverse">
+    <div className="md:mb-0 mb-5 flex border border-white flex-col bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg rounded-xl p-8 max-w-3xl mx-auto hover:shadow-xl transition-shadow duration-300 mt-5 md:mt-10 gap-6 md:flex-row-reverse">
       {/* Optional Image */}
       {image && (
         <div
-          className="relative w-full h-40 md:w-1/3 md:h-auto rounded-lg overflow-hidden bg-cover bg-center md:block hidden"
+          className="relative w-full h-40 md:w-1/3 md:h-auto rounded-lg overflow-hidden bg-cover bg-center md:block hidden border border-white"
           style={{
             backgroundImage: `url('${image}')`,
+            boxShadow:
+              "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)",
           }}
         ></div>
       )}
@@ -134,16 +210,88 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         </p>
 
         {/* Button */}
-        <div className="flex justify-start text-right">
+        <div className="flex justify-start text-right gap-2">
           <Link href={link} onClick={handleClick}>
             <Button
               type="submit"
               size="lg"
-              className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
+              className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
             >
               {buttonText}
             </Button>
           </Link>
+
+          {/* Update Button */}
+          {isAdmin && (
+            <Link href={`/competitions/edit/${id}`}>
+              <Button
+                size="lg"
+                className="bg-gradient-to-br from-green-500 text-white to-green-700 hover:bg-gradient-to-br hover:from-green-700 hover:to-green-500 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
+              >
+                އަޕްޑޭޓް
+              </Button>
+            </Link>
+          )}
+
+          {/* Hide Button (Visible to Admins Only) */}
+          {isAdmin && (
+            <Button
+              size="lg"
+              className="shadow-md font-dhivehi text-xl bg-gradient-to-br from-orange-500 text-white to-orange-700 hover:bg-gradient-to-br hover:from-orange-700 hover:to-orange-500 "
+              onClick={handleToggleVisibility}
+            >
+              {hidden ? "ދައްކާ" : "ފޮރުވާ"}
+            </Button>
+          )}
+
+          {isAdmin && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-br from-red-500 text-white to-red-700 hover:bg-gradient-to-br hover:from-red-700 hover:to-red-500 font-dhivehi text-xl"
+                >
+                  ޑިލީޓް
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader className="flex gap-2">
+                  <AlertDialogTitle
+                    dir="rtl"
+                    className="font-dhivehi text-right text-2xl"
+                  >
+                    ޑިލީޓް ކޮށްލަންވީތަ؟
+                  </AlertDialogTitle>
+                  <AlertDialogDescription
+                    dir="rtl"
+                    className="font-dhivehi text-right text-xl"
+                  >
+                    ޑިލީޓް ކޮށްލުމަށްފަހު މި ކާޑް އަނބުރާ ނުގެނެވޭނެއެވެ.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel asChild className="hover:text-white">
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-br from-slate-500 text-white to-slate-700 hover:bg-gradient-to-br hover:from-slate-700 hover:to-slate-500 font-dhivehi text-lg"
+                    >
+                      ނޫން
+                    </Button>
+                  </AlertDialogCancel>
+
+                  <AlertDialogAction asChild>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-br from-red-500 text-white to-red-700 hover:bg-gradient-to-br hover:from-red-700 hover:to-red-500 font-dhivehi text-lg"
+                      onClick={handleDelete}
+                    >
+                      ޑިލީޓް
+                    </Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
     </div>

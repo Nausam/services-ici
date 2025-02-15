@@ -34,7 +34,7 @@ const Q_ParticipantCard = ({
   };
 
   return (
-    <div className="flex items-center justify-between border rounded-xl p-5 shadow-lg bg-white hover:shadow-xl transition-all transform  duration-300 ease-in-out">
+    <div className="flex items-center justify-between border border-slate-200 hover:border-cyan-700/50 rounded-xl p-5 bg-gradient-to-br from-cyan-50 to-cayn-100 shadow-md hover:shadow-lg transition-all transform  duration-300 ease-in-out">
       <h2 className="font-dhivehi text-2xl text-cyan-800 font-bold mb-2">
         {fullName}
       </h2>
@@ -43,13 +43,13 @@ const Q_ParticipantCard = ({
         {idCardUrl && (
           <Button
             onClick={handleDownloadIDCard}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white rounded-md shadow-md transition-colors duration-300 font-dhivehi"
+            className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500 rounded-md shadow-md transition-colors duration-300 font-dhivehi"
           >
             އައިޑީ
           </Button>
         )}
         <Link href={href}>
-          <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white rounded-md shadow-md transition-colors duration-300 font-dhivehi">
+          <Button className="w-full bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500 rounded-md shadow-md transition-colors duration-300 font-dhivehi">
             އިތުރު ތަފްސީލު
           </Button>
         </Link>

@@ -131,9 +131,9 @@ const ServiceTable = () => {
         dir="rtl"
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-5"
       >
-        {services.map((serv: any) => (
+        {services.map((serv: any, index) => (
           <Q_ParticipantCard
-            key={serv.idCardNumber}
+            key={serv.idCardNumber + index}
             fullName={serv.address}
             idCardNumber={serv.idCardNumber}
             contactNumber={serv.contactNumber}
