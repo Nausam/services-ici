@@ -69,14 +69,14 @@ export const createHomeCards = async ({
 
     console.log(
       "Service Card Collection ID:",
-      appwriteConfig.homeCompetitionsCardCollectionId
+      appwriteConfig.homeCardsCollectionId
     );
 
     const documentId = ID.unique();
 
     const competitionsCard = await databases.createDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.homeCompetitionsCardCollectionId,
+      appwriteConfig.homeCardsCollectionId,
       documentId,
       {
         title,
@@ -100,19 +100,23 @@ export const createHomeCards = async ({
 
 // GET ALL CARDS BY CATEGORY
 export const getAllCardsByCategory = async (
-  category: string, // Category to filter by (e.g., "Services", "Competitions")
+  category: string,
   limit: number,
   offset: number
 ) => {
   try {
     const { databases } = await createAdminClient();
 
-    // Fetch documents filtered by category
+    // Log the collection ID and category for debugging
+    console.log("Database ID:", appwriteConfig.databaseId);
+    console.log("Collection ID:", appwriteConfig.homeCardsCollectionId);
+    console.log("Category:", category);
+
     const filteredCards = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.homeCompetitionsCardCollectionId, // Assuming both services and competitions are in this collection
+      appwriteConfig.homeCardsCollectionId, // Ensure this value is correct
       [
-        Query.equal("category", category), // Filter by category field
+        Query.equal("category", category),
         Query.limit(limit),
         Query.offset(offset),
       ]
@@ -138,7 +142,7 @@ export const updateHomeCards = async (
 
     const updatedCard = await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.homeCompetitionsCardCollectionId,
+      appwriteConfig.homeCardsCollectionId,
       id,
       data
     );
@@ -157,7 +161,7 @@ export const getHomeCompetitionsCardById = async (id: string) => {
 
     const homeCard = await databases.getDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.homeCompetitionsCardCollectionId,
+      appwriteConfig.homeCardsCollectionId,
       id
     );
 
@@ -174,7 +178,7 @@ export const updateCardVisibility = async (id: string, hidden: boolean) => {
   try {
     const updatedCard = await databases.updateDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.homeCompetitionsCardCollectionId,
+      appwriteConfig.homeCardsCollectionId,
       id,
       { hidden }
     );
@@ -196,7 +200,7 @@ export const deleteHomeCompetitionsCard = async (
     // Delete the card document
     await databases.deleteDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.homeCompetitionsCardCollectionId,
+      appwriteConfig.homeCardsCollectionId,
       cardId
     );
 

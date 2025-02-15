@@ -17,8 +17,6 @@ export const appwriteConfig = {
   quizCompetitionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZ_COLLECTION!,
   quizCompetitionAnswersId:
     process.env.NEXT_PUBLIC_APPWRITE_QUIZ_ANSWERS_COLLECTION!,
-  homeCompetitionsCardCollectionId:
-    process.env.NEXT_PUBLIC_APPWRITE_HOME_COMETITIONS_CARD_COLLECTION!,
-  homeServiceCardCollectionId:
-    process.env.NEXT_PUBLIC_APPWRITE_HOME_SERVICE_CARD_COLLECTION!,
+  homeCardsCollectionId:
+    process.env.NEXT_PUBLIC_APPWRITE_HOME_CARDS_COLLECTION!,
 };
