@@ -33,7 +33,7 @@ const Home = () => {
           <Tabs
             dir="rtl"
             defaultValue="registrations"
-            className="flex flex-col items-center justify-center w-full"
+            className="flex flex-col items-center justify-center w-full z-50 "
           >
             <TabsList>
               <TabsTrigger
@@ -49,7 +49,7 @@ const Home = () => {
                 މުބާރާތްތައް
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="competitions" className="w-full">
+            <TabsContent value="competitions" className="w-full ">
               <Competitions />
             </TabsContent>
             <TabsContent value="registrations" className="w-full">

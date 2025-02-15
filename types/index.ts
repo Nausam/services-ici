@@ -48,3 +48,16 @@ export type QuizQuestion = {
   question: string;
   options: string[];
 };
+
+export type HomeCard = {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+  buttonText: string;
+  dueDate: string;
+  image: string;
+  imageId: string;
+  hidden: boolean;
+  category: string;
+};
