@@ -6,6 +6,7 @@ import { AnimatedGroup } from "./ui/animated-group";
 import { getAllCardsByCategory } from "@/lib/actions/home.actions";
 import ServiceCardLoader from "./ServiceCardLoader";
 import { useUser } from "@/providers/UserProvider";
+import PlaceholderCard from "./PlaceholderCard";
 
 const Competitions = () => {
   const [competitionCards, setCompetitionCards] = useState([]);
@@ -50,27 +51,34 @@ const Competitions = () => {
         <h3 className="text-2xl md:text-4xl font-dhivehi text-cyan-900 text-center">
           މުބާރާތްތައް
         </h3>
-        {loading
-          ? Array.from({ length: 4 }).map((_, index) => (
-              <ServiceCardLoader key={index} />
-            ))
-          : competitionCards.map((card: any) => (
-              <ServiceCard
-                key={card.$id}
-                id={card.$id}
-                title={card.title}
-                description={card.description}
-                link={card.link}
-                buttonText={card.buttonText}
-                dueDate={card.dueDate}
-                image={card.image}
-                imageId={card.imageId}
-                hidden={card.hidden}
-                isAdmin={isAdmin}
-                onVisibilityToggle={handleVisibilityToggle}
-                onDelete={fetchCompetitionCards}
-              />
-            ))}
+        {loading ? (
+          // Show loaders while fetching data
+          Array.from({ length: 4 }).map((_, index) => (
+            <ServiceCardLoader key={index} />
+          ))
+        ) : competitionCards.length === 0 ? (
+          // Show placeholder card if no competitions exist
+          <PlaceholderCard />
+        ) : (
+          // Render competition cards
+          competitionCards.map((card: any) => (
+            <ServiceCard
+              key={card.$id}
+              id={card.$id}
+              title={card.title}
+              description={card.description}
+              link={card.link}
+              buttonText={card.buttonText}
+              dueDate={card.dueDate}
+              image={card.image}
+              imageId={card.imageId}
+              hidden={card.hidden}
+              isAdmin={isAdmin}
+              onVisibilityToggle={handleVisibilityToggle}
+              onDelete={fetchCompetitionCards}
+            />
+          ))
+        )}
       </div>
     </section>
   );
