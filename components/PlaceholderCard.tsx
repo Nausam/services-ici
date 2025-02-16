@@ -8,11 +8,11 @@ const PlaceholderCard = () => {
       {/* Content */}
       <div className="flex flex-col flex-1 text-center">
         <h3 className="md:text-3xl text-2xl font-bold font-dhivehi text-cyan-900 leading-tight mt-5">
-          އެއްވެސް މުބާރާތެއް ކުރިއަށް ރޭވިފައެއް ނެތް!
+          މިވަގުތު އެއްވެސް މުބާރާތެއް ކުރިއަށް ރޭވިފައެއް ނުވޭ!
         </h3>
         <p className="md:text-lg text-md font-dhivehi text-slate-600 mt-3">
           އިންނަމާދޫ ކައުންސިލް އިންތިޒާމުކޮށް ކުރިއަށް ގެންދާ އެއްވެސް އިތުރު
-          މުބާރާތަކަށް ރެޖިސްޓާވުމަށް ހުޅުވާލާފައެއް ނެތް!
+          މުބާރާތަކަށް ރެޖިސްޓާވުމުގެ ފުރުސަތު މިވަގުތު ހުޅުވާލާފައެއް ނުވޭ!
         </p>
       </div>
     </div>
