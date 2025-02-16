@@ -33,7 +33,7 @@ const Home = () => {
           <Tabs
             dir="rtl"
             defaultValue="registrations"
-            className="flex flex-col items-center justify-center w-full z-50 "
+            className="flex flex-col items-center justify-center w-full z-40 "
           >
             <TabsList>
               <TabsTrigger

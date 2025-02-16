@@ -3,7 +3,7 @@ import { TextEffect } from "./ui/text-effect";
 
 const Hero = () => {
   return (
-    <section className="relative text-center md:py-5 mt-20">
+    <section className="text-center md:py-5 mt-20">
       <div className="max-w-7xl mx-auto">
         <h1 className="md:text-7xl xl:text-8xl text-5xl font-dhivehi leading-snug text-cyan-900">
           ރ. އިންނަމާދޫ ކައުންސިލް
