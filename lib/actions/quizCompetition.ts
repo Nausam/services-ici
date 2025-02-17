@@ -99,9 +99,11 @@ export const submitQuizForm = async (quizData: {
       contactMatches.total > 0 ||
       idCardMatches.total > 0
     ) {
-      throw new Error(
-        "A submission already exists for today's quiz with matching details. Please try again tomorrow."
-      );
+      return {
+        success: false,
+        message:
+          "A submission already exists for today's quiz with matching details. Please try again tomorrow.",
+      };
     }
 
     // Create a new submission document

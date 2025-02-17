@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Define the schema for the form data
+// WASTE MANAGEMENT FORM SCHEMA
 export const createRegistrationSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   address: z.string().min(1, "Address is required"),
@@ -10,6 +10,7 @@ export const createRegistrationSchema = z.object({
   category: z.string().min(1, "ID card is required"),
 });
 
+// QURAN COMPETITION FORM SCHEMA
 export const createQuranCompetitionRegistrationSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   idCardNumber: z.string().min(1, "ID card number is required"),
@@ -46,4 +47,12 @@ export const createQuranCompetitionRegistrationSchema = z.object({
   finalRoundBalaigenKiyevunNimey: z.boolean().optional(),
 
   idCard: z.string().min(1, "ID card is required"),
+});
+
+// RAMDAN QUIZ FORM SCHEMA
+export const quizSchema = z.object({
+  fullName: z.string().min(1, " ފުރިހަމަ ނަން ލިޔުއްވާ! "),
+  contactNumber: z.string().min(7, " ފޯނު ނަންބަރު ލިޔުއްވާ! "),
+  idCardNumber: z.string().min(5, " އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ! "),
+  answer: z.string().min(1, " އިހްތިޔާރު ކުރައްވާ ޖަވާބު ނަންގަވާ! "),
 });
