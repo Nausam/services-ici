@@ -87,16 +87,19 @@ const QuizCompetitionForm = () => {
         answer: values.answer,
       });
 
-      toast({
-        title: `${values.fullName} މިއަދުގެ ސުވާލަށް ދެއްވި ޖަވާބު ސަބްމިޓް ކުރެވިއްޖެ `,
-        variant: "default",
-      });
-
-      if (!response.success) {
+      if (
+        response.message ===
+        "A submission already exists for today's quiz with matching details. Please try again tomorrow."
+      ) {
         toast({
           title:
             "ކޮންމެ ބޭފުޅަކަށްވެސް އެދުވަހެއްގެ ސުވާލުގެ ޖަވާބު ހުށަހެޅޭނީ އެންމެ ފަހަރަކު ",
           variant: "destructive",
+        });
+      } else {
+        toast({
+          title: `${values.fullName} މިއަދުގެ ސުވާލަށް ދެއްވި ޖަވާބު ސަބްމިޓް ކުރެވިއްޖެ `,
+          variant: "default",
         });
       }
 
