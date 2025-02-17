@@ -20,13 +20,8 @@ import {
   submitQuizForm,
 } from "@/lib/actions/quizCompetition";
 import { QuizQuestion } from "@/types";
-
-const quizSchema = z.object({
-  fullName: z.string().min(1, " ފުރިހަމަ ނަން ލިޔުއްވާ! "),
-  contactNumber: z.string().min(7, " ފޯނު ނަންބަރު ލިޔުއްވާ! "),
-  idCardNumber: z.string().min(5, " އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ! "),
-  answer: z.string().min(1, "އެންމެން ޖަހައްސަވާނެ"),
-});
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { quizSchema } from "@/lib/validations";
 
 const QuizCompetitionForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -92,32 +87,25 @@ const QuizCompetitionForm = () => {
         answer: values.answer,
       });
 
-      toast({
-        title: `${values.fullName} މިއަދުގެ ސުވާލަށް ދެއްވި ޖަވާބު ސަބްމިޓް ކުރެވިއްޖެ `,
-        variant: "default",
-      });
+      if (
+        response.message ===
+        "A submission already exists for today's quiz with matching details. Please try again tomorrow."
+      ) {
+        toast({
+          title:
+            "ކޮންމެ ބޭފުޅަކަށްވެސް އެދުވަހެއްގެ ސުވާލުގެ ޖަވާބު ހުށަހެޅޭނީ އެންމެ ފަހަރަކު ",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: `${values.fullName} މިއަދުގެ ސުވާލަށް ދެއްވި ޖަވާބު ސަބްމިޓް ކުރެވިއްޖެ `,
+          variant: "default",
+        });
+      }
 
       form.reset();
     } catch (error) {
       console.error("Error submitting the form:", error);
-
-      if (
-        error instanceof Error &&
-        error.message ===
-          "A submission already exists for today's quiz with matching details. Please try again tomorrow."
-      ) {
-        toast({
-          title:
-            "ކޮންމެ ބޭފުޅަކަށްވެސް އެދުވަހެއްގެ ސުވާލުގެ ޖަވާބު ހުށައެޅޭނީ އެންމެ ފަހަރަކު ",
-          variant: "destructive",
-        });
-        // } else {
-        //   toast({
-        //     title: "ފައިލުންތަކެއް ކުރެވޭނެ.",
-        //     description: "މީންރައިގުން ބަޔާކުރެވޭނެ.",
-        //     variant: "destructive",
-        //   });
-      }
     } finally {
       setIsSubmitting(false);
     }
@@ -166,31 +154,39 @@ const QuizCompetitionForm = () => {
         </div>
 
         <div className="grid gap-4">
-          {quizData?.options.map((option, index) => (
-            <FormField
-              key={index}
-              control={form.control}
-              name="answer"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        value={option}
-                        checked={field.value === option}
-                        onChange={() => field.onChange(option)}
-                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                      />
-                      <span className="font-dhivehi text-xl text-cyan-950">
-                        {option}
-                      </span>
-                    </label>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          ))}
+          <FormField
+            control={form.control}
+            name="answer"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    className="space-y-4"
+                    dir="rtl"
+                  >
+                    {quizData?.options.map((option, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          className="ml-2"
+                          value={option}
+                          id={`option-${index}`}
+                        />
+                        <label
+                          htmlFor={`option-${index}`}
+                          className="font-dhivehi text-xl text-cyan-950 cursor-pointer"
+                        >
+                          {option}
+                        </label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage className="font-dhivehi text-md" />
+              </FormItem>
+            )}
+          />
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">

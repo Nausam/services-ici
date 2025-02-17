@@ -1,37 +1,36 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { Button } from "../ui/button";
-import { getAllRegistrations } from "@/lib/actions/waste.actions";
+import { getAllQuizSubmissions } from "@/lib/actions/quizCompetition";
 import Q_ParticipantCard from "../quran-competition/Q_ParticipantCard";
 
-const ServiceTable = () => {
-  const [services, setServices] = useState([]);
+const QuizCompetitionTable = () => {
+  const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
-  const fetchServices = async (page: number) => {
+  const fetchParticipants = async (page: number) => {
     setLoading(true);
     try {
       const offset = (page - 1) * itemsPerPage;
-      const { documents, total } = await getAllRegistrations(
+      const { documents, total } = await getAllQuizSubmissions(
         itemsPerPage,
         offset
       );
-      setServices(documents);
+      setParticipants(documents);
       setTotalItems(total);
     } catch (error) {
-      console.error("Failed to fetch service requests:", error);
+      console.error("Failed to fetch quiz participants:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchServices(currentPage);
+    fetchParticipants(currentPage);
   }, [currentPage, itemsPerPage]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -45,19 +44,18 @@ const ServiceTable = () => {
   };
 
   const downloadCSV = () => {
-    if (services.length === 0) return;
+    if (participants.length === 0) return;
 
-    const csvHeader =
-      "ފޯނު ނަންބަރު, އައިޑީކާޑް ނަންބަރު, ކެޓެގަރީ, އެޑްރެސް, ފުރިހަމަ ނަން\n";
+    const csvHeader = "Full Name, ID Card, Contact Number, Answer, Date\n";
 
-    const csvRows = services
-      .map((service: any) =>
+    const csvRows = participants
+      .map((p: any) =>
         [
-          `"${service.contactNumber}"`,
-          `"${service.idCardNumber}"`,
-          `"${service.category}"`,
-          `"${service.address}"`,
-          `"${service.fullName}"`,
+          `"${p.fullName}"`,
+          `"${p.idCardNumber}"`,
+          `"${p.contactNumber}"`,
+          `"${p.answer}"`,
+          `"${new Date(p.submissionDate).toLocaleString()}"`,
         ].join(",")
       )
       .join("\n");
@@ -70,7 +68,7 @@ const ServiceTable = () => {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = "waste_management.csv";
+    link.download = "quiz_submissions.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -94,16 +92,16 @@ const ServiceTable = () => {
     );
   }
 
-  if (services.length === 0) {
+  if (participants.length === 0) {
     return (
-      <p className="text-center text-gray-500">No service requests found.</p>
+      <p className="text-center text-gray-500">No quiz participants found.</p>
     );
   }
 
   return (
     <div className="p-4 mt-10">
       <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
-        ކުނި މެނޭޖްމަންޓް ({totalItems})
+        ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް ({totalItems})
       </h2>
       <div className="flex justify-start mb-4 gap-4">
         <Button
@@ -131,30 +129,18 @@ const ServiceTable = () => {
         dir="rtl"
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5"
       >
-        {services.map((serv: any, index) => (
+        {participants.map((p: any, index) => (
           <Q_ParticipantCard
-            key={serv.idCardNumber + index}
-            fullName={serv.address}
-            idCardNumber={serv.idCardNumber}
-            contactNumber={serv.contactNumber}
-            href={`/services/waste-management/${serv.idCardNumber}`}
-            idCardUrl={serv.idCard}
+            key={p.idCardNumber + index}
+            fullName={p.fullName}
+            idCardNumber={p.idCardNumber}
+            contactNumber={p.contactNumber}
+            href={`/quiz/participants/${p.idCardNumber}`}
           />
         ))}
       </div>
 
       <div className="flex justify-center items-center gap-4 mt-10">
-        <Button
-          onClick={nextPage}
-          disabled={currentPage === totalPages}
-          className="bg-cyan-600 hover:bg-cyan-700 text-white"
-        >
-          Next
-        </Button>
-        <span className="text-cyan-700 font-semibold">
-          Page {currentPage} of {totalPages}
-        </span>
-
         <Button
           onClick={prevPage}
           disabled={currentPage === 1}
@@ -162,9 +148,19 @@ const ServiceTable = () => {
         >
           Previous
         </Button>
+        <span className="text-cyan-700 font-semibold">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          onClick={nextPage}
+          disabled={currentPage === totalPages}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Next
+        </Button>
       </div>
     </div>
   );
 };
 
-export default ServiceTable;
+export default QuizCompetitionTable;
