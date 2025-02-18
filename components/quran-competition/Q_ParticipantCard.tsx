@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 type RegistrationCardProps = {
   fullName: string;
+  address?: string;
   idCardNumber: string;
   contactNumber: string;
   href: string;
@@ -14,6 +15,7 @@ type RegistrationCardProps = {
 
 const Q_ParticipantCard = ({
   fullName,
+  address,
   idCardNumber,
   contactNumber,
   href,

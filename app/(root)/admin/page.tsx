@@ -21,7 +21,7 @@ import QuizStatistics from "@/components/quiz-competition/QuizStatistics";
 const Admin = () => {
   return (
     <section className="h-screen p-8 container mx-auto">
-      <div className="mt-8">
+      <div className="mt-8 h-screen">
         <div className="flex items-center justify-center w-full mt-10">
           <Tabs
             dir="rtl"
