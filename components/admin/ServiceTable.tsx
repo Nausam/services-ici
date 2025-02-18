@@ -134,11 +134,10 @@ const ServiceTable = () => {
         {services.map((serv: any, index) => (
           <Q_ParticipantCard
             key={serv.idCardNumber + index}
-            fullName={serv.fullName}
-            address={serv.address}
+            fullName={serv.address}
             idCardNumber={serv.idCardNumber}
             contactNumber={serv.contactNumber}
-            href={`/services/waste-management/${serv.address}`}
+            href={`/services/waste-management/${serv.idCardNumber}`}
             idCardUrl={serv.idCard}
           />
         ))}

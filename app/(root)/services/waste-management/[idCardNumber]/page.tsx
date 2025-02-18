@@ -6,18 +6,16 @@ import { useParams } from "next/navigation";
 import { getWasteRegistrationById } from "@/lib/actions/waste.actions";
 
 const WasteParticipantDetails = () => {
-  const { address } = useParams();
-  const [registration, setRegistration] = useState<Models.Document | null>(
-    null
-  );
+  const { idCardNumber } = useParams();
+  const [registration, setRegistration] = useState<Models.Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRegistration = async () => {
       try {
-        const data = await getWasteRegistrationById(address);
-        setRegistration(data);
+        const data = await getWasteRegistrationById(idCardNumber);
+        setRegistration(data.documents || []);
       } catch (err) {
         setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު");
         console.error(err);
@@ -27,7 +25,7 @@ const WasteParticipantDetails = () => {
     };
 
     fetchRegistration();
-  }, [address]);
+  }, [idCardNumber]);
 
   if (loading)
     return (
@@ -66,30 +64,37 @@ const WasteParticipantDetails = () => {
       dir="rtl"
       className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center p-4 "
     >
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden max-w-3xl w-full">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 p-6">
-          <h1 className="text-4xl font-bold text-white text-center font-dhivehi">
-            {registration.address} / ރ. އިންނަމާދޫ
-          </h1>
-        </div>
+      <div className="max-w-5xl w-full mt-5">
+        <h1 className="text-4xl font-bold text-cyan-900 text-center font-dhivehi mb-8">
+          <span className="font-sans">{idCardNumber}</span> ގެދަށުން
+          ރެޖިސްޓާކޮށްފައިވާ ({registration.length})
+        </h1>
 
-        {/* Details Section */}
-        <div className="p-6">
-          <div className="grid font-dhivehi grid-cols-1 gap-4">
-            {infoSection("ފުރިހަމަ ނަން", registration.fullName)}
-            {infoSection("އައިޑީކާޑް", registration.idCardNumber)}
-            {infoSection("ކެޓެގަރީ", registration.category)}
-            {infoSection("ފޯނު ނަންބަރު", registration.contactNumber)}
-          </div>
-        </div>
+        <div className="grid gap-6">
+          {registration.map((registration, index) => (
+            <div
+              key={registration.$id}
+              className="bg-white shadow-lg rounded-xl overflow-hidden"
+            >
+              {/* Header Section */}
+              <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 p-6">
+                <h2 className="text-3xl font-bold text-white text-center font-dhivehi">
+                  {registration.address} / ރ. އިންނަމާދޫ
+                </h2>
+              </div>
 
-        {/* Footer Section */}
-        {/* <div className="bg-gray-50 p-4 border-t text-center">
-          <p className="text-sm text-gray-500 font-dhivehi">
-            ޕާޓިސިޕަންޓްގެ ތަފްޞީލް
-          </p>
-        </div> */}
+              {/* Details Section */}
+              <div className="p-6">
+                <div className="grid font-dhivehi grid-cols-1 gap-4">
+                  {infoSection("ފުރިހަމަ ނަން", registration.fullName)}
+                  {infoSection("އައިޑީކާޑް", registration.idCardNumber)}
+                  {infoSection("ކެޓެގަރީ", registration.category)}
+                  {infoSection("ފޯނު ނަންބަރު", registration.contactNumber)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

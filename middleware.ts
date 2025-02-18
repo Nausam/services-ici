@@ -18,5 +18,6 @@ export const config = {
     "/services/waste-management/:path*",
     "/competitions/edit/:path*",
     "/services/edit/:path*",
+    "/sign-up",
   ],
 };

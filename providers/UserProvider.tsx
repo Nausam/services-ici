@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/actions/user.actions";
 const UserContext = createContext({
   currentUser: null,
   isAdmin: false,
+  isSuperAdmin: false,
   loading: true,
   refreshUser: async () => {}, // Function to refresh user data
 });
@@ -15,6 +16,7 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
@@ -25,6 +27,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
       // ✅ Check for `isAdmin` boolean field instead of labels
       setIsAdmin(user?.isAdmin || false);
+      setIsSuperAdmin(user?.isSuperAdmin || false);
     } catch (error) {
       console.error("Failed to fetch user:", error);
     } finally {
@@ -38,7 +41,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <UserContext.Provider
-      value={{ currentUser, isAdmin, loading, refreshUser: fetchUser }}
+      value={{
+        currentUser,
+        isAdmin,
+        isSuperAdmin,
+        loading,
+        refreshUser: fetchUser,
+      }}
     >
       {children}
     </UserContext.Provider>

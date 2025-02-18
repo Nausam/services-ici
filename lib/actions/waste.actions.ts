@@ -105,21 +105,21 @@ export const getAllRegistrations = async (limit: number, offset: number) => {
 };
 
 export const getWasteRegistrationById = async (
-  address: string | string[] | undefined
+  idCardNumber: string | string[] | undefined
 ) => {
   try {
     const { databases } = await createAdminClient();
 
     // Check if idCardNumber is a valid string
-    if (!address || Array.isArray(address)) {
-      throw new Error("Invalid address provided.");
+    if (!idCardNumber || Array.isArray(idCardNumber)) {
+      throw new Error("Invalid ID card number provided.");
     }
 
     // Fetch the participant based on the ID card number
     const response = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.wasteManagementFormsId,
-      [Query.equal("address", [address])] // Query expects an array
+      [Query.equal("idCardNumber", [idCardNumber])] // Query expects an array
     );
 
     // Check if the participant exists
@@ -127,10 +127,8 @@ export const getWasteRegistrationById = async (
       throw new Error("Participant not found");
     }
 
-    console.log(response);
-
     // Return the first matched document
-    return response.documents[0];
+    return response;
   } catch (error) {
     console.error("Failed to fetch registration:", error);
     throw new Error("Failed to fetch participant details");

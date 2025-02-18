@@ -16,6 +16,7 @@ export const convertTimeToDateTime = (time: string, date: string) => {
   return dateTime.toISOString();
 };
 
+// WASTE MANAGEMENT
 export const registrationDefaultValues = {
   fullName: "",
   address: "",
@@ -24,6 +25,7 @@ export const registrationDefaultValues = {
   category: "",
 };
 
+// QURAN COMPETITION
 export const QuranCompetitionregistrationDefaultValues = {
   fullName: "",
   idCardNumber: "",
@@ -59,3 +61,21 @@ export const QuranCompetitionregistrationDefaultValues = {
 
   idCard: "",
 };
+
+// PERMISSION REQUESTS
+export const permissionOptions = [
+  { value: "މަގު ބަންދުކުރުމުގެ ހުއްދަ", label: "މަގު ބަންދުކުރުމުގެ ހުއްދަ" },
+  { value: "މަގު ކޮނުމުގެ ހުއްދަ", label: "މަގު ކޮނުމުގެ ހުއްދަ" },
+  {
+    value: "ފުޓްސަލް ދަނޑު ބޭނުންކުރުމުގެ ހުއްދަ",
+    label: "ފުޓްސަލް ދަނޑު ބޭނުންކުރުމުގެ ހުއްދަ",
+  },
+  {
+    value: "ވޯލީބޯޅަ ކޯޓް ބޭނުންކުރުމުގެ ހުއްދަ",
+    label: "ވޯލީބޯޅަ ކޯޓް ބޭނުންކުރުމުގެ ހުއްދަ",
+  },
+  {
+    value: "ޕްރީސްކޫލް ބޭނުންކުރުމުގެ ހުއްދަ",
+    label: "ޕްރީސްކޫލް ބޭނުންކުރުމުގެ ހުއްދަ",
+  },
+];
