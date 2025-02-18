@@ -2,26 +2,16 @@ import React from "react";
 import ServiceTable from "@/components/admin/ServiceTable";
 import QuranCompetitionTable from "@/components/quran-competition/QuranCompetitionTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import HomeCardForm from "@/components/admin/home-cards/HomeCardForm";
-import QuizCompetitionTable from "@/components/quiz-competition/QuizCompetitionTable";
 import QuizStatistics from "@/components/quiz-competition/QuizStatistics";
+import { useUser } from "@/providers/UserProvider";
+
+// const { isAdmin, isSuperAdmin } = useUser();
 
 const Admin = () => {
   return (
     <section className="h-screen p-8 container mx-auto">
-      <div className="mt-8">
+      <div className="mt-8 h-screen">
         <div className="flex items-center justify-center w-full mt-10">
           <Tabs
             dir="rtl"

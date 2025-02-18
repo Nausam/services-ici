@@ -49,24 +49,14 @@ const QuizStatistics = () => {
 
   return (
     <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <div className="flex items-center justify-center">
         {/* Most Correct Answers */}
-        <div className="flex flex-col items-center justify-center border  border-cyan-700/50 rounded-xl p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 shadow-md">
+        <div className="flex flex-col items-center justify-center border  border-cyan-700/50 rounded-xl p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 shadow-md w-full">
           <h2 className="font-dhivehi text-3xl text-cyan-800 font-bold mb-2">
             އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
           </h2>
-          <p className="text-2xl text-cyan-900 font-extrabold">
+          <p className="text-2xl text-cyan-900 font-extrabold mt-4">
             {stats.topCorrect ? stats.topCorrect : " ނެތް "}
-          </p>
-        </div>
-
-        {/* Most Incorrect Answers */}
-        <div className="flex flex-col items-center justify-center border border-red-700/50 rounded-xl p-6 bg-gradient-to-br from-red-50 to-red-100 shadow-md">
-          <h2 className="font-dhivehi text-3xl text-red-800 font-bold mb-2">
-            އެންމެ ގިނައިން ރަނގަޅު ނޫން ޖަވާބުދިން
-          </h2>
-          <p className="text-2xl text-red-900 font-extrabold">
-            {stats.topIncorrect ? stats.topIncorrect : " ނެތް "}
           </p>
         </div>
       </div>

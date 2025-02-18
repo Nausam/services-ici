@@ -39,7 +39,7 @@ export default function RootLayout({
             <Toaster />
           </div>
         </UserProvider>
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );

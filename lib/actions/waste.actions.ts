@@ -128,7 +128,7 @@ export const getWasteRegistrationById = async (
     }
 
     // Return the first matched document
-    return response.documents[0];
+    return response;
   } catch (error) {
     console.error("Failed to fetch registration:", error);
     throw new Error("Failed to fetch participant details");

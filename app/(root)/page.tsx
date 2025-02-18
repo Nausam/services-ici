@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <div>
       <div
-        className="bg-gradient-to-b from-blue-100 to-blue-50  overflow-hidden relative h-full"
+        className="bg-gradient-to-b from-blue-100 to-blue-50  overflow-hidden relative min-h-screen"
         dir="rtl"
       >
         {/* Faded Gradient Glow Effect */}
@@ -29,7 +29,7 @@ const Home = () => {
 
         {/* Services Section */}
 
-        <div className="flex items-center justify-center w-full mt-10">
+        <div className="flex items-center justify-center w-full h-full mt-10">
           <Tabs
             dir="rtl"
             defaultValue="registrations"

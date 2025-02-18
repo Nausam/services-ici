@@ -56,3 +56,14 @@ export const quizSchema = z.object({
   idCardNumber: z.string().min(5, " އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ! "),
   answer: z.string().min(1, " އިހްތިޔާރު ކުރައްވާ ޖަވާބު ނަންގަވާ! "),
 });
+
+// PERMISSION REQUEST FORM SCHEMA
+export const permissionRequestSchema = z.object({
+  fullName: z.string().min(1, "ނަން ލިޔުއްވާ"),
+  contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ"),
+  company: z.string().optional(),
+  permissionType: z.string().min(1, "ހުއްދައިގެ ބާވަތް ނަންގަވާ"),
+  reason: z.string().min(1, " ހުއްދަ ނަގަން ބޭނުންވާ ސަބަބު ލިޔުއްވާ "),
+  startDate: z.string().min(1, "ހުއްދަ ފަށާދުވަސް ނަންގަވާ"),
+  endDate: z.string().min(1, "ހުއްދަ ނިމޭ ދުވަސް ނަންގަވާ"),
+});

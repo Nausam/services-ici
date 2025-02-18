@@ -12,7 +12,7 @@ const Competitions = () => {
   const [competitionCards, setCompetitionCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { isAdmin } = useUser();
+  const { isAdmin, isSuperAdmin } = useUser();
 
   const fetchCompetitionCards = async () => {
     try {
@@ -74,6 +74,7 @@ const Competitions = () => {
               imageId={card.imageId}
               hidden={card.hidden}
               isAdmin={isAdmin}
+              isSuperAdmin={isSuperAdmin}
               onVisibilityToggle={handleVisibilityToggle}
               onDelete={fetchCompetitionCards}
             />

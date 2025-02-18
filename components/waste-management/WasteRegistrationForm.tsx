@@ -2,26 +2,17 @@
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { createRegistration, uploadImage } from "@/lib/actions/waste.actions";
-import Image from "next/legacy/image";
 import { createRegistrationSchema } from "@/lib/validations";
 import { Registration } from "@/types";
 import { registrationDefaultValues } from "@/constants";
