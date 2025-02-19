@@ -55,42 +55,45 @@ const QuranCompetitionDashboard = () => {
 
     // CSV Header in Dhivehi (Reversed Order)
     const csvHeader = `
-އިޤްރާރު,ފައިނަލް ނުބަލައި ނިމޭ,ފައިނަލް ނުބަލައި ފެށޭ,ފައިނަލް ބަލައިގެން ނިމޭ,ފައިނަލް ބަލައިގެން ފެށޭ,ނުބަލައި ނިމޭ,ނުބަލައި ފެށޭ,ބަލައިގެން ނިމޭ,ބަލައިގެން ފެށޭ,އިޤްރާރު ކުރުން އަށްވަނީ,އިޤްރާރު ކުރި ތާރީހް,ބޭންކުގެ ނަން,ބޭންކު އެކައުންޓް ނަންބަރު,ބޭންކު އެކައުންޓް ނަން,ބެލެނިވެރިޔާގެ ފޯނު ނަންބަރު,ހުރިގާތް,ބެލެނިވެރިޔާގެ ދާއިމީ އެޑްރެސް,ބެލެނިވެރިޔާގެ އައިޑީކާޑް,ބެލެނިވެރިޔާގެ ނަން,ފޯނު ނަންބަރު,އުފަން ތާރީހް,ޖިންސު,ދާއިމީ އެޑްރެސް,އައިޑީކާޑް ނަންބަރު,ފުރިހަމަ ނަން\n`;
+އިޤްރާރު,ފައިނަލް ނުބަލައި ނިމޭ,ފައިނަލް ނުބަލައި ފެށޭ,ފައިނަލް ބަލައިގެން ނިމޭ,ފައިނަލް ބަލައިގެން ފެށޭ,ނުބަލައި ނިމޭ,ނުބަލައި ފެށޭ,ބަލައިގެން ނިމޭ,ބަލައިގެން ފެށޭ,އިޤްރާރު ކުރުން އަށްވަނީ,އިޤްރާރު ކުރި ތާރީހް,ބޭންކުɡެ ނަން,ބޭންކު އެކައުންޓް ނަންބަރު,ބޭންކު އެކައުންޓް ނަން,ބެލެނިވެރިޔާގެ ފޯނު ނަންބަރު,ހުރިގާތް,ބެލެނިވެރިޔާގެ ދާއިމީ އެޑްރެސް,ބެލެނިވެރިޔާގެ އައިޑީކާޑް,ބެލެނިވެރިޔާގެ ނަން,ފޯނު ނަންބަރު,އުފަން ތާރީހް,ކީސްޓޭޖް,ޖިންސު,ދާއިމީ އެޑްރެސް,އައިޑީކާޑް ނަންބަރު,ފުރިހަމަ ނަން\n`;
 
     const csvRows = registrations
       .map((reg: any) =>
         [
-          reg.agreeToTerms ? "✔️ އިޤްރާރު ކުރެވިއްޖެ" : "❌ ނުކުރެވިއްޖެ",
-          reg.finalRoundNubalaaKiyevunNimey ? "✔️" : "❌",
-          reg.finalRoundNubalaaKiyevunFeshey ? "✔️" : "❌",
-          reg.finalRoundBalaigenKiyevunNimey ? "✔️" : "❌",
-          reg.finalRoundBalaigenKiyevunFeshey ? "✔️" : "❌",
-          reg.nubalaaKiyevunNimey ? "✔️" : "❌",
-          reg.nubalaaKiyevunFeshey ? "✔️" : "❌",
-          reg.balaigenKiyevunNimey ? "✔️" : "❌",
-          reg.balaigenKiyevunFeshey ? "✔️" : "❌",
-          reg.agreeyerName,
-          reg.agreedDate,
-          reg.bankName,
-          reg.bankAccountNumber,
-          reg.bankAccountName,
-          reg.parentContactNumber || "-",
-          reg.relationship || "-",
-          reg.parentAddress || "-",
-          reg.parentIdCardNumber || "-",
-          reg.parentName || "-",
-          reg.contactNumber,
-          reg.dateOfBirth,
-          reg.sex,
-          reg.address,
-          reg.idCardNumber,
-          reg.fullName,
+          `"${
+            reg.agreeToTerms ? "✔️ އިޤްރާރު ކުރެވިއްޖެ" : "❌ ނުކުރެވިއްޖެ"
+          }"`,
+          `"${reg.finalRoundNubalaaKiyevunNimey ? "✔️" : "❌"}"`,
+          `"${reg.finalRoundNubalaaKiyevunFeshey ? "✔️" : "❌"}"`,
+          `"${reg.finalRoundBalaigenKiyevunNimey ? "✔️" : "❌"}"`,
+          `"${reg.finalRoundBalaigenKiyevunFeshey ? "✔️" : "❌"}"`,
+          `"${reg.nubalaaKiyevunNimey ? "✔️" : "❌"}"`,
+          `"${reg.nubalaaKiyevunFeshey ? "✔️" : "❌"}"`,
+          `"${reg.balaigenKiyevunNimey ? "✔️" : "❌"}"`,
+          `"${reg.balaigenKiyevunFeshey ? "✔️" : "❌"}"`,
+          `"${reg.agreeyerName}"`,
+          `"${reg.agreedDate}"`,
+          `"${reg.bankName}"`,
+          `"${reg.bankAccountNumber}"`,
+          `"${reg.bankAccountName}"`,
+          `"${reg.parentContactNumber || "-"}"`,
+          `"${reg.relationship || "-"}"`,
+          `"${reg.parentAddress || "-"}"`,
+          `"${reg.parentIdCardNumber || "-"}"`,
+          `"${reg.parentName || "-"}"`,
+          `"${reg.contactNumber}"`,
+          `"${reg.dateOfBirth}"`,
+          `"${reg.keyStage || "-"}"`, // Moved KeyStage after Date of Birth
+          `"${reg.sex}"`,
+          `"${reg.address}"`,
+          `"${reg.idCardNumber}"`, // Keep ID Card Number
+          `"${reg.fullName}"`, // Keep Full Name
         ].join(",")
       )
       .join("\n");
 
-    const csvContent = csvHeader + csvRows;
-    const blob = new Blob(["\uFEFF" + csvContent], {
+    const csvContent = "\uFEFF" + csvHeader + csvRows;
+    const blob = new Blob([csvContent], {
       type: "text/csv;charset=utf-8;",
     });
     const url = URL.createObjectURL(blob);
