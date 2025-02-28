@@ -46,14 +46,12 @@ const QuizCompetitionForm = () => {
       setIsLoading(true);
       const data = await getTodaysQuizQuestion();
 
+      console.log("📢 Quiz Data Fetched:", data); // ✅ Debugging
+
       if (data?.nextQuizDate) {
         const nextQuizTime = new Date(data.nextQuizDate).getTime();
         const now = Date.now();
-
-        // Convert current time to Maldives Time (UTC+5)
         const maldivesNow = now + 5 * 60 * 60 * 1000;
-
-        // Calculate time left in milliseconds
         const diff = nextQuizTime - maldivesNow;
 
         if (diff > 0) {
