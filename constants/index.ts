@@ -1,5 +1,3 @@
-import { date } from "zod";
-
 // Format the time to display in the input field
 export const formatTimeForInput = (dateTime: string | null) => {
   if (!dateTime) return "";
@@ -14,6 +12,26 @@ export const convertTimeToDateTime = (time: string, date: string) => {
   const dateTime = new Date(date);
   dateTime.setUTCHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
   return dateTime.toISOString();
+};
+
+export const formatExcelDate = (excelDate: any): string => {
+  if (typeof excelDate === "number") {
+    // ✅ Convert Excel Serial Date to JavaScript Date
+    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+    const convertedDate = new Date(
+      excelEpoch.getTime() + excelDate * 86400 * 1000
+    );
+    return convertedDate.toISOString();
+  } else if (typeof excelDate === "string") {
+    // ✅ Handle text-based date strings (e.g., "2/19/2025")
+    const parsedDate = new Date(excelDate);
+    return !isNaN(parsedDate.getTime())
+      ? parsedDate.toISOString()
+      : new Date().toISOString();
+  } else {
+    // Default to today if invalid
+    return new Date().toISOString();
+  }
 };
 
 // WASTE MANAGEMENT
@@ -79,3 +97,15 @@ export const permissionOptions = [
     label: "ޕްރީސްކޫލް ބޭނުންކުރުމުގެ ހުއްދަ",
   },
 ];
+
+export const formatTime = (milliseconds: number) => {
+  if (milliseconds <= 0) return "00:00:00"; // Avoid negative countdown
+
+  const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+  const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};

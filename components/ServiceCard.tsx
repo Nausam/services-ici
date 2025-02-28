@@ -89,28 +89,34 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   };
 
   /// Handle button click
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const normalizedLink = link.startsWith("/") ? link : `/${link}`;
+
     if (isDuePassed(dueDate)) {
-      e.preventDefault(); // Prevent navigation if due date is passed
-      if (link == "/services/register/waste-management") {
+      e.preventDefault();
+
+      if (normalizedLink === "/services/register/waste-management") {
         toast({
           title:
             "ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުމުގެ މުއްދަތު ވަނީ ހަމަވެފަ",
           variant: "destructive",
         });
+        return;
       }
-      if (link == "/competitions/register/quran-competition") {
+
+      if (normalizedLink === "/competitions/register/quran-competition") {
         toast({
           title:
             "ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތަށް ރެޖިސްޓާ ކުރުމުގެ މުއްދަތު ވަނީ ހަމަވެފަ",
           variant: "destructive",
         });
+        return;
       }
-      // toast({
-      //   title:
-      //     "ކުނި އުކާލުމަށާއި ކުނި ނައްތާލުމަށް ރެޖިސްޓާ ކުރުމުގެ މުއްދަތު ވަނީ ހަމަވެފަ",
-      //   variant: "destructive",
-      // });
+
+      toast({
+        title: "މުއްދަތު ވަނީ ހަމަވެފަ",
+        variant: "destructive",
+      });
     }
   };
 
@@ -213,7 +219,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
         {/* Button */}
         <div className="flex justify-start text-right gap-2">
-          <Link href={link} onClick={handleClick}>
+          <Link href={link} onClick={handleClick} passHref>
             <Button
               type="submit"
               size="lg"
