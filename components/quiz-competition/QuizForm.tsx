@@ -130,7 +130,7 @@ const QuizCompetitionForm = () => {
         <p className="font-dhivehi text-7xl text-cyan-700 mt-20">
           {formatTime(timeLeft)}
         </p>
-        <h2 className="font-dhivehi text-3xl text-cyan-700 mt-10">
+        <h2 className="font-dhivehi text-center md:text-3xl text-xl text-cyan-700 mt-10">
           ކޮންމެ ދުވަހެއްގެ ސުވާލުވެސް އެދުވަހެއްގެ 00:00 ގައި ޕަބްލިޝް ކުރެވޭނެ
         </h2>
       </div>
