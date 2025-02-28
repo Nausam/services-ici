@@ -135,7 +135,7 @@ export const submitQuizForm = async (quizData: {
       return {
         success: false,
         message:
-          "A submission already exists for today's quiz. Please try again tomorrow.",
+          "A submission already exists for today's quiz with matching details. Please try again tomorrow.",
       };
     }
 
