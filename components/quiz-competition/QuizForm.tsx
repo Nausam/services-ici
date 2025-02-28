@@ -130,6 +130,9 @@ const QuizCompetitionForm = () => {
         <p className="font-dhivehi text-7xl text-cyan-700 mt-20">
           {formatTime(timeLeft)}
         </p>
+        <h2 className="font-dhivehi text-3xl text-cyan-700 mt-10">
+          ކޮންމެ ދުވަހެއްގެ ސުވާލުވެސް އެދުވަހެއްގެ 00:00 ގައި ޕަބްލިޝް ކުރެވޭނެ
+        </h2>
       </div>
     );
   }
@@ -146,10 +149,10 @@ const QuizCompetitionForm = () => {
           ސުވާލެއްގެ ޖަވާބު ސަބްމިޓް ކުރުމުގައި މައްސަލައެއް ދިމާވެއްޖެނަމަ
           7481126 އަށް ގުޅުއްވާ!
         </p>
-        <p className="font-dhivehi text-5xl text-right text-cyan-800 mt-5">
+        <p className="font-dhivehi text-5xl text-right text-cyan-900 mt-5">
           މިއަދުގެ ސުވާލު
         </p>
-        <div className="text-right font-dhivehi text-2xl text-cyan-800 mt-5">
+        <div className="text-right font-dhivehi text-2xl text-cyan-900 mt-5">
           {quizData?.question}
         </div>
 
@@ -175,7 +178,7 @@ const QuizCompetitionForm = () => {
                         />
                         <label
                           htmlFor={`option-${index}`}
-                          className="font-dhivehi text-xl text-cyan-950 cursor-pointer"
+                          className="font-dhivehi text-xl text-cyan-800 cursor-pointer"
                         >
                           {option}
                         </label>
