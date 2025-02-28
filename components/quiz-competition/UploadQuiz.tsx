@@ -39,10 +39,10 @@ const UploadQuiz = () => {
       const questions = parsedData.slice(1).map((row) => {
         return {
           questionNumber: String(row[0]), // Convert question number to string
-          date: formatExcelDate(row[1]), // ✅ FIX: Convert Excel date properly
+          date: formatExcelDate(row[1]), // ✅ Fix: Convert Excel date properly
           question: row[2],
-          options: [row[3], row[4], row[5], row[6]], // Ensure array structure
-          correctAnswer: row[7],
+          options: [row[3] || "", row[4] || "", row[5] || ""], // ✅ Only 3 options
+          correctAnswer: row[6], // ✅ Correct answer should match one of the 3 options
         };
       });
 
