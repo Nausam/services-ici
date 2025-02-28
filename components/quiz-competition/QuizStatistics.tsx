@@ -4,6 +4,14 @@ import React, { useEffect, useState } from "react";
 import { getQuizStatistics } from "@/lib/actions/quizCompetition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 const QuizStatistics = () => {
   const [stats, setStats] = useState<{
@@ -49,9 +57,9 @@ const QuizStatistics = () => {
 
   return (
     <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
-      <div className="flex items-center justify-center">
-        {/* Most Correct Answers */}
-        <div className="flex flex-col items-center justify-center border  border-cyan-700/50 rounded-xl p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 shadow-md w-full">
+      {/* <div className="flex items-center justify-center">
+       
+        <div className="flex flex-col items-center justify-center border  border-cyan-700/30 rounded-xl p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 shadow-md w-full">
           <h2 className="font-dhivehi text-3xl text-cyan-800 font-bold mb-2">
             އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
           </h2>
@@ -59,54 +67,58 @@ const QuizStatistics = () => {
             {stats.topCorrect ? stats.topCorrect : " ނެތް "}
           </p>
         </div>
-      </div>
+      </div> */}
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl text-cyan-950">
-            {" "}
-            ސުވާލު މުބާރާތުގެ ސްޓެޓިސްޓިކްސް{" "}
+          <CardTitle className="text-center text-3xl text-cyan-800">
+            ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1446
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 p-2 text-xl text-cyan-900">
+          <Table className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
+            <TableHeader className="bg-gradient-to-br from-slate-100 to-slate-200">
+              <TableRow>
+                <TableHead className="text-lg text-center p-4 text-cyan-700">
                   ސުވާލު ނަންބަރު
-                </th>
-                <th className="border border-gray-300 p-2 text-xl text-cyan-900">
+                </TableHead>
+                <TableHead className="text-lg text-center p-4 text-cyan-700">
                   ޖަވާބު ދިން ފަރާތްތައް
-                </th>
-                <th className="border border-gray-300 p-2 text-xl text-cyan-900">
-                  ރަނގަޅު ޖަވާބު ދިން ފަރާތްތައް
-                </th>
-                <th className="border border-gray-300 p-2 text-xl text-cyan-900">
-                  ރަނގަޅު ނޫން ޖަވާބު ދިން ފަރާތްތައް
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+                <TableHead className="text-lg text-center p-4 text-cyan-700">
+                  ރަނގަޅު ޖަވާބު ދިން
+                </TableHead>
+                <TableHead className="text-lg text-center p-4 text-cyan-700">
+                  ރަނގަޅު ނޫން ޖަވާބު ދިން
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="bg-white">
               {Object.entries(stats.dailyStats).map(
-                ([questionNumber, data]) => (
-                  <tr key={questionNumber}>
-                    <td className="border border-gray-300 p-2 text-center text-lg text-cyan-800">
+                ([questionNumber, data], index) => (
+                  <TableRow
+                    key={questionNumber}
+                    className={`border-b ${
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100 transition-all`}
+                  >
+                    <TableCell className="text-center text-lg font-semibold text-cyan-800 p-3">
                       {questionNumber}
-                    </td>
-                    <td className="border border-gray-300 p-2 text-center text-lg text-cyan-800">
+                    </TableCell>
+                    <TableCell className="text-center text-lg font-medium text-gray-700 p-3">
                       {data.total}
-                    </td>
-                    <td className="border border-gray-300 p-2 text-center text-green-600 text-lg">
+                    </TableCell>
+                    <TableCell className="text-center text-lg font-bold text-green-600 p-3">
                       {data.correct}
-                    </td>
-                    <td className="border border-gray-300 p-2 text-center text-red-600 text-lg">
+                    </TableCell>
+                    <TableCell className="text-center text-lg font-bold text-red-600 p-3">
                       {data.incorrect}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

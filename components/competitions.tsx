@@ -58,7 +58,7 @@ const Competitions = () => {
           ))
         ) : competitionCards.length === 0 ? (
           // Show placeholder card if no competitions exist
-          <PlaceholderCard />
+          <PlaceholderCard title="މިވަގުތު އެއްވެސް މުބާރާތެއް ކުރިއަށް ރޭވިފައެއް ނުވޭ!" />
         ) : (
           // Render competition cards
           competitionCards.map((card: any) => (

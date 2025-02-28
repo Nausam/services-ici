@@ -88,3 +88,20 @@ export const getAllPermissionRequests = async (
     throw new Error("Failed to fetch permission requests");
   }
 };
+
+export const getPermissionRequestById = async (id: string) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const request = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.permissionRequestsId,
+      id
+    );
+
+    return request;
+  } catch (error) {
+    console.error("❌ Failed to fetch permission request:", error);
+    return null;
+  }
+};

@@ -44,9 +44,10 @@ export type QuranCompetitionRegistration = {
 };
 
 export type QuizQuestion = {
-  date: string;
-  question: string;
-  options: string[];
+  date?: string;
+  question?: string;
+  options?: string[];
+  nextQuizDate?: string;
 };
 
 export type HomeCard = {

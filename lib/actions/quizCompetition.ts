@@ -2,8 +2,17 @@
 
 import { createAdminClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
-import { Query } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { parseStringify } from "../utils";
+import * as XLSX from "xlsx";
+
+interface QuizQuestion {
+  questionNumber: string;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  date: string;
+}
 
 export const getTodaysQuizQuestion = async () => {
   try {
@@ -14,6 +23,8 @@ export const getTodaysQuizQuestion = async () => {
     todayStart.setUTCHours(0, 0, 0, 0); // Set to start of the day
     const todayEnd = new Date();
     todayEnd.setUTCHours(23, 59, 59, 999); // Set to end of the day
+
+    const todayISO = todayStart.toISOString();
 
     const formattedStart = todayStart.toISOString();
     const formattedEnd = todayEnd.toISOString();
@@ -33,6 +44,23 @@ export const getTodaysQuizQuestion = async () => {
         date: result.documents[0].date,
         question: result.documents[0].question,
         options: result.documents[0].options || [],
+      };
+    }
+
+    // If no quiz is found today, find the next available quiz
+    const futureQuizzes = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quizCompetitionId,
+      [
+        Query.greaterThan("date", todayISO),
+        Query.orderAsc("date"),
+        Query.limit(1),
+      ]
+    );
+
+    if (futureQuizzes.total > 0) {
+      return {
+        nextQuizDate: futureQuizzes.documents[0].date,
       };
     }
 
@@ -210,5 +238,37 @@ export const getQuizStatistics = async () => {
   } catch (error) {
     console.error("Failed to fetch quiz statistics:", error);
     throw new Error("Failed to fetch quiz statistics");
+  }
+};
+
+export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    for (const question of questions) {
+      if (!Array.isArray(question.options)) {
+        throw new Error(
+          `Invalid options format for question: ${question.question}`
+        );
+      }
+
+      await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.quizCompetitionId,
+        ID.unique(),
+        {
+          questionNumber: question.questionNumber,
+          question: question.question,
+          options: question.options,
+          correctAnswer: question.correctAnswer,
+          date: question.date,
+        }
+      );
+    }
+
+    return { success: true, message: "Quiz questions uploaded successfully!" };
+  } catch (error) {
+    console.error("❌ Failed to upload quiz questions:", error);
+    throw new Error("Failed to upload quiz questions.");
   }
 };

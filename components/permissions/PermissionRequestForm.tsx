@@ -157,11 +157,11 @@ const PermissionRequestForm = () => {
                   ފަށާ ދުވަސް
                 </p>
                 <FormControl dir="rtl" className="text-right">
-                  <Input
-                    dir="rtl"
-                    type="date"
+                  <input
+                    type="date" // Native date picker
+                    placeholder="ފަށާ ދުވަސް"
                     {...field}
-                    className="rounded-md text-right"
+                    className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 text-cyan-950"
                   />
                 </FormControl>
                 <FormMessage className="font-dhivehi text-md" />
@@ -178,10 +178,11 @@ const PermissionRequestForm = () => {
                   ނިމޭ ދުވަސް
                 </p>
                 <FormControl>
-                  <Input
-                    type="date"
+                  <input
+                    type="date" // Native date picker
+                    placeholder="ނިމޭ ދުވަސް"
                     {...field}
-                    className="rounded-md text-right"
+                    className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 text-cyan-950"
                   />
                 </FormControl>
                 <FormMessage className="font-dhivehi text-md" />
@@ -209,14 +210,16 @@ const PermissionRequestForm = () => {
           />
         </div>
 
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isSubmitting}
-          className="bg-cyan-700 text-white font-dhivehi text-lg"
-        >
-          {isSubmitting ? "ރެޖިސްޓާ ކުރަނީ..." : "ރެޖިސްޓާ ކުރައްވާ"}
-        </Button>
+        <div className="flex justify-start">
+          <Button
+            type="submit"
+            size="lg"
+            disabled={isSubmitting}
+            className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
+          >
+            {isSubmitting ? "ރެޖިސްޓާ ކުރަނީ..." : "ރެޖިސްޓާ ކުރައްވާ"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

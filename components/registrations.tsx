@@ -6,9 +6,10 @@ import { AnimatedGroup } from "./ui/animated-group";
 import { getAllCardsByCategory } from "@/lib/actions/home.actions";
 import ServiceCardLoader from "./ServiceCardLoader";
 import { useUser } from "@/providers/UserProvider";
+import PlaceholderCard from "./PlaceholderCard";
 
 const Registrations = () => {
-  const [competitionCards, setCompetitionCards] = useState([]);
+  const [serviceCards, setServiceCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { isAdmin, isSuperAdmin } = useUser();
@@ -26,7 +27,7 @@ const Registrations = () => {
             new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
         );
 
-      setCompetitionCards(sortedCards);
+      setServiceCards(sortedCards);
     } catch (error) {
       console.error("Error fetching competition cards:", error);
     } finally {
@@ -50,28 +51,32 @@ const Registrations = () => {
         <h3 className="text-2xl md:text-4xl font-dhivehi text-cyan-900 text-center">
           ހިދުމަތްތައް
         </h3>
-        {loading
-          ? Array.from({ length: 4 }).map((_, index) => (
-              <ServiceCardLoader key={index} />
-            ))
-          : competitionCards.map((card: any) => (
-              <ServiceCard
-                key={card.$id}
-                id={card.$id}
-                title={card.title}
-                description={card.description}
-                link={card.link}
-                buttonText={card.buttonText}
-                dueDate={card.dueDate}
-                image={card.image}
-                imageId={card.imageId}
-                hidden={card.hidden}
-                isAdmin={isAdmin}
-                isSuperAdmin={isSuperAdmin}
-                onVisibilityToggle={handleVisibilityToggle}
-                onDelete={fetchCompetitionCards}
-              />
-            ))}
+        {loading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <ServiceCardLoader key={index} />
+          ))
+        ) : serviceCards.length === 0 ? (
+          <PlaceholderCard title="މިވަގުތު އެއްވެސް ހިދުމަތަކަށް ރެޖިސްޓާވުމުގެ ފުރުސަތު ހުޅުވާލާފައެއް ނުވޭ!" />
+        ) : (
+          serviceCards.map((card: any) => (
+            <ServiceCard
+              key={card.$id}
+              id={card.$id}
+              title={card.title}
+              description={card.description}
+              link={card.link}
+              buttonText={card.buttonText}
+              dueDate={card.dueDate}
+              image={card.image}
+              imageId={card.imageId}
+              hidden={card.hidden}
+              isAdmin={isAdmin}
+              isSuperAdmin={isSuperAdmin}
+              onVisibilityToggle={handleVisibilityToggle}
+              onDelete={fetchCompetitionCards}
+            />
+          ))
+        )}
       </div>
     </section>
   );

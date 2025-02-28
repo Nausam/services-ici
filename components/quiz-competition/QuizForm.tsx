@@ -22,6 +22,7 @@ import {
 import { QuizQuestion } from "@/types";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { quizSchema } from "@/lib/validations";
+import { formatTime } from "@/constants";
 
 const QuizCompetitionForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,22 +45,23 @@ const QuizCompetitionForm = () => {
     const fetchQuizQuestion = async () => {
       setIsLoading(true);
       const data = await getTodaysQuizQuestion();
-      if (data) {
-        setQuizData(data);
 
-        // Calculate time difference considering Maldives time zone (UTC+5)
-        const quizTime = new Date(data.date).getTime();
+      if (data?.nextQuizDate) {
+        const nextQuizTime = new Date(data.nextQuizDate).getTime();
         const now = Date.now();
 
-        // Add 5 hours (Maldives time zone offset from UTC)
+        // Convert current time to Maldives Time (UTC+5)
         const maldivesNow = now + 5 * 60 * 60 * 1000;
 
-        const diff = quizTime - maldivesNow;
+        // Calculate time left in milliseconds
+        const diff = nextQuizTime - maldivesNow;
 
         if (diff > 0) {
           setTimeLeft(diff);
         }
       }
+
+      setQuizData(data);
       setIsLoading(false);
     };
 
@@ -122,18 +124,11 @@ const QuizCompetitionForm = () => {
     );
 
   // Timer display
-  if (timeLeft > 0) {
-    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
+  if (!quizData?.question && quizData?.nextQuizDate && timeLeft > 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
-        <h2 className="font-dhivehi text-4xl text-cyan-800">މިއަދުގެ ސުވާލު</h2>
-        <p className="font-dhivehi text-5xl text-cyan-700 mt-5">
-          {`${hours.toString().padStart(2, "0")}:${minutes
-            .toString()
-            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`}
+        <p className="font-dhivehi text-7xl text-cyan-700 mt-20">
+          {formatTime(timeLeft)}
         </p>
       </div>
     );
@@ -146,7 +141,12 @@ const QuizCompetitionForm = () => {
         className="flex flex-col gap-8 bg-white shadow-lg p-8 rounded-lg"
         dir="rtl"
       >
-        <p className="font-dhivehi text-5xl text-right text-cyan-800">
+        <p className="font-dhivehi text-xl text-right text-red-500">
+          ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އަދި އެއްވެސް
+          ސުވާލެއްގެ ޖަވާބު ސަބްމިޓް ކުރުމުގައި މައްސަލައެއް ދިމާވެއްޖެނަމަ
+          7481126 އަށް ގުޅުއްވާ!
+        </p>
+        <p className="font-dhivehi text-5xl text-right text-cyan-800 mt-5">
           މިއަދުގެ ސުވާލު
         </p>
         <div className="text-right font-dhivehi text-2xl text-cyan-800 mt-5">
@@ -166,7 +166,7 @@ const QuizCompetitionForm = () => {
                     className="space-y-4"
                     dir="rtl"
                   >
-                    {quizData?.options.map((option, index) => (
+                    {quizData?.options?.map((option, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <RadioGroupItem
                           className="ml-2"
@@ -278,7 +278,7 @@ const QuizCompetitionForm = () => {
             type="submit"
             size="lg"
             disabled={isSubmitting}
-            className="bg-cyan-700 text-white hover:bg-cyan-600 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
+            className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"
           >
             {isSubmitting ? "ސަބްމިޓް ކުރަނީ" : "ސަބްމިޓް"}
           </Button>
