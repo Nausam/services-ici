@@ -84,16 +84,24 @@ export const submitQuizForm = async (quizData: {
   try {
     const { databases } = await createAdminClient();
 
-    // Get today's date range in UTC to check for existing submissions
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0); // Start of the day UTC
-    const todayEnd = new Date();
-    todayEnd.setUTCHours(23, 59, 59, 999); // End of the day UTC
+    // ✅ Convert current time to Maldives Time (UTC+5)
+    const maldivesNow = new Date();
+    maldivesNow.setUTCHours(maldivesNow.getUTCHours() + 5); // Shift to UTC+5
 
+    const todayStart = new Date(maldivesNow);
+    todayStart.setUTCHours(0, 0, 0, 0); // Midnight start
+
+    const todayEnd = new Date(maldivesNow);
+    todayEnd.setUTCHours(23, 59, 59, 999); // Midnight end
+
+    // ✅ Convert to ISO format for Appwrite
     const formattedStart = todayStart.toISOString();
     const formattedEnd = todayEnd.toISOString();
 
-    // Query for today's quiz question
+    console.log("🌍 Maldives Today Start (UTC):", formattedStart);
+    console.log("🌍 Maldives Today End (UTC):", formattedEnd);
+
+    // ✅ Query for today's quiz question
     const quizResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionId,
@@ -111,7 +119,7 @@ export const submitQuizForm = async (quizData: {
     const correctAnswer = quizQuestion.correctAnswer; // Correct answer field from the database
     const isCorrect = quizData.answer.trim() === correctAnswer.trim(); // Compare user's answer
 
-    // Query for existing submissions matching idCardNumber
+    // ✅ Query for existing submissions matching idCardNumber
     const idCardMatches = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
@@ -122,16 +130,16 @@ export const submitQuizForm = async (quizData: {
       ]
     );
 
-    // Check if there are any matches in any of the queries
+    // ✅ If the user has already submitted today, prevent multiple submissions
     if (idCardMatches.total > 0) {
       return {
         success: false,
         message:
-          "A submission already exists for today's quiz with matching details. Please try again tomorrow.",
+          "A submission already exists for today's quiz. Please try again tomorrow.",
       };
     }
 
-    // Create a new submission document
+    // ✅ Store new submission in Maldives Time (UTC+5)
     const response = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
@@ -141,7 +149,7 @@ export const submitQuizForm = async (quizData: {
         contactNumber: quizData.contactNumber,
         idCardNumber: quizData.idCardNumber,
         answer: quizData.answer,
-        submissionDate: new Date().toISOString(), // Use UTC time
+        submissionDate: todayStart.toISOString(), // ✅ Corrected Maldives Time Submission Date
         questionNumber: quizQuestion.questionNumber,
         correct: isCorrect,
       }
