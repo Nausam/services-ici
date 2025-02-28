@@ -18,18 +18,24 @@ export const getTodaysQuizQuestion = async () => {
   try {
     const { databases } = await createAdminClient();
 
-    // Get today's full date range in ISO format
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0); // Set to start of the day
-    const todayEnd = new Date();
-    todayEnd.setUTCHours(23, 59, 59, 999); // Set to end of the day
+    // ✅ Convert to Maldives Time (UTC+5)
+    const maldivesNow = new Date();
+    maldivesNow.setUTCHours(maldivesNow.getUTCHours() + 5); // Shift to UTC+5
 
-    const todayISO = todayStart.toISOString();
+    const todayStart = new Date(maldivesNow);
+    todayStart.setUTCHours(0, 0, 0, 0); // Start of the day in UTC+5
 
+    const todayEnd = new Date(maldivesNow);
+    todayEnd.setUTCHours(23, 59, 59, 999); // End of the day in UTC+5
+
+    // ✅ Convert to ISO format (UTC format for Appwrite)
     const formattedStart = todayStart.toISOString();
     const formattedEnd = todayEnd.toISOString();
 
-    // Query for today's quiz within the full day range
+    console.log("🌍 Maldives Today Start (UTC):", formattedStart);
+    console.log("🌍 Maldives Today End (UTC):", formattedEnd);
+
+    // ✅ Query today's quiz based on Maldives Time
     const result = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionId,
@@ -39,6 +45,8 @@ export const getTodaysQuizQuestion = async () => {
       ]
     );
 
+    console.log("🔍 Database Query Result:", result); // ✅ Debugging
+
     if (result.total > 0) {
       return {
         date: result.documents[0].date,
@@ -47,20 +55,16 @@ export const getTodaysQuizQuestion = async () => {
       };
     }
 
-    // If no quiz is found today, find the next available quiz
-    const futureQuizzes = await databases.listDocuments(
+    // ✅ If no quiz for today, fetch the next available quiz
+    const nextQuiz = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionId,
-      [
-        Query.greaterThan("date", todayISO),
-        Query.orderAsc("date"),
-        Query.limit(1),
-      ]
+      [Query.greaterThan("date", formattedEnd), Query.limit(1)]
     );
 
-    if (futureQuizzes.total > 0) {
+    if (nextQuiz.total > 0) {
       return {
-        nextQuizDate: futureQuizzes.documents[0].date,
+        nextQuizDate: nextQuiz.documents[0].date,
       };
     }
 
