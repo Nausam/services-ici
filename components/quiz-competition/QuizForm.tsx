@@ -139,18 +139,19 @@ const QuizCompetitionForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col gap-8 bg-white shadow-lg p-8 rounded-lg"
+        className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
         dir="rtl"
       >
         <p className="font-dhivehi text-xl text-right text-red-500">
-          ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އަދި އެއްވެސް
+          ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އެއްވެސް
           ސުވާލެއްގެ ޖަވާބު ސަބްމިޓް ކުރުމުގައި މައްސަލައެއް ދިމާވެއްޖެނަމަ
           7481126 އަށް ގުޅުއްވާ!
         </p>
-        <p className="font-dhivehi text-5xl text-right text-cyan-900 mt-5">
+
+        {/* <p className="font-dhivehi text-5xl text-right text-cyan-950 mt-5">
           މިއަދުގެ ސުވާލު
-        </p>
-        <div className="text-right font-dhivehi text-2xl text-cyan-900 mt-5">
+        </p> */}
+        <div className="text-right font-dhivehi text-2xl text-cyan-800 mt-5">
           {quizData?.question}
         </div>
 
@@ -176,7 +177,7 @@ const QuizCompetitionForm = () => {
                         />
                         <label
                           htmlFor={`option-${index}`}
-                          className="font-dhivehi text-xl text-cyan-800 cursor-pointer"
+                          className="font-dhivehi text-xl text-cyan-950 cursor-pointer"
                         >
                           {option}
                         </label>
@@ -228,16 +229,16 @@ const QuizCompetitionForm = () => {
                       field.value.startsWith("A")
                         ? field.value
                         : `A${field.value}`
-                    } // Always starts with "A"
+                    }
                     onChange={(e) => {
                       const inputValue = e.target.value;
 
                       // Remove non-digit characters after "A"
                       const numericPart = inputValue
                         .replace(/^A/, "")
-                        .replace(/\D/g, "");
+                        .replace(/\D/g, "")
+                        .slice(0, 6); // Ensure max 6 digits
 
-                      // Update the value with "A" prefix and numeric part
                       field.onChange(`A${numericPart}`);
                     }}
                     placeholder="A123456"
@@ -255,17 +256,19 @@ const QuizCompetitionForm = () => {
             name="contactNumber"
             render={({ field }) => (
               <FormItem>
-                <p
-                  dir="rtl"
-                  className="font-dhivehi text-xl text-right text-cyan-950"
-                >
+                <p className="font-dhivehi text-xl text-right text-cyan-950">
                   ފޯނު ނަންބަރު
                 </p>
                 <FormControl>
                   <Input
-                    placeholder=" ފޯނު ނަންބަރު "
                     {...field}
-                    className="rounded-md font-dhivehi border-gray-300  text-right"
+                    value={field.value.replace(/\D/g, "").slice(0, 7)} // Ensure only 7 digits
+                    onChange={(e) => {
+                      const inputValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric values
+                      field.onChange(inputValue.slice(0, 7)); // Allow max 7 digits
+                    }}
+                    placeholder="ފޯނު ނަންބަރު"
+                    className="rounded-md font-dhivehi border-gray-300 text-right"
                   />
                 </FormControl>
                 <FormMessage className="font-dhivehi text-md" />
