@@ -71,7 +71,7 @@ const QuizStatistics = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-center text-3xl text-cyan-800">
+          <CardTitle className="text-center text-3xl text-cyan-950">
             ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1446
           </CardTitle>
         </CardHeader>
@@ -79,16 +79,16 @@ const QuizStatistics = () => {
           <Table className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
             <TableHeader className="bg-gradient-to-br from-slate-100 to-slate-200">
               <TableRow>
-                <TableHead className="text-lg text-center p-4 text-cyan-700">
+                <TableHead className="text-lg text-center p-4 text-cyan-900">
                   ސުވާލު ނަންބަރު
                 </TableHead>
-                <TableHead className="text-lg text-center p-4 text-cyan-700">
+                <TableHead className="text-lg text-center p-4 text-cyan-900">
                   ޖަވާބު ދިން ފަރާތްތައް
                 </TableHead>
-                <TableHead className="text-lg text-center p-4 text-cyan-700">
+                <TableHead className="text-lg text-center p-4 text-cyan-900">
                   ރަނގަޅު ޖަވާބު ދިން
                 </TableHead>
-                <TableHead className="text-lg text-center p-4 text-cyan-700">
+                <TableHead className="text-lg text-center p-4 text-cyan-900">
                   ރަނގަޅު ނޫން ޖަވާބު ދިން
                 </TableHead>
               </TableRow>

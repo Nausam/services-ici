@@ -15,6 +15,7 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/competitions/quran-competition/:path*",
+    "/competitions/quiz-competition/:path*",
     "/services/waste-management/:path*",
     "/competitions/edit/:path*",
     "/services/edit/:path*",
