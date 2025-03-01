@@ -9,6 +9,7 @@ import HomeCardForm from "@/components/admin/home-cards/HomeCardForm";
 import QuizStatistics from "@/components/quiz-competition/QuizStatistics";
 import UploadQuiz from "@/components/quiz-competition/UploadQuiz";
 import PermissionRequestsTable from "@/components/permissions/PermissionRequestsTable";
+import QuizSubmissionsList from "@/components/quiz-competition/QuizSubmissionList";
 
 export default function AdminPage() {
   return (
@@ -69,7 +70,10 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="quiz" className="w-full">
-            <QuizStatistics />
+            <div>
+              <QuizStatistics />
+              <QuizSubmissionsList />
+            </div>
           </TabsContent>
 
           <TabsContent value="permission" className="w-full">

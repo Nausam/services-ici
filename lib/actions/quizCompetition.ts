@@ -163,18 +163,38 @@ export const submitQuizForm = async (quizData: {
 };
 
 // GET ALL QUIZ SUBMISSIONS
-export const getAllQuizSubmissions = async (limit: number, offset: number) => {
+export const getAllQuizSubmissions = async (
+  limit: number,
+  offset: number,
+  selectedDate?: string
+) => {
   try {
     const { databases } = await createAdminClient();
+
+    const filters = [
+      Query.limit(limit),
+      Query.offset(offset),
+      Query.orderDesc("$createdAt"),
+    ];
+
+    if (selectedDate) {
+      const startDate = new Date(selectedDate);
+      startDate.setUTCHours(0, 0, 0, 0);
+      const endDate = new Date(selectedDate);
+      endDate.setUTCHours(23, 59, 59, 999);
+
+      filters.push(
+        Query.greaterThanEqual("submissionDate", startDate.toISOString())
+      );
+      filters.push(
+        Query.lessThanEqual("submissionDate", endDate.toISOString())
+      );
+    }
 
     const quizSubmissions = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [
-        Query.limit(limit),
-        Query.offset(offset),
-        Query.orderDesc("$createdAt"), // Sort by latest submissions
-      ]
+      filters
     );
 
     return {
@@ -282,5 +302,33 @@ export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
   } catch (error) {
     console.error("❌ Failed to upload quiz questions:", error);
     throw new Error("Failed to upload quiz questions.");
+  }
+};
+
+export const getQuizSubmissionById = async (
+  idCardNumber: string | string[] | undefined
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // Check if idCardNumber is a valid string
+    if (!idCardNumber || Array.isArray(idCardNumber)) {
+      throw new Error("Invalid ID card number provided.");
+    }
+
+    const result = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quizCompetitionAnswersId,
+      [Query.equal("idCardNumber", idCardNumber)]
+    );
+
+    if (result.total === 0) {
+      throw new Error("Submission not found.");
+    }
+
+    return result.documents[0]; // Return the first matching document
+  } catch (error) {
+    console.error("Failed to fetch quiz submission details:", error);
+    throw new Error("Failed to fetch quiz submission details.");
   }
 };
