@@ -32,9 +32,6 @@ export const getTodaysQuizQuestion = async () => {
     const formattedStart = todayStart.toISOString();
     const formattedEnd = todayEnd.toISOString();
 
-    console.log("🌍 Maldives Today Start (UTC):", formattedStart);
-    console.log("🌍 Maldives Today End (UTC):", formattedEnd);
-
     // ✅ Query today's quiz based on Maldives Time
     const result = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -45,12 +42,12 @@ export const getTodaysQuizQuestion = async () => {
       ]
     );
 
-    console.log("🔍 Database Query Result:", result); // ✅ Debugging
-
     if (result.total > 0) {
       return {
         date: result.documents[0].date,
         question: result.documents[0].question,
+        questionNumber: result.documents[0].questionNumber,
+        correctAnswer: result.documents[0].correctAnswer,
         options: result.documents[0].options || [],
       };
     }
@@ -306,27 +303,54 @@ export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
 };
 
 export const getQuizSubmissionById = async (
-  idCardNumber: string | string[] | undefined
+  idCardNumber: string | string[] | undefined,
+  questionNumber: string | string[] | undefined
 ) => {
   try {
     const { databases } = await createAdminClient();
 
-    // Check if idCardNumber is a valid string
-    if (!idCardNumber || Array.isArray(idCardNumber)) {
-      throw new Error("Invalid ID card number provided.");
+    if (
+      !idCardNumber ||
+      !questionNumber ||
+      Array.isArray(idCardNumber) ||
+      Array.isArray(questionNumber)
+    ) {
+      throw new Error("Invalid ID card number or question number provided.");
     }
 
-    const result = await databases.listDocuments(
+    // Fetch the submission
+    const submissionResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [Query.equal("idCardNumber", idCardNumber)]
+      [
+        Query.equal("idCardNumber", idCardNumber),
+        Query.equal("questionNumber", questionNumber),
+      ]
     );
 
-    if (result.total === 0) {
+    if (submissionResult.total === 0) {
       throw new Error("Submission not found.");
     }
 
-    return result.documents[0]; // Return the first matching document
+    const submission = submissionResult.documents[0];
+
+    // Fetch the actual question
+    const questionResult = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quizCompetitionId,
+      [Query.equal("questionNumber", questionNumber)]
+    );
+
+    if (questionResult.total === 0) {
+      throw new Error("Question not found.");
+    }
+
+    const question = questionResult.documents[0];
+
+    return {
+      ...submission,
+      questionText: question.question,
+    };
   } catch (error) {
     console.error("Failed to fetch quiz submission details:", error);
     throw new Error("Failed to fetch quiz submission details.");

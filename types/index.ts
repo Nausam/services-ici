@@ -46,6 +46,8 @@ export type QuranCompetitionRegistration = {
 export type QuizQuestion = {
   date?: string;
   question?: string;
+  correctAnswer?: string;
+  questionNumber?: string;
   options?: string[];
   nextQuizDate?: string;
 };
