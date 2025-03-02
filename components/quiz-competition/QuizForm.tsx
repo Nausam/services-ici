@@ -172,7 +172,7 @@ const QuizCompetitionForm = () => {
               <motion.div
                 className={`w-32 h-32 rounded-full border-4 border-green-500 flex items-center justify-center transition-all duration-300 ${
                   isWrongAnswer
-                    ? "shadow-[0_0_3px_rgba(255,102,102,0.4),0_0_6px_rgba(255,85,85,0.3)]"
+                    ? "shadow-[0_0_3px_rgba(255,102,102,0.4),0_0_6px_rgba(255,85,85,0.2)]"
                     : ""
                 }`}
                 initial={{ scale: 0 }}
