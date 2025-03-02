@@ -13,6 +13,7 @@ interface QuizSubmission {
   contactNumber: string;
   idCardUrl?: string;
   submissionDate: string;
+  questionNumber: string;
 }
 
 // Function to get today's date in "YYYY-MM-DD" format
@@ -66,13 +67,13 @@ const QuizSubmissionsList = () => {
 
   return (
     <div className="w-full mx-auto p-5 mt-20">
-      <h1 className="text-3xl font-dhivehi text-start text-cyan-950 mb-5">
+      <h1 className="md:text-3xl text-2xl font-dhivehi text-start text-cyan-950 mb-5">
         މިއަދުގެ ސުވާލަށް ޖަވާބުދެއްވި ފަރާތްތައް
       </h1>
 
       {/* Date Filter Input */}
       <div className="flex  gap-4 mb-5">
-        <div className="w-48">
+        <div className="w-32">
           <Input
             dir="rtl"
             type="date"
@@ -107,7 +108,7 @@ const QuizSubmissionsList = () => {
               fullName={submission.fullName}
               idCardNumber={submission.idCardNumber}
               contactNumber={submission.contactNumber}
-              href={`/competitions/quiz-competition/${submission.idCardNumber}`}
+              href={`/competitions/quiz-competition/${submission.idCardNumber}/${submission.questionNumber}`}
               idCardUrl={submission.idCardUrl}
             />
           ))}

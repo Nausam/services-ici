@@ -71,7 +71,7 @@ const QuizStatistics = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-center text-3xl text-cyan-950">
+          <CardTitle className="text-center md:text-3xl text-2xl text-cyan-950">
             ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1446
           </CardTitle>
         </CardHeader>

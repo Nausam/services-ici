@@ -7,7 +7,7 @@ import { getQuizSubmissionById } from "@/lib/actions/quizCompetition";
 import { Models } from "node-appwrite";
 
 const QuizSubmissionDetails = () => {
-  const { idCardNumber } = useParams();
+  const { idCardNumber, questionNumber } = useParams();
   const [submission, setSubmission] = useState<Models.Document | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +15,10 @@ const QuizSubmissionDetails = () => {
   useEffect(() => {
     const fetchSubmission = async () => {
       try {
-        const response = await getQuizSubmissionById(idCardNumber);
+        const response = await getQuizSubmissionById(
+          idCardNumber,
+          questionNumber
+        );
         setSubmission(response);
       } catch (err) {
         setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު");
@@ -26,7 +29,7 @@ const QuizSubmissionDetails = () => {
     };
 
     fetchSubmission();
-  }, [idCardNumber]);
+  }, [idCardNumber, questionNumber]);
 
   if (loading)
     return (
@@ -70,7 +73,7 @@ const QuizSubmissionDetails = () => {
           {/* Header Section */}
           <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 p-6">
             <h2 className="text-3xl font-bold text-white text-center font-dhivehi">
-              ސުވާލު ނަންބަރު {submission.questionNumber}
+              {submission.questionNumber} - {submission.questionText}
             </h2>
           </div>
 
@@ -80,11 +83,16 @@ const QuizSubmissionDetails = () => {
               {infoSection("ފުރިހަމަ ނަން", submission.fullName)}
               {infoSection(
                 "އައިޑީކާޑް",
-                <span className="font-sans font-semibold">
+                <span className="font-mono font-semibold">
                   {submission.idCardNumber}
                 </span>
               )}
-              {infoSection("ފޯނު ނަންބަރު", submission.contactNumber)}
+              {infoSection(
+                "ފޯނު ނަންބަރު",
+                <span className="font-mono font-semibold">
+                  {submission.contactNumber}
+                </span>
+              )}
               {infoSection("ދެއްވި ޖަވާބު", submission.answer)}
               {infoSection(
                 "ޖަވާބު ރަނގަޅު؟",
@@ -92,7 +100,7 @@ const QuizSubmissionDetails = () => {
               )}
               {infoSection(
                 "ޖަވާބުދެއްވި ތާރީހާއި ގަޑި",
-                <span className="font-sans font-semibold">
+                <span className="font-mono font-semibold">
                   {new Intl.DateTimeFormat("en-US", {
                     year: "numeric",
                     month: "long",
