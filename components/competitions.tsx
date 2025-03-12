@@ -42,7 +42,7 @@ const Competitions = () => {
 
   // Callback to refresh cards when visibility changes
   const handleVisibilityToggle = () => {
-    fetchCompetitionCards(); // Re-fetch cards
+    fetchCompetitionCards();
   };
 
   return (
@@ -52,15 +52,12 @@ const Competitions = () => {
           މުބާރާތްތައް
         </h3>
         {loading ? (
-          // Show loaders while fetching data
           Array.from({ length: 4 }).map((_, index) => (
             <ServiceCardLoader key={index} />
           ))
         ) : competitionCards.length === 0 ? (
-          // Show placeholder card if no competitions exist
           <PlaceholderCard title="މިވަގުތު އެއްވެސް މުބާރާތެއް ކުރިއަށް ރޭވިފައެއް ނުވޭ!" />
         ) : (
-          // Render competition cards
           competitionCards.map((card: any) => (
             <ServiceCard
               key={card.$id}

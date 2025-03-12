@@ -14,6 +14,22 @@ interface QuizQuestion {
   date: string;
 }
 
+type TopUser = {
+  idCardNumber: string;
+  name: string;
+  count: number;
+};
+
+type QuizStatistics = {
+  dailyStats: Record<
+    string,
+    { total: number; correct: number; incorrect: number }
+  >;
+  topUsers: TopUser[];
+  topCorrect: TopUser[];
+  topIncorrect: TopUser[];
+};
+
 export const getTodaysQuizQuestion = async () => {
   try {
     const { databases } = await createAdminClient();
@@ -204,11 +220,25 @@ export const getAllQuizSubmissions = async (
   }
 };
 
-export const getQuizStatistics = async () => {
+export const getQuizStatistics = async (): Promise<QuizStatistics> => {
   try {
     const { databases } = await createAdminClient();
 
-    // Fetch all quiz submissions (limit set high to fetch all)
+    // ✅ Step 1: Get Total Number of Questions
+    const quizQuestions = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quizCompetitionId,
+      [Query.limit(1000)]
+    );
+
+    const totalQuestionsCount = quizQuestions.total;
+    console.log("✅ Total Quiz Questions:", totalQuestionsCount);
+
+    if (totalQuestionsCount === 0) {
+      throw new Error("No quiz questions found.");
+    }
+
+    // ✅ Step 2: Get All Submissions
     const submissions = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
@@ -218,54 +248,113 @@ export const getQuizStatistics = async () => {
     if (submissions.total === 0) {
       return {
         dailyStats: {},
-        topCorrect: null,
-        topIncorrect: null,
+        topUsers: [],
+        topCorrect: [],
+        topIncorrect: [],
       };
     }
 
+    // ✅ Step 3: Initialize Stats
     const dailyStats: Record<
       string,
       { total: number; correct: number; incorrect: number }
     > = {};
-    const userCorrectCount: Record<string, number> = {};
-    const userIncorrectCount: Record<string, number> = {};
 
+    const userCorrectCount: Record<
+      string,
+      { fullName: string; count: number }
+    > = {};
+
+    const userIncorrectCount: Record<
+      string,
+      { fullName: string; count: number }
+    > = {};
+
+    // ✅ Step 4: Process Submission Data
     submissions.documents.forEach((submission: any) => {
-      const { questionNumber, correct, fullName } = submission;
+      let { questionNumber, correct, idCardNumber, fullName } = submission;
 
-      // Track daily statistics
+      // ✅ Clean Data
+      questionNumber = questionNumber.trim();
+
+      // ✅ Track daily stats
       if (!dailyStats[questionNumber]) {
         dailyStats[questionNumber] = { total: 0, correct: 0, incorrect: 0 };
       }
 
       dailyStats[questionNumber].total += 1;
+
       if (correct) {
         dailyStats[questionNumber].correct += 1;
-        userCorrectCount[fullName] = (userCorrectCount[fullName] || 0) + 1;
+
+        // ✅ Track user's correct count
+        if (!userCorrectCount[idCardNumber]) {
+          userCorrectCount[idCardNumber] = { fullName, count: 0 };
+        }
+        userCorrectCount[idCardNumber].count += 1;
       } else {
         dailyStats[questionNumber].incorrect += 1;
-        userIncorrectCount[fullName] = (userIncorrectCount[fullName] || 0) + 1;
+
+        // ✅ Track user's incorrect count
+        if (!userIncorrectCount[idCardNumber]) {
+          userIncorrectCount[idCardNumber] = { fullName, count: 0 };
+        }
+        userIncorrectCount[idCardNumber].count += 1;
       }
     });
 
-    // Find users with the most correct and incorrect answers
-    const topCorrect = Object.entries(userCorrectCount).reduce(
-      (max, entry) => (entry[1] > max[1] ? entry : max),
-      ["", 0]
+    // ✅ Step 5: Identify Perfect Users (Users who got ALL questions correct)
+    const perfectUsers = Object.entries(userCorrectCount)
+      .filter(([_, data]) => data.count === totalQuestionsCount)
+      .map(([idCardNumber, data]) => ({
+        idCardNumber,
+        name: data.fullName,
+        count: data.count,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    console.log("✅ Perfect Users:", perfectUsers);
+
+    // ✅ Step 6: Top Correct Answers (No Limit)
+    const topCorrect: TopUser[] = Object.entries(userCorrectCount)
+      .map(([idCardNumber, data]) => ({
+        idCardNumber,
+        name: data.fullName,
+        count: data.count,
+      }))
+      // ✅ Sort highest to lowest correct answers
+      .sort((a, b) => b.count - a.count);
+
+    // ✅ Step 7: Keep Only the Highest Scoring Participants
+    const highestCount = topCorrect[0]?.count || 0;
+    const filteredTopCorrect = topCorrect.filter(
+      (user) => user.count === highestCount
     );
 
-    const topIncorrect = Object.entries(userIncorrectCount).reduce(
-      (max, entry) => (entry[1] > max[1] ? entry : max),
-      ["", 0]
-    );
+    console.log("✅ Highest Count:", highestCount);
+    console.log("✅ Filtered Top Correct:", filteredTopCorrect);
+
+    // ✅ Step 8: Top Incorrect Answers (Top 5)
+    const topIncorrect: TopUser[] = Object.entries(userIncorrectCount)
+      .map(([idCardNumber, data]) => ({
+        idCardNumber,
+        name: data.fullName,
+        count: data.count,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    console.log("✅ Top Correct:", filteredTopCorrect);
+    console.log("✅ Top Incorrect:", topIncorrect);
 
     return {
       dailyStats,
-      topCorrect: topCorrect[0] || null,
-      topIncorrect: topIncorrect[0] || null,
+      topUsers: filteredTopCorrect, // ✅ Show only highest-scoring participants
+      topCorrect: filteredTopCorrect, // ✅ Show only highest-scoring participants
+      topIncorrect,
     };
   } catch (error) {
-    console.error("Failed to fetch quiz statistics:", error);
+    console.error("❌ Failed to fetch quiz statistics:", error);
     throw new Error("Failed to fetch quiz statistics");
   }
 };
@@ -302,57 +391,58 @@ export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
   }
 };
 
-export const getQuizSubmissionById = async (
-  idCardNumber: string | string[] | undefined,
-  questionNumber: string | string[] | undefined
+export const getQuizSubmissionsById = async (
+  idCardNumber: string | string[] | undefined
 ) => {
   try {
     const { databases } = await createAdminClient();
 
-    if (
-      !idCardNumber ||
-      !questionNumber ||
-      Array.isArray(idCardNumber) ||
-      Array.isArray(questionNumber)
-    ) {
-      throw new Error("Invalid ID card number or question number provided.");
+    if (!idCardNumber || Array.isArray(idCardNumber)) {
+      throw new Error("Invalid ID card number provided.");
     }
 
-    // Fetch the submission
+    // ✅ Fetch all submissions by the same user
     const submissionResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [
-        Query.equal("idCardNumber", idCardNumber),
-        Query.equal("questionNumber", questionNumber),
-      ]
+      [Query.equal("idCardNumber", idCardNumber)]
     );
 
     if (submissionResult.total === 0) {
-      throw new Error("Submission not found.");
+      throw new Error("No submissions found.");
     }
 
-    const submission = submissionResult.documents[0];
+    const submissions = submissionResult.documents;
 
-    // Fetch the actual question
+    // ✅ Fetch related questions for all submissions
+    const questionNumbers = submissions.map(
+      (submission) => submission.questionNumber
+    );
+
+    if (questionNumbers.length === 0) {
+      throw new Error("No questions found for submissions.");
+    }
+
     const questionResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionId,
-      [Query.equal("questionNumber", questionNumber)]
+      [Query.equal("questionNumber", questionNumbers)]
     );
 
-    if (questionResult.total === 0) {
-      throw new Error("Question not found.");
-    }
+    const questionMap = questionResult.documents.reduce((map, question) => {
+      map[question.questionNumber] = question.question;
+      return map;
+    }, {} as Record<string, string>);
 
-    const question = questionResult.documents[0];
-
-    return {
+    // ✅ Attach questionText to each submission
+    const detailedSubmissions = submissions.map((submission) => ({
       ...submission,
-      questionText: question.question,
-    };
+      questionText: questionMap[submission.questionNumber] || "ސުވާލު ނުފެނުނު",
+    }));
+
+    return detailedSubmissions;
   } catch (error) {
-    console.error("Failed to fetch quiz submission details:", error);
-    throw new Error("Failed to fetch quiz submission details.");
+    console.error("Failed to fetch quiz submissions:", error);
+    throw new Error("Failed to fetch quiz submissions.");
   }
 };
