@@ -52,6 +52,19 @@ export type QuizQuestion = {
   nextQuizDate?: string;
 };
 
+export type MadhahaCompetitionRegistration = {
+  fullName: string;
+  address: string;
+  idCardNumber: string;
+  contactNumber: string;
+  ageGroup: string;
+  groupOrSolo: string;
+  groupMembers?: string[];
+  madhahaName?: string;
+  madhahaLyrics?: string;
+  idCard: string;
+};
+
 export type HomeCard = {
   id: string;
   title: string;

@@ -57,6 +57,53 @@ export const quizSchema = z.object({
   answer: z.string().min(1, " އިހްތިޔާރު ކުރައްވާ ޖަވާބު ނަންގަވާ! "),
 });
 
+export const madhahaSchema = z
+  .object({
+    fullName: z.string().min(1, " ފުރިހަމަ ނަން ލިޔުއްވާ! "),
+    address: z.string().min(1, " އެޑްރެސް ލިޔުއްވާ! "),
+    idCardNumber: z.string().min(1, " އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
+    contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
+    ageGroup: z
+      .string()
+      .min(1, "ބައިވެރިވުމަށް އެދިލައްވާ އުމުރުފުރާ ނަންގަވާ!"),
+    groupOrSolo: z.enum(["ވަކިވަކިން", "ގްރޫޕްކޮން"], {
+      required_error: "ބައިވެރިވުމަށް އެދިލައްވާ ގޮތް ނަންގަވާ!",
+    }),
+    groupName: z.string().optional(),
+    groupMembers: z
+      .array(z.string().min(1, "Member name is required"))
+      .max(10, "Maximum 10 members allowed")
+      .default([]),
+    madhahaName: z.string().optional(),
+    madhahaLyrics: z.string().optional(),
+    idCard: z.string().min(1, "އައިޑީ ކާޑް އަޕްލޯޑް ކުރައްވާ!"),
+  })
+  .refine(
+    (data) => {
+      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 3) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        "ގްރޫޕްކޮށް ބައިވެރިވާނަމަ، ގްރޫޕަށް 3 ބައިވެރިން އެޑް ކުރައްވާ!",
+      path: ["groupMembers"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.groupOrSolo === "ގްރޫޕްކޮން") {
+        return data.groupName && data.groupName.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: "ގްރޫޕްކޮށް ބައިވެރިވާނަމަ، ގްރޫޕްގެ ނަން ލިޔުއްވާ!",
+      path: ["groupName"],
+    }
+  );
+
 // PERMISSION REQUEST FORM SCHEMA
 export const permissionRequestSchema = z.object({
   fullName: z.string().min(1, "ނަން ލިޔުއްވާ"),

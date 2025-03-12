@@ -138,7 +138,7 @@ export function FileUploader({
             className="rounded-full font-dhivehi text-md bg-cyan-700 hover:bg-cyan-600 text-white"
             onClick={() => document.getElementById("file-upload")?.click()} // Simulate click on hidden file input
           >
-            އައިޑީ ކާޑް ނަންގަވާ
+            އަޕްލޯޑް ކުރައްވާ
           </Button>
         </label>
       )}

@@ -25,6 +25,7 @@ import { HomeCard } from "@/types";
 import { useParams, useRouter } from "next/navigation";
 import H_DropDown from "./H_DropDown";
 import { useUser } from "@/providers/UserProvider";
+import PlaceholderCard from "@/components/PlaceholderCard";
 
 const quizSchema = z.object({
   id: z.string().optional(),
@@ -140,7 +141,7 @@ const HomeCardForm = ({ type, HomeCard }: HomeCardFormProps) => {
 
   return (
     <>
-      {isSuperAdmin && (
+      {isSuperAdmin ? (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -348,6 +349,8 @@ const HomeCardForm = ({ type, HomeCard }: HomeCardFormProps) => {
             </div>
           </form>
         </Form>
+      ) : (
+        <PlaceholderCard title="ހޯމް ކާޑް އެޑް ކުރުމުގެ އެކްސެސް ތިޔަފަރާތަށް ލިބިފައެއް ނުވޭ!" />
       )}
     </>
   );
