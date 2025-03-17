@@ -130,7 +130,7 @@ const QuizStatistics = () => {
             </div>
           </div>
 
-          <div>
+          {/* <div>
             <ShufflePicker
               participants={stats?.topCorrect || []}
               onWinnersSelected={(winners) => {
@@ -138,7 +138,7 @@ const QuizStatistics = () => {
                 // You can store the winners or update state elsewhere
               }}
             />
-          </div>
+          </div> */}
 
           <Card>
             <CardHeader>
