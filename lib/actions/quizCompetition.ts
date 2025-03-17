@@ -228,7 +228,7 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
     const quizQuestions = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionId,
-      [Query.limit(1000)]
+      [Query.limit(5000)] // ⬆️ Increased limit for more data
     );
 
     const totalQuestionsCount = quizQuestions.total;
@@ -242,7 +242,7 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
     const submissions = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [Query.limit(1000)]
+      [Query.limit(5000)] // ⬆️ Increased Limit to Ensure All Entries Are Fetched
     );
 
     if (submissions.total === 0) {
@@ -303,17 +303,11 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
       }
     });
 
-    // ✅ Step 5: Identify Perfect Users (Users who got ALL questions correct)
-    const perfectUsers = Object.entries(userCorrectCount)
-      .filter(([_, data]) => data.count === totalQuestionsCount)
-      .map(([idCardNumber, data]) => ({
-        idCardNumber,
-        name: data.fullName,
-        count: data.count,
-      }))
-      .sort((a, b) => b.count - a.count);
-
-    console.log("✅ Perfect Users:", perfectUsers);
+    // ✅ Step 5: Identify Current Question Day (based on answered questions)
+    const currentDayCount = Math.max(
+      ...Object.keys(dailyStats).map((q) => parseInt(q))
+    );
+    console.log("✅ Current Question Day:", currentDayCount);
 
     // ✅ Step 6: Top Correct Answers (No Limit)
     const topCorrect: TopUser[] = Object.entries(userCorrectCount)
@@ -325,13 +319,16 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
       // ✅ Sort highest to lowest correct answers
       .sort((a, b) => b.count - a.count);
 
-    // ✅ Step 7: Keep Only the Highest Scoring Participants
-    const highestCount = topCorrect[0]?.count || 0;
+    // ✅ Step 7: Keep Top Scorers Based on Current Day Count
+    const highestCount =
+      topCorrect.find((user) => user.count <= currentDayCount)?.count || 0;
+
+    console.log("✅ Highest Count (based on current day):", highestCount);
+
     const filteredTopCorrect = topCorrect.filter(
       (user) => user.count === highestCount
     );
 
-    console.log("✅ Highest Count:", highestCount);
     console.log("✅ Filtered Top Correct:", filteredTopCorrect);
 
     // ✅ Step 8: Top Incorrect Answers (Top 5)
@@ -344,7 +341,6 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    console.log("✅ Top Correct:", filteredTopCorrect);
     console.log("✅ Top Incorrect:", topIncorrect);
 
     return {

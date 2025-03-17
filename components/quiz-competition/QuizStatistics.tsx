@@ -14,6 +14,7 @@ import {
 } from "../ui/table";
 import { useUser } from "@/providers/UserProvider";
 import Link from "next/link";
+import ShufflePicker from "./ShufflePicker";
 
 const QuizStatistics = () => {
   const [stats, setStats] = useState<{
@@ -127,6 +128,16 @@ const QuizStatistics = () => {
                 <p className="text-gray-500 text-center">No top users yet.</p>
               )}
             </div>
+          </div>
+
+          <div>
+            <ShufflePicker
+              participants={stats?.topCorrect || []}
+              onWinnersSelected={(winners) => {
+                console.log("🏆 Winners:", winners);
+                // You can store the winners or update state elsewhere
+              }}
+            />
           </div>
 
           <Card>
