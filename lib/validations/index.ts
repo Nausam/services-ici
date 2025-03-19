@@ -59,38 +59,46 @@ export const quizSchema = z.object({
 
 export const madhahaSchema = z
   .object({
-    fullName: z.string().min(1, " ފުރިހަމަ ނަން ލިޔުއްވާ! "),
-    address: z.string().min(1, " އެޑްރެސް ލިޔުއްވާ! "),
-    idCardNumber: z.string().min(1, " އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
+    fullName: z.string().min(1, "ފުރިހަމަ ނަން ލިޔުއްވާ!"),
+    address: z.string().min(1, "އެޑްރެސް ލިޔުއްވާ!"),
+    idCardNumber: z.string().min(1, "އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
     contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
-    ageGroup: z
-      .string()
-      .min(1, "ބައިވެރިވުމަށް އެދިލައްވާ އުމުރުފުރާ ނަންގަވާ!"),
+
+    // ✅ ageGroup is optional initially
+    ageGroup: z.string().optional(),
+
     groupOrSolo: z.enum(["ވަކިވަކިން", "ގްރޫޕްކޮން"], {
       required_error: "ބައިވެރިވުމަށް އެދިލައްވާ ގޮތް ނަންގަވާ!",
     }),
+
     groupName: z.string().optional(),
+
     groupMembers: z
       .array(z.string().min(1, "Member name is required"))
       .max(10, "Maximum 10 members allowed")
       .default([]),
+
     madhahaName: z.string().optional(),
     madhahaLyrics: z.string().optional(),
+
     idCard: z.string().min(1, "އައިޑީ ކާޑް އަޕްލޯޑް ކުރައްވާ!"),
   })
+
+  // ✅ Require at least 3 group members if groupOrSolo is "ގްރޫޕްކޮން"
   .refine(
     (data) => {
-      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 3) {
+      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 2) {
         return false;
       }
       return true;
     },
     {
-      message:
-        "ގްރޫޕްކޮށް ބައިވެރިވާނަމަ، ގްރޫޕަށް 3 ބައިވެރިން އެޑް ކުރައްވާ!",
+      message: " ގްރޫޕަށް އިތުރު 2 ބައިވެރިން އެޑް ކުރައްވާ!",
       path: ["groupMembers"],
     }
   )
+
+  // ✅ Require groupName if groupOrSolo is "ގްރޫޕްކޮން"
   .refine(
     (data) => {
       if (data.groupOrSolo === "ގްރޫޕްކޮން") {
@@ -99,8 +107,22 @@ export const madhahaSchema = z
       return true;
     },
     {
-      message: "ގްރޫޕްކޮށް ބައިވެރިވާނަމަ، ގްރޫޕްގެ ނަން ލިޔުއްވާ!",
+      message: " ގްރޫޕްގެ ނަން ލިޔުއްވާ!",
       path: ["groupName"],
+    }
+  )
+
+  // ✅ Require ageGroup only if groupOrSolo is "ވަކިވަކިން"
+  .refine(
+    (data) => {
+      if (data.groupOrSolo === "ވަކިވަކިން") {
+        return data.ageGroup && data.ageGroup.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: "ވަކިވަކިން ހެދުމުގައި، އުމުރުފުރާ ނަންގަވާ!",
+      path: ["ageGroup"],
     }
   );
 

@@ -145,6 +145,77 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           </p>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
+            {/* Group or Solo */}
+            <FormField
+              control={form.control}
+              name="groupOrSolo"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ބައިވެރިވުމަށް އެދޭ ގޮތް
+                  </p>
+                  <FormControl>
+                    <ReusableDropdown
+                      options={["ވަކިވަކިން", "ގްރޫޕްކޮން"]}
+                      placeholder="އެދޭ ގޮތް"
+                      value={field.value}
+                      onChangeHandler={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
+                  <FormMessage className="font-dhivehi text-md" />
+                </FormItem>
+              )}
+            />
+
+            {/* Age Group */}
+            {form.watch("groupOrSolo") === "ވަކިވަކިން" && (
+              <FormField
+                control={form.control}
+                name="ageGroup"
+                render={({ field }) => (
+                  <FormItem>
+                    <p className="font-dhivehi text-xl text-right text-cyan-950">
+                      ބައިވެރިވުމަށް އެދޭ އުމުރުފުރާ
+                    </p>
+                    <FormControl>
+                      <ReusableDropdown
+                        options={AGE_GROUPS}
+                        placeholder="އުމުރުފުރާ"
+                        value={field.value}
+                        onChangeHandler={(value) => field.onChange(value)}
+                      />
+                    </FormControl>
+                    <FormMessage className="font-dhivehi text-md" />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* ✅ Conditionally Show Group Name Input */}
+            {form.watch("groupOrSolo") === "ގްރޫޕްކޮން" && (
+              <FormField
+                control={form.control}
+                name="groupName"
+                render={({ field }) => (
+                  <FormItem>
+                    <p className="font-dhivehi text-xl text-right text-cyan-950">
+                      ގްރޫޕްގެ ނަން
+                    </p>
+                    <FormControl>
+                      <Input
+                        placeholder="ގްރޫޕްގެ ނަން"
+                        {...field}
+                        className="rounded-md font-dhivehi border-gray-300 text-right"
+                      />
+                    </FormControl>
+                    <FormMessage className="font-dhivehi text-md whitespace-nowrap" />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Full Name */}
             <FormField
               control={form.control}
@@ -152,7 +223,9 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    ފުރިހަމަ ނަން
+                    {form.watch("groupOrSolo") === "ގްރޫޕްކޮން"
+                      ? "ފުރިހަމަ ނަން (ގްރޫޕް ލީޑަރުގެ)"
+                      : "ފުރިހަމަ ނަން"}
                   </p>
                   <FormControl>
                     <Input
@@ -166,14 +239,16 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               )}
             />
 
-            {/* Adress */}
+            {/* Address */}
             <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    އެޑްރެސް
+                    {form.watch("groupOrSolo") === "ގްރޫޕްކޮން"
+                      ? "އެޑްރެސް (ގްރޫޕް ލީޑަރުގެ)"
+                      : "އެޑްރެސް"}
                   </p>
                   <FormControl>
                     <Input
@@ -194,7 +269,9 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    އައިޑީކާޑް ނަންބަރު
+                    {form.watch("groupOrSolo") === "ގްރޫޕްކޮން"
+                      ? "އައިޑީކާޑް ނަންބަރު (ގްރޫޕް ލީޑަރުގެ)"
+                      : "އައިޑީކާޑް ނަންބަރު"}
                   </p>
                   <FormControl>
                     <Input
@@ -236,7 +313,9 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    ފޯނު ނަންބަރު
+                    {form.watch("groupOrSolo") === "ގްރޫޕްކޮން"
+                      ? "ފޯނު ނަންބަރު  (ގްރޫޕް ލީޑަރުގެ)"
+                      : "ފޯނު ނަންބަރު"}
                   </p>
                   <FormControl>
                     <Input
@@ -257,50 +336,6 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
-            {/* Age Group */}
-            <FormField
-              control={form.control}
-              name="ageGroup"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    ބައިވެރިވުމަށް އެދޭ އުމުރުފުރާ
-                  </p>
-                  <FormControl>
-                    <ReusableDropdown
-                      options={AGE_GROUPS}
-                      placeholder="އުމުރުފުރާ"
-                      value={field.value}
-                      onChangeHandler={(value) => field.onChange(value)}
-                    />
-                  </FormControl>
-                  <FormMessage className="font-dhivehi text-md" />
-                </FormItem>
-              )}
-            />
-
-            {/* Group or Solo */}
-            <FormField
-              control={form.control}
-              name="groupOrSolo"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    ބައިވެރިވުމަށް އެދޭ ގޮތް
-                  </p>
-                  <FormControl>
-                    <ReusableDropdown
-                      options={["ވަކިވަކިން", "ގްރޫޕްކޮން"]}
-                      placeholder="އެދޭ ގޮތް"
-                      value={field.value}
-                      onChangeHandler={(value) => field.onChange(value)}
-                    />
-                  </FormControl>
-                  <FormMessage className="font-dhivehi text-md" />
-                </FormItem>
-              )}
-            />
-
             {/* Madhaha Name */}
             <FormField
               control={form.control}
@@ -347,29 +382,6 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                 </FormItem>
               )}
             />
-
-            {/* ✅ Conditionally Show Group Name Input */}
-            {form.watch("groupOrSolo") === "ގްރޫޕްކޮން" && (
-              <FormField
-                control={form.control}
-                name="groupName"
-                render={({ field }) => (
-                  <FormItem>
-                    <p className="font-dhivehi text-xl text-right text-cyan-950">
-                      ގްރޫޕްގެ ނަން
-                    </p>
-                    <FormControl>
-                      <Input
-                        placeholder="ގްރޫޕްގެ ނަން"
-                        {...field}
-                        className="rounded-md font-dhivehi border-gray-300 text-right"
-                      />
-                    </FormControl>
-                    <FormMessage className="font-dhivehi text-md whitespace-nowrap" />
-                  </FormItem>
-                )}
-              />
-            )}
           </div>
 
           {/* Group Members */}
@@ -407,7 +419,9 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                                   newMembers[index] = e.target.value;
                                   field.onChange(newMembers);
                                 }}
-                                placeholder={`ބައިވެރިޔާ ${index + 1}`}
+                                placeholder={` ފުރިހަމަ ނަން - ބައިވެރިޔާ ${
+                                  index + 2
+                                }`}
                                 className="rounded-md font-dhivehi border-gray-300 text-right mt-2"
                               />
                               <Button
@@ -425,11 +439,11 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                               </Button>
                             </div>
                           ))}
-                          {(field.value ?? []).length < 10 && (
+                          {(field.value ?? []).length < 9 && (
                             <Button
                               type="button"
                               onClick={() => {
-                                if ((field.value ?? []).length < 10) {
+                                if ((field.value ?? []).length < 9) {
                                   field.onChange([...(field.value || []), ""]);
                                 }
                               }}

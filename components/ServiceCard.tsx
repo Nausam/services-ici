@@ -218,7 +218,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         </p>
 
         {/* Button */}
-        <div className="flex justify-start text-right gap-2">
+        <div className="flex flex-wrap justify-start gap-2">
           <Link href={link} onClick={handleClick} passHref>
             <Button
               type="submit"

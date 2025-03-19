@@ -57,7 +57,7 @@ export type MadhahaCompetitionRegistration = {
   address: string;
   idCardNumber: string;
   contactNumber: string;
-  ageGroup: string;
+  ageGroup?: string;
   groupOrSolo: string;
   groupMembers?: string[];
   madhahaName?: string;
