@@ -99,9 +99,9 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
 
         if (newRegistration) {
           form.reset();
-          router.push("/success");
+          router.push("/");
           toast({
-            title: "✅ ރަޖިސްޓާ ކުރެވިފަ!",
+            title: `އިންނަމާދޫ ކައުންސިލްގެ 1 ވަނަ ޙުތުބާ އަދި ބަންގި ގޮވުމުގެ މުބާރާތުގައި ${newRegistration.fullName} ރެޖިސްޓާ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
@@ -109,7 +109,7 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
     } catch (error) {
       console.error("❌ Error Submitting:", error);
       toast({
-        title: "❌ އެހެން ނުކުރެވޭ!",
+        title: "ރެޖިސްޓާ ނުކުރެވުނު",
         variant: "destructive",
       });
     } finally {

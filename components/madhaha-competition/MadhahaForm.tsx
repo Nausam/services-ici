@@ -88,12 +88,15 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
         if (newRegistration) {
           form.reset();
           router.push("/");
-          toast({ title: "ރަޖިސްޓާ ނުފެން!", variant: "default" });
+          toast({
+            title: `އިންނަމާދޫ ކައުންސިލްގެ 3 ވަނަ މަދަޙަ މުބާރާތުގައި ${newRegistration.fullName} ރެޖިސްޓާ ކުރެވިއްޖެ`,
+            variant: "default",
+          });
         }
       }
     } catch (error) {
       console.error("❌ Error Submitting:", error);
-      toast({ title: "އެހެން ނުކުރެވޭ!", variant: "destructive" });
+      toast({ title: "ރެޖިސްޓާ ނުކުރެވުނު", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
