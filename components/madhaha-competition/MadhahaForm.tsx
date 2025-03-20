@@ -54,6 +54,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
       madhahaName: "",
       madhahaLyrics: "",
       idCard: "",
+      groupName: "",
     },
     mode: "onChange",
   });
@@ -89,7 +90,11 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           form.reset();
           router.push("/");
           toast({
-            title: `އިންނަމާދޫ ކައުންސިލްގެ 3 ވަނަ މަދަޙަ މުބާރާތުގައި ${newRegistration.fullName} ރެޖިސްޓާ ކުރެވިއްޖެ`,
+            title: `އިންނަމާދޫ ކައުންސިލްގެ 3 ވަނަ މަދަޙަ މުބާރާތުގައި ${
+              newRegistration.groupOrSolo === "ގްރޫޕްކޮން"
+                ? newRegistration.groupName
+                : newRegistration.fullName
+            } ރެޖިސްޓާ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
@@ -156,28 +161,31 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
             />
 
             {/* Age Group */}
-            {form.watch("groupOrSolo") === "ވަކިވަކިން" && (
-              <FormField
-                control={form.control}
-                name="ageGroup"
-                render={({ field }) => (
-                  <FormItem>
-                    <p className="font-dhivehi text-xl text-right text-cyan-950">
-                      ބައިވެރިވުމަށް އެދޭ އުމުރުފުރާ
-                    </p>
-                    <FormControl>
-                      <ReusableDropdown
-                        options={AGE_GROUPS}
-                        placeholder="އުމުރުފުރާ"
-                        value={field.value}
-                        onChangeHandler={(value) => field.onChange(value)}
-                      />
-                    </FormControl>
-                    <FormMessage className="font-dhivehi text-md" />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="ageGroup"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ބައިވެރިވުމަށް އެދޭ އުމުރުފުރާ
+                  </p>
+                  <FormControl>
+                    <ReusableDropdown
+                      // ✅ Filter options if "ގްރޫޕްކޮން" is selected
+                      options={
+                        form.watch("groupOrSolo") === "ގްރޫޕްކޮން"
+                          ? ["18 އަހަރުން ދަށް", "18 އަހަރުން މަތި"]
+                          : AGE_GROUPS
+                      }
+                      placeholder="އުމުރުފުރާ"
+                      value={field.value}
+                      onChangeHandler={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
+                  <FormMessage className="font-dhivehi text-md" />
+                </FormItem>
+              )}
+            />
 
             {/* ✅ Conditionally Show Group Name Input */}
             {form.watch("groupOrSolo") === "ގްރޫޕްކޮން" && (
