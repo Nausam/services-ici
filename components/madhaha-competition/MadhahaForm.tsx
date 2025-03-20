@@ -102,6 +102,13 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
     }
   };
 
+  const handleDownloadRules = () => {
+    const link = document.createElement("a");
+    link.href = "/assets/files/Bangi_And_Huthubaa_Gavaidhu.pdf";
+    link.download = "Bangi_And_Huthubaa_Gavaidhu.pdf";
+    link.click();
+  };
+
   return (
     <>
       <Form {...form}>
@@ -110,9 +117,20 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
           dir="rtl"
         >
-          <p className="font-dhivehi text-lg text-right text-red-500">
-            ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
-          </p>
+          <div className="flex flex-col items-start">
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                onClick={handleDownloadRules}
+                className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-lg"
+              >
+                މުބާރާތުގެ ޤަވާޢިދު
+              </Button>
+            </div>
+            <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
+              ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
+            </p>
+          </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Group or Solo */}
