@@ -58,39 +58,6 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
     mode: "onChange",
   });
 
-  const handleCheckExistingParticipant = async (idCardNumber: string) => {
-    try {
-      const existingData = await getQuranParticipantByIdCard(idCardNumber);
-
-      if (existingData) {
-        // ✅ Set the existing URL for display but don't treat it as a file
-        if (existingData.idCard) {
-          form.setValue("idCard", existingData.idCard);
-          setFile(null); // Don't set it as a file
-          toast({
-            title: "✅ Existing participant found! Using existing ID card.",
-            variant: "default",
-          });
-        }
-      } else {
-        // ✅ Allow new file upload if participant is new
-        setFile(null);
-        form.setValue("idCard", "");
-        toast({
-          title:
-            "🚫 No matching participant found. Please upload a new ID card.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("❌ Error checking existing data:", error);
-      toast({
-        title: "❌ Failed to check existing participant!",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleSubmit = async (values: z.infer<typeof madhahaSchema>) => {
     setIsSubmitting(true);
 
@@ -343,7 +310,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    މަދަހައިގެ ނަން
+                    މަދަހައިގެ ނަން (މަޖުބޫރެއްނޫން)
                   </p>
                   <FormControl>
                     <Input
@@ -364,7 +331,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    މަދަހައިގެ ލިރިކްސް
+                    މަދަހައިގެ ލިރިކްސް (މަޖުބޫރެއްނޫން)
                   </p>
                   <FormControl>
                     <Input

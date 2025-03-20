@@ -21,6 +21,8 @@ export const appwriteConfig = {
     process.env.NEXT_PUBLIC_APPWRITE_HOME_CARDS_COLLECTION!,
   madhahaCompetitionId:
     process.env.NEXT_PUBLIC_APPWRITE_MADHAHA_COMPETITION_COLLECTION!,
+  HuthubaBangiCompetitionId:
+    process.env.NEXT_PUBLIC_APPWRITE_HUTHUBA_BANGI_COMPETITION_COLLECTION!,
   permissionRequestsId:
     process.env.NEXT_PUBLIC_APPWRITE_PERMISSION_REQUESTS_COLLECTION!,
 };

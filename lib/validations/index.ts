@@ -93,7 +93,7 @@ export const madhahaSchema = z
       return true;
     },
     {
-      message: " ގްރޫޕަށް އިތުރު 2 ބައިވެރިން އެޑް ކުރައްވާ!",
+      message: " ގްރޫޕަށް ބައިވެރިން އިތުރު ކުރައްވާ!",
       path: ["groupMembers"],
     }
   )
@@ -135,4 +135,14 @@ export const permissionRequestSchema = z.object({
   reason: z.string().min(1, " ހުއްދަ ނަގަން ބޭނުންވާ ސަބަބު ލިޔުއްވާ "),
   startDate: z.string().min(1, "ހުއްދަ ފަށާދުވަސް ނަންގަވާ"),
   endDate: z.string().min(1, "ހުއްދަ ނިމޭ ދުވަސް ނަންގަވާ"),
+});
+
+export const huthubaBangiSchema = z.object({
+  fullName: z.string().min(1, "ފުރިހަމަ ނަން ލިޔުއްވާ!"),
+  address: z.string().min(1, "އެޑްރެސް ލިޔުއްވާ!"),
+  idCardNumber: z.string().min(1, "އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
+  contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
+  competitionType: z.enum(["ހުތުބާ", "ބަންގި", "ދެބައި"]),
+  idCard: z.string().min(1, "އައިޑީ ކާޑް އަޕްލޯޑް ކުރައްވާ!"),
+  ageGroup: z.string().min(1, "އުމުރުފުރާ ނަންގަވާ!"),
 });

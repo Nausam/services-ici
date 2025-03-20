@@ -77,3 +77,14 @@ export type HomeCard = {
   hidden: boolean;
   category: string;
 };
+
+export type HuthubaBangiCompetitionRegistration = {
+  fullName: string;
+  address: string;
+  idCardNumber: string;
+  contactNumber: string;
+  competitionType: "Huthuba" | "Bangi" | "ދެބައި";
+  idCard: string;
+};
+
+export type CompetitionType = "ހުތުބާ" | "ބަންގި" | "ދެބައި";
