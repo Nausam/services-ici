@@ -54,42 +54,10 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
       madhahaName: "",
       madhahaLyrics: "",
       idCard: "",
+      groupName: "",
     },
     mode: "onChange",
   });
-
-  const handleCheckExistingParticipant = async (idCardNumber: string) => {
-    try {
-      const existingData = await getQuranParticipantByIdCard(idCardNumber);
-
-      if (existingData) {
-        // ✅ Set the existing URL for display but don't treat it as a file
-        if (existingData.idCard) {
-          form.setValue("idCard", existingData.idCard);
-          setFile(null); // Don't set it as a file
-          toast({
-            title: "✅ Existing participant found! Using existing ID card.",
-            variant: "default",
-          });
-        }
-      } else {
-        // ✅ Allow new file upload if participant is new
-        setFile(null);
-        form.setValue("idCard", "");
-        toast({
-          title:
-            "🚫 No matching participant found. Please upload a new ID card.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("❌ Error checking existing data:", error);
-      toast({
-        title: "❌ Failed to check existing participant!",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleSubmit = async (values: z.infer<typeof madhahaSchema>) => {
     setIsSubmitting(true);
@@ -121,15 +89,29 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
         if (newRegistration) {
           form.reset();
           router.push("/");
-          toast({ title: "ރަޖިސްޓާ ނުފެން!", variant: "default" });
+          toast({
+            title: `އިންނަމާދޫ ކައުންސިލްގެ 3 ވަނަ މަދަޙަ މުބާރާތުގައި ${
+              newRegistration.groupOrSolo === "ގްރޫޕްކޮން"
+                ? newRegistration.groupName
+                : newRegistration.fullName
+            } ރެޖިސްޓާ ކުރެވިއްޖެ`,
+            variant: "default",
+          });
         }
       }
     } catch (error) {
       console.error("❌ Error Submitting:", error);
-      toast({ title: "އެހެން ނުކުރެވޭ!", variant: "destructive" });
+      toast({ title: "ރެޖިސްޓާ ނުކުރެވުނު", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleDownloadRules = () => {
+    const link = document.createElement("a");
+    link.href = "/assets/files/Bangi_And_Huthubaa_Gavaidhu.pdf";
+    link.download = "Bangi_And_Huthubaa_Gavaidhu.pdf";
+    link.click();
   };
 
   return (
@@ -140,9 +122,20 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
           dir="rtl"
         >
-          <p className="font-dhivehi text-lg text-right text-red-500">
-            ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
-          </p>
+          <div className="flex flex-col items-start">
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                onClick={handleDownloadRules}
+                className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-lg"
+              >
+                މުބާރާތުގެ ޤަވާޢިދު
+              </Button>
+            </div>
+            <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
+              ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
+            </p>
+          </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Group or Solo */}
@@ -168,28 +161,31 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
             />
 
             {/* Age Group */}
-            {form.watch("groupOrSolo") === "ވަކިވަކިން" && (
-              <FormField
-                control={form.control}
-                name="ageGroup"
-                render={({ field }) => (
-                  <FormItem>
-                    <p className="font-dhivehi text-xl text-right text-cyan-950">
-                      ބައިވެރިވުމަށް އެދޭ އުމުރުފުރާ
-                    </p>
-                    <FormControl>
-                      <ReusableDropdown
-                        options={AGE_GROUPS}
-                        placeholder="އުމުރުފުރާ"
-                        value={field.value}
-                        onChangeHandler={(value) => field.onChange(value)}
-                      />
-                    </FormControl>
-                    <FormMessage className="font-dhivehi text-md" />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="ageGroup"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ބައިވެރިވުމަށް އެދޭ އުމުރުފުރާ
+                  </p>
+                  <FormControl>
+                    <ReusableDropdown
+                      // ✅ Filter options if "ގްރޫޕްކޮން" is selected
+                      options={
+                        form.watch("groupOrSolo") === "ގްރޫޕްކޮން"
+                          ? ["18 އަހަރުން ދަށް", "18 އަހަރުން މަތި"]
+                          : AGE_GROUPS
+                      }
+                      placeholder="އުމުރުފުރާ"
+                      value={field.value}
+                      onChangeHandler={(value) => field.onChange(value)}
+                    />
+                  </FormControl>
+                  <FormMessage className="font-dhivehi text-md" />
+                </FormItem>
+              )}
+            />
 
             {/* ✅ Conditionally Show Group Name Input */}
             {form.watch("groupOrSolo") === "ގްރޫޕްކޮން" && (
@@ -343,7 +339,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    މަދަހައިގެ ނަން
+                    މަދަހައިގެ ނަން (މަޖުބޫރެއްނޫން)
                   </p>
                   <FormControl>
                     <Input
@@ -364,7 +360,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    މަދަހައިގެ ލިރިކްސް
+                    މަދަހައިގެ ލިރިކްސް (މަޖުބޫރެއްނޫން)
                   </p>
                   <FormControl>
                     <Input

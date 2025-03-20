@@ -5,12 +5,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CompetitionType } from "@/types";
 
 type DropdownProps = {
-  options: string[]; // List of dropdown options
-  placeholder?: string; // Placeholder text
+  options: string[];
+  placeholder?: string;
   value?: string;
   onChangeHandler?: (value: string) => void;
+  onValueChange?: (value: CompetitionType) => void;
 };
 
 const ReusableDropdown = ({
@@ -18,13 +20,19 @@ const ReusableDropdown = ({
   placeholder,
   value,
   onChangeHandler,
+  onValueChange,
 }: DropdownProps) => {
+  const handleValueChange = (value: string) => {
+    if (onChangeHandler) onChangeHandler(value);
+    if (onValueChange) onValueChange(value as CompetitionType);
+  };
+
   return (
-    <Select onValueChange={onChangeHandler} defaultValue={value}>
+    <Select onValueChange={handleValueChange} defaultValue={value}>
       <SelectTrigger className="select-field flex justify-end font-dhivehi text-cyan-950">
         <SelectValue
           className="text-slate-100"
-          placeholder={placeholder || "ނަތީޖާ"}
+          placeholder={placeholder || ""}
         />
       </SelectTrigger>
       <SelectContent
