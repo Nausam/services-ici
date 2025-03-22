@@ -83,7 +83,7 @@ export type HuthubaBangiCompetitionRegistration = {
   address: string;
   idCardNumber: string;
   contactNumber: string;
-  competitionType: "Huthuba" | "Bangi" | "ދެބައި";
+  competitionType: "ޙުތުބާ" | "ބަންގި" | "ދެބައި";
   idCard: string;
 };
 
