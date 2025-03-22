@@ -89,9 +89,9 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
             ...values,
             competitionType:
               values.competitionType === "ހުތުބާ"
-                ? "Huthuba"
+                ? "ޙުތުބާ"
                 : values.competitionType === "ބަންގި"
-                ? "Bangi"
+                ? "ބަންގި"
                 : "ދެބައި",
             idCard,
           }

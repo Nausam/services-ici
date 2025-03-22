@@ -65,7 +65,7 @@ export const madhahaSchema = z
     contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
 
     // ✅ ageGroup is optional initially
-    ageGroup: z.string().optional(),
+    ageGroup: z.string().min(1, "އުމުރުފުރާ ނަންގަވާ!"),
 
     groupOrSolo: z.enum(["ވަކިވަކިން", "ގްރޫޕްކޮން"], {
       required_error: "ބައިވެރިވުމަށް އެދިލައްވާ ގޮތް ނަންގަވާ!",

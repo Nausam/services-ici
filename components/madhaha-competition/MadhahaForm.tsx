@@ -109,8 +109,8 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
 
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "/assets/files/Bangi_And_Huthubaa_Gavaidhu.pdf";
-    link.download = "Bangi_And_Huthubaa_Gavaidhu.pdf";
+    link.href = "/assets/files/Madhaha_Gavaidhu.pdf";
+    link.download = "Madhaha_Gavaidhu.pdf";
     link.click();
   };
 
