@@ -82,3 +82,33 @@ export const getQuranParticipantByIdCard = async (idCardNumber: string) => {
     return null;
   }
 };
+
+export const getAllMadhahaCompetitionRegistrations = async (
+  limit: number,
+  offset: number,
+  searchTerm?: string
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const queries = [Query.limit(limit), Query.offset(offset)];
+
+    if (searchTerm) {
+      queries.push(Query.search("idCardNumber", searchTerm));
+    }
+
+    const result = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.madhahaCompetitionId,
+      queries
+    );
+
+    return {
+      documents: result.documents,
+      total: result.total,
+    };
+  } catch (error) {
+    console.error("Failed to fetch Madhaha registrations:", error);
+    throw new Error("Failed to fetch Madhaha registrations");
+  }
+};

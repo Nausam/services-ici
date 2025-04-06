@@ -401,7 +401,7 @@ export const getQuizSubmissionsById = async (
     const submissionResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [Query.equal("idCardNumber", idCardNumber)]
+      [Query.equal("idCardNumber", idCardNumber), Query.limit(50)]
     );
 
     if (submissionResult.total === 0) {
@@ -422,7 +422,7 @@ export const getQuizSubmissionsById = async (
     const questionResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionId,
-      [Query.equal("questionNumber", questionNumbers)]
+      [Query.equal("questionNumber", questionNumbers), Query.limit(50)]
     );
 
     const questionMap = questionResult.documents.reduce((map, question) => {

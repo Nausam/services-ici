@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import {
   createHuthubaBangiCompetitionRegistration,
   getHuthubaBangiParticipantByIdCard,
+  updateHuthubaBangiCompetitionRegistration,
   uploadImage,
 } from "@/lib/actions/huthubaBangi.actions";
 import { huthubaBangiSchema } from "@/lib/validations";
@@ -42,13 +43,13 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
   const form = useForm<z.infer<typeof huthubaBangiSchema>>({
     resolver: zodResolver(huthubaBangiSchema),
     defaultValues: {
-      fullName: "",
-      address: "",
-      idCardNumber: "",
-      contactNumber: "",
-      competitionType: "ހުތުބާ",
-      idCard: "",
-      ageGroup: "",
+      fullName: registration?.fullName || "",
+      address: registration?.address || "",
+      idCardNumber: registration?.idCardNumber || "",
+      contactNumber: registration?.contactNumber || "",
+      competitionType: registration?.competitionType || "ޙުތުބާ",
+      idCard: registration?.idCard || "",
+      ageGroup: registration?.ageGroup || "",
     },
     mode: "onChange",
   });
@@ -56,7 +57,7 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
   useEffect(() => {
     const selectedType = form.watch("competitionType");
 
-    if (selectedType === "ހުތުބާ" || selectedType === "ދެބައި") {
+    if (selectedType === "ޙުތުބާ" || selectedType === "ދެބައި") {
       setFilteredAgeGroups(
         AGE_GROUPS_BANGI.filter((age) => age !== "6 އަހަރުން ދަށް")
       );
@@ -83,12 +84,13 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
         idCard = await uploadImage(file);
       }
 
+      // Create existing registration
       if (type === "Create") {
         const newRegistration = await createHuthubaBangiCompetitionRegistration(
           {
             ...values,
             competitionType:
-              values.competitionType === "ހުތުބާ"
+              values.competitionType === "ޙުތުބާ"
                 ? "ޙުތުބާ"
                 : values.competitionType === "ބަންގި"
                 ? "ބަންގި"
@@ -102,6 +104,33 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
           router.push("/");
           toast({
             title: `އިންނަމާދޫ ކައުންސިލްގެ 1 ވަނަ ޙުތުބާ އަދި ބަންގި ގޮވުމުގެ މުބާރާތުގައި ${newRegistration.fullName} ރެޖިސްޓާ ކުރެވިއްޖެ`,
+            variant: "default",
+          });
+        }
+      }
+
+      // Update existing registration
+      if (type === "Update" && registration) {
+        const updatedRegistration =
+          await updateHuthubaBangiCompetitionRegistration(
+            registration.idCardNumber,
+            {
+              ...values,
+              competitionType:
+                values.competitionType === "ޙުތުބާ"
+                  ? "ޙުތުބާ"
+                  : values.competitionType === "ބަންގި"
+                  ? "ބަންގި"
+                  : "ދެބައި",
+              idCard,
+            }
+          );
+
+        if (updatedRegistration) {
+          form.reset();
+          router.push("/admin");
+          toast({
+            title: `${updatedRegistration.fullName} އަޕްޑޭޓް ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
@@ -131,22 +160,24 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
         className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
         dir="rtl"
       >
-        <div className="flex flex-col items-start">
-          <div className="flex gap-4">
-            <Button
-              type="button"
-              onClick={handleDownloadRules}
-              className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-lg"
-            >
-              މުބާރާތުގެ ޤަވާޢިދު
-            </Button>
+        {type === "Create" && (
+          <div className="flex flex-col items-start">
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                onClick={handleDownloadRules}
+                className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-lg"
+              >
+                މުބާރާތުގެ ޤަވާޢިދު
+              </Button>
+            </div>
+            <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
+              ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! މި
+              މުބާރާތުގައި ބައިވެރިވެވޭނީ ހަމައެކަނި ފިރިހެން ކުދިންނަށާއި
+              ބޮޑެތި ފިރިހެން ބޭފުޅުންނަށެވެ.
+            </p>
           </div>
-          <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
-            ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! މި
-            މުބާރާތުގައި ބައިވެރިވެވޭނީ ހަމައެކަނި ފިރިހެން ކުދިންނަށާއި ބޮޑެތި
-            ފިރިހެން ބޭފުޅުންނަށެވެ.
-          </p>
-        </div>
+        )}
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
           <FormField
@@ -159,7 +190,7 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
                 </p>
                 <FormControl>
                   <ReusableDropdown
-                    options={["ހުތުބާ", "ބަންގި", "ދެބައި"]}
+                    options={["ޙުތުބާ", "ބަންގި", "ދެބައި"]}
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
                   />

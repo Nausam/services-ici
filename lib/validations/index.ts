@@ -142,7 +142,7 @@ export const huthubaBangiSchema = z.object({
   address: z.string().min(1, "އެޑްރެސް ލިޔުއްވާ!"),
   idCardNumber: z.string().min(1, "އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
   contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
-  competitionType: z.enum(["ހުތުބާ", "ބަންގި", "ދެބައި"]),
+  competitionType: z.enum(["ޙުތުބާ", "ބަންގި", "ދެބައި"]),
   idCard: z.string().min(1, "އައިޑީ ކާޑް އަޕްލޯޑް ކުރައްވާ!"),
   ageGroup: z.string().min(1, "އުމުރުފުރާ ނަންގަވާ!"),
 });
