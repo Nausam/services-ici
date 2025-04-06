@@ -10,6 +10,8 @@ import QuizStatistics from "@/components/quiz-competition/QuizStatistics";
 import UploadQuiz from "@/components/quiz-competition/UploadQuiz";
 import PermissionRequestsTable from "@/components/permissions/PermissionRequestsTable";
 import QuizSubmissionsList from "@/components/quiz-competition/QuizSubmissionList";
+import BangiHuthubaCompetitionDashboard from "@/components/huthuba-bangi-competition/BangiHuthubaCompetitionDashboard";
+import MadhahaCompetitionDashboard from "@/components/madhaha-competition/MadhahaCompetitionDashboard";
 
 export default function AdminPage() {
   return (
@@ -20,30 +22,35 @@ export default function AdminPage() {
             <TabsTrigger value="admin" className="font-dhivehi text-2xl">
               އެޑްމިން
             </TabsTrigger>
+            <TabsTrigger value="waste" className="font-dhivehi text-2xl">
+              ކުނި މެނޭޖްމަންޓް
+            </TabsTrigger>
             <TabsTrigger
               value="quran-competition"
               className="font-dhivehi text-2xl"
             >
               ޤުރުއާން މުބާރާތް
             </TabsTrigger>
-            <TabsTrigger value="competitions" className="font-dhivehi text-2xl">
-              ކުނި މެނޭޖްމަންޓް
-            </TabsTrigger>
+
             <TabsTrigger value="quiz" className="font-dhivehi text-2xl">
               ސުވާލު މުބާރާތް
+            </TabsTrigger>
+            <TabsTrigger
+              value="bangi-huthuba-competition"
+              className="font-dhivehi text-2xl"
+            >
+              ބަންގި އަދި ޙުތުބާ
+            </TabsTrigger>
+            <TabsTrigger
+              value="madhaha-competition"
+              className="font-dhivehi text-2xl"
+            >
+              މަދަޙަ މުބާރާތް
             </TabsTrigger>
             <TabsTrigger value="permission" className="font-dhivehi text-2xl">
               ހުއްދަ ރިކުއެސްޓް
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="competitions" className="w-full">
-            <ServiceTable />
-          </TabsContent>
-
-          <TabsContent value="quran-competition" className="w-full">
-            <QuranCompetitionTable />
-          </TabsContent>
 
           <TabsContent value="admin" className="w-full mt-5">
             <Tabs dir="rtl" defaultValue="services" className="w-full">
@@ -69,11 +76,27 @@ export default function AdminPage() {
             </Tabs>
           </TabsContent>
 
+          <TabsContent value="waste" className="w-full">
+            <ServiceTable />
+          </TabsContent>
+
+          <TabsContent value="quran-competition" className="w-full">
+            <QuranCompetitionTable />
+          </TabsContent>
+
           <TabsContent value="quiz" className="w-full">
             <div>
               <QuizStatistics />
               <QuizSubmissionsList />
             </div>
+          </TabsContent>
+
+          <TabsContent value="bangi-huthuba-competition" className="w-full">
+            <BangiHuthubaCompetitionDashboard />
+          </TabsContent>
+
+          <TabsContent value="madhaha-competition" className="w-full">
+            <MadhahaCompetitionDashboard />
           </TabsContent>
 
           <TabsContent value="permission" className="w-full">

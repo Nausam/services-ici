@@ -66,17 +66,112 @@ export const getHuthubaBangiParticipantByIdCard = async (
   try {
     const response = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.quranCompetitionId,
+      appwriteConfig.HuthubaBangiCompetitionId,
       [Query.equal("idCardNumber", idCardNumber)]
     );
 
     if (response.documents.length > 0) {
-      return response.documents[0]; // ✅ Return the existing participant
+      return response.documents[0];
     }
 
     return null;
   } catch (error) {
     console.error("Failed to fetch Quran participant:", error);
     return null;
+  }
+};
+
+export const getAllHuthubaBangiCompetitionRegistrations = async (
+  limit: number,
+  offset: number
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    const huthubaBangiCompetitionRegistrations = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.HuthubaBangiCompetitionId,
+      [
+        // Appwrite's pagination queries
+        Query.limit(limit),
+        Query.offset(offset),
+      ]
+    );
+
+    return {
+      documents: parseStringify(huthubaBangiCompetitionRegistrations.documents),
+      total: huthubaBangiCompetitionRegistrations.total,
+    };
+  } catch (error) {
+    console.error("Failed to fetch registrations:", error);
+    throw new Error("Failed to fetch registrations");
+  }
+};
+
+export const updateHuthubaBangiCompetitionRegistration = async (
+  idCardNumber: string, // ✅ Use idCardNumber as the identifier
+  data: HuthubaBangiCompetitionRegistration
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // ✅ Get the document by idCardNumber first
+    const existingDocs = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.HuthubaBangiCompetitionId,
+      [Query.equal("idCardNumber", idCardNumber)]
+    );
+
+    if (existingDocs.documents.length === 0) {
+      throw new Error("No document found for the given idCardNumber");
+    }
+
+    const documentId = existingDocs.documents[0].$id; // ✅ Get the document ID
+
+    // ✅ Update the document
+    const updatedDocument = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.HuthubaBangiCompetitionId,
+      documentId,
+      data
+    );
+
+    return parseStringify(updatedDocument);
+  } catch (error) {
+    console.error("Failed to update registration:", error);
+    throw new Error("Failed to update registration");
+  }
+};
+
+export const deleteHuthubaBangiCompetitionRegistration = async (
+  idCardNumber: string
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // ✅ Get the document ID using the idCardNumber
+    const existingDocs = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.HuthubaBangiCompetitionId,
+      [Query.equal("idCardNumber", idCardNumber)]
+    );
+
+    if (existingDocs.documents.length === 0) {
+      throw new Error("No document found for the given idCardNumber");
+    }
+
+    const documentId = existingDocs.documents[0].$id;
+
+    // ✅ Delete the document
+    await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.HuthubaBangiCompetitionId,
+      documentId
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete registration:", error);
+    throw new Error("Failed to delete registration");
   }
 };

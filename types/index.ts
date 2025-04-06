@@ -78,13 +78,14 @@ export type HomeCard = {
   category: string;
 };
 
+export type CompetitionType = "ޙުތުބާ" | "ބަންގި" | "ދެބައި";
+
 export type HuthubaBangiCompetitionRegistration = {
   fullName: string;
   address: string;
   idCardNumber: string;
   contactNumber: string;
-  competitionType: "ޙުތުބާ" | "ބަންގި" | "ދެބައި";
+  competitionType: CompetitionType;
   idCard: string;
+  ageGroup: string;
 };
-
-export type CompetitionType = "ހުތުބާ" | "ބަންގި" | "ދެބައި";
