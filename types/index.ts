@@ -53,12 +53,14 @@ export type QuizQuestion = {
 };
 
 export type MadhahaCompetitionRegistration = {
+  $id?: string;
   fullName: string;
   address: string;
   idCardNumber: string;
   contactNumber: string;
   ageGroup?: string;
   groupOrSolo: string;
+  groupName?: string;
   groupMembers?: string[];
   madhahaName?: string;
   madhahaLyrics?: string;
@@ -89,3 +91,5 @@ export type HuthubaBangiCompetitionRegistration = {
   idCard: string;
   ageGroup: string;
 };
+
+

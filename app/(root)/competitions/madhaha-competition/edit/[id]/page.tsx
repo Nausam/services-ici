@@ -26,6 +26,7 @@ const UpdateMadhahaPage = () => {
 
         if (data) {
           setRegistration({
+            $id: data.$id,
             fullName: data.fullName || "",
             address: data.address || "",
             idCardNumber: data.idCardNumber || "",
@@ -68,8 +69,10 @@ const UpdateMadhahaPage = () => {
   }
 
   return (
-    <div className="mt-10">
-      <MadhahaCompetitionForm type="Update" registration={registration} />
+    <div className="max-w-7xl mx-auto h-screen">
+      <div className="my-10">
+        <MadhahaCompetitionForm type="Update" registration={registration} />
+      </div>
     </div>
   );
 };

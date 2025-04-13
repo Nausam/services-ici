@@ -19,7 +19,7 @@ import { getAllMadhahaCompetitionRegistrations } from "@/lib/actions/madhaha.act
 
 const MadhahaCompetitionDashboard = () => {
   const [registrations, setRegistrations] = useState<
-    HuthubaBangiCompetitionRegistration[]
+    MadhahaCompetitionRegistration[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +42,7 @@ const MadhahaCompetitionDashboard = () => {
 
       setRegistrations(
         documents.map((doc) => ({
+          $id: doc.$id,
           fullName: doc.fullName,
           address: doc.address,
           idCardNumber: doc.idCardNumber,
@@ -54,7 +55,7 @@ const MadhahaCompetitionDashboard = () => {
           madhahaName: doc.madhahaName,
           madhahaLyrics: doc.madhahaLyrics,
           groupName: doc.groupName,
-        })) as HuthubaBangiCompetitionRegistration[]
+        })) as MadhahaCompetitionRegistration[]
       );
 
       setTotalItems(total);
@@ -87,11 +88,11 @@ const MadhahaCompetitionDashboard = () => {
     setCurrentPage(1);
   };
 
-  const handleEdit = (idCardNumber: string) => {
-    router.push(`/competitions/bangi-huthuba-competition/edit/${idCardNumber}`);
+  const handleEdit = ($id: string) => {
+    router.push(`/competitions/madhaha-competition/edit/${$id}`);
   };
 
-  const handleDelete = async (idCardNumber: string) => {
+  const handleDelete = async ($id: string) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this participant?"
     );
@@ -100,11 +101,11 @@ const MadhahaCompetitionDashboard = () => {
 
     try {
       // ✅ Call the delete function
-      await deleteHuthubaBangiCompetitionRegistration(idCardNumber);
+      await deleteHuthubaBangiCompetitionRegistration($id);
 
       // ✅ Remove from state after successful deletion
       setRegistrations((prev) =>
-        prev.filter((reg) => reg.idCardNumber !== idCardNumber)
+        prev.filter((reg) => reg.$id !== $id)
       );
 
       setTotalItems((prev) => prev - 1);
@@ -140,7 +141,7 @@ const MadhahaCompetitionDashboard = () => {
   if (registrations.length === 0)
     return (
       <div className="flex items-center justify-center">
-        <PlaceholderCard title="ބަންގި ގޮވުމާއި އަދި ޙުތުބާ ކިޔުމުގެ މުބާރާތުގައި އެއްވެސް ބައިވެރިއަކު ނެތް!" />
+        <PlaceholderCard title="މަދަޙަ ކިޔުމުގެ މުބާރާތުގައި އެއްވެސް ބައިވެރިއަކު ނެތް!" />
       </div>
     );
 
@@ -150,7 +151,7 @@ const MadhahaCompetitionDashboard = () => {
         މަދަޙަ މުބާރާތުގެ ބައިވެރިން ({totalItems})
       </h2>
 
-      <div className="flex justify-between items-center mb-6">
+      {/* <div className="flex justify-between items-center mb-6">
         <Input
           type="text"
           placeholder="އައިޑީ ކާޑް ގައި ސަރޗްކުރައްވާ!"
@@ -158,7 +159,7 @@ const MadhahaCompetitionDashboard = () => {
           onChange={handleSearch}
           className="w-full max-w-sm rounded-md font-dhivehi border-gray-300 text-right"
         />
-      </div>
+      </div> */}
 
       {/* Items Per Page */}
       <select
@@ -181,14 +182,14 @@ const MadhahaCompetitionDashboard = () => {
       >
         {registrations.map((reg: any, index) => (
           <Q_ParticipantCard
-            key={reg.idCardNumber + index}
-            fullName={reg.fullName}
+            key={reg.$id + index}
+            fullName={reg.groupName || reg.fullName}
             idCardNumber={reg.idCardNumber}
             contactNumber={reg.contactNumber}
-            href={`/competitions/bangi-huthuba-competition/${reg.idCardNumber}`}
+            href={`/competitions/madhaha-competition/${reg.$id}`}
             idCardUrl={reg.idCard}
-            onEdit={() => handleEdit(reg.idCardNumber)}
-            onDelete={() => handleDelete(reg.idCardNumber)}
+            onEdit={() => handleEdit(reg.$id)}
+            onDelete={() => handleDelete(reg.$id)}
           />
         ))}
       </div>

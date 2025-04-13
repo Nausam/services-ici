@@ -24,6 +24,7 @@ import { FileUploader } from "../waste-management/FileUploader";
 import {
   createMadhahaCompetitionRegistration,
   getQuranParticipantByIdCard,
+  updateMadhahaCompetitionRegistration,
   uploadImage,
 } from "@/lib/actions/madhaha.actions";
 import { useRouter } from "next/navigation";
@@ -44,18 +45,21 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
   const form = useForm<z.infer<typeof madhahaSchema>>({
     resolver: zodResolver(madhahaSchema),
     defaultValues: {
-      fullName: "",
-      address: "",
-      idCardNumber: "",
-      contactNumber: "",
-      ageGroup: "",
-      groupOrSolo: undefined,
-      groupMembers: [],
-      madhahaName: "",
-      madhahaLyrics: "",
-      idCard: "",
-      groupName: "",
-    },
+  fullName: registration?.fullName || "",
+  address: registration?.address || "",
+  idCardNumber: registration?.idCardNumber || "",
+  contactNumber: registration?.contactNumber || "",
+  ageGroup: registration?.ageGroup || "",
+  groupOrSolo: registration?.groupOrSolo === "ވަކިވަކިން" || registration?.groupOrSolo === "ގްރޫޕްކޮން"
+    ? registration.groupOrSolo
+    : undefined,
+  groupMembers: registration?.groupMembers || [],
+  madhahaName: registration?.madhahaName || "",
+  madhahaLyrics: registration?.madhahaLyrics || "",
+  idCard: registration?.idCard || "",
+  groupName: registration?.groupName || "",
+}
+,
     mode: "onChange",
   });
 
@@ -105,6 +109,25 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
     } finally {
       setIsSubmitting(false);
     }
+
+    if (type === "Update" && registration) {
+  const updated = await updateMadhahaCompetitionRegistration(
+    registration?.$id || "", // Ensure $id is a string
+    {
+      ...values,
+    }
+  );
+
+  if (updated) {
+    router.push("/");
+    toast({
+      title: "ބައިވެރިޔާ އަޕްޑޭޓް ކުރެވިއްޖެ",
+      variant: "default",
+    });
+  }
+}
+
+
   };
 
   const handleDownloadRules = () => {
@@ -122,7 +145,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
           dir="rtl"
         >
-          <div className="flex flex-col items-start">
+          {type === "Create" && (<div className="flex flex-col items-start">
             <div className="flex gap-4">
               <Button
                 type="button"
@@ -135,7 +158,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
             <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
               ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
             </p>
-          </div>
+          </div>)}
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Group or Solo */}

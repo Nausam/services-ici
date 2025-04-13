@@ -83,6 +83,23 @@ export const getQuranParticipantByIdCard = async (idCardNumber: string) => {
   }
 };
 
+export const getMadhahaParticipantByDocumentId = async (documentId: string) => {
+  const { databases } = await createAdminClient();
+
+  try {
+    const doc = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.madhahaCompetitionId,
+      documentId
+    );
+
+    return doc;
+  } catch (error) {
+    console.error("Failed to fetch by doc id:", error);
+    return null;
+  }
+};
+
 export const getAllMadhahaCompetitionRegistrations = async (
   limit: number,
   offset: number,
@@ -110,5 +127,40 @@ export const getAllMadhahaCompetitionRegistrations = async (
   } catch (error) {
     console.error("Failed to fetch Madhaha registrations:", error);
     throw new Error("Failed to fetch Madhaha registrations");
+  }
+};
+
+export const updateMadhahaCompetitionRegistration = async (
+  $id: string,
+  data: MadhahaCompetitionRegistration
+) => {
+  try {
+    const { databases } = await createAdminClient();
+
+    // ✅ Get the document by idCardNumber first
+    const existingDocs = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.madhahaCompetitionId,
+      [Query.equal("$id", $id)]
+    );
+
+    if (existingDocs.documents.length === 0) {
+      throw new Error("No document found for the given idCardNumber");
+    }
+
+    const documentId = existingDocs.documents[0].$id; // ✅ Get the document ID
+
+    // ✅ Update the document
+    const updatedDocument = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.madhahaCompetitionId,
+      documentId,
+      data
+    );
+
+    return parseStringify(updatedDocument);
+  } catch (error) {
+    console.error("Failed to update registration:", error);
+    throw new Error("Failed to update registration");
   }
 };
