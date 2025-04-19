@@ -133,11 +133,55 @@ const BangiHuthubaCompetitionDashboard = () => {
       </div>
     );
 
+    const downloadCSV = () => {
+  if (registrations.length === 0) return;
+
+  const csvHeader = `
+އުމުރުފުރާ,ޙުތުބާ / ބަންގި,އެޑްރެސް,ފޯނު ނަންބަރު,އައިޑީ ކާޑް,ފުރިހަމަ ނަން\n`;
+
+  const csvRows = registrations
+    .map((reg) =>
+      [
+        `"${reg.ageGroup || "-"}"`,
+        `"${reg.competitionType || "-"}"`,
+        `"${reg.address || "-"}"`,
+        `"${reg.contactNumber || "-"}"`,
+        `"${reg.idCardNumber || "-"}"`,
+        `"${reg.fullName || "-"}"`,
+      ].join(",")
+    )
+    .join("\n");
+
+  const csvContent = "\uFEFF" + csvHeader + csvRows;
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "bangi_huthuba_competition_data.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
   return (
     <div className="p-4 mt-10">
       <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
         ބަންގި އަދި ޙުތުބާގެ ބައިވެރިން ({totalItems})
       </h2>
+
+       <div className="flex justify-start mb-4 gap-4">
+                   
+                    <Button
+                      onClick={downloadCSV}
+                      className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                    >
+                      Download CSV
+                    </Button>
+                  </div>
+      
 
       <div className="flex justify-between items-center mb-6">
         <Input

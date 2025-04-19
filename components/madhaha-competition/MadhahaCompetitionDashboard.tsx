@@ -145,11 +145,59 @@ const MadhahaCompetitionDashboard = () => {
       </div>
     );
 
+    const downloadCSV = () => {
+  if (registrations.length === 0) return;
+
+  const csvHeader = `
+ބައިވެރި ނަން,އެޑްރެސް,އައިޑީކާޑް,ފޯނު ނަންބަރު,އުމުރުފުރާ,ގޮތް,ގްރޫޕް ނަން,ގްރޫޕް މެމްބަރުން,މަދަހަ ނަން,މަދަހަ ލިޔުން\n`;
+
+  const csvRows = registrations
+    .map((reg) =>
+      [
+        `"${reg.fullName}"`,
+        `"${reg.address}"`,
+        `"${reg.idCardNumber}"`,
+        `"${reg.contactNumber}"`,
+        `"${reg.ageGroup}"`,
+        `"${reg.groupOrSolo}"`,
+        `"${reg.groupName || "-"}"`,
+        `"${(reg.groupMembers || []).join(", ")}"`,
+        `"${reg.madhahaName}"`,
+        `"${reg.madhahaLyrics}"`,
+      ].join(",")
+    )
+    .join("\n");
+
+  const csvContent = "\uFEFF" + csvHeader + csvRows;
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "madhaha_competition_data.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
   return (
     <div className="p-4 mt-10">
       <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
         މަދަޙަ މުބާރާތުގެ ބައިވެރިން ({totalItems})
       </h2>
+
+      <div className="flex justify-start mb-4 gap-4">
+             
+              <Button
+                onClick={downloadCSV}
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+              >
+                Download CSV
+              </Button>
+            </div>
 
       {/* <div className="flex justify-between items-center mb-6">
         <Input
