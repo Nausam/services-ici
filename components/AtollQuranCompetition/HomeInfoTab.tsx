@@ -74,20 +74,25 @@ export default function HomeInfoTab() {
         {/* Intro */}
         <div className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-muted">
           <h2 className="mb-2 text-2xl md:text-3xl font-semibold font-dhivehi text-center">
-            ރާ އަތޮޅު ޤުރުއާން މައުލޫމާތް
+            ރ. އަތޮޅު ޤުރުއާން މުބާރާތް 2025
           </h2>
-          <p className="text-sm md:text-base leading-relaxed text-muted-foreground text-center">
-            Welcome to the information hub for the{" "}
-            <strong>Raa Atoll Quran Competition</strong>. Here you’ll find the
-            event introduction, schedule, and participating islands. (Update
-            this text with your official wording.)
+          <p className="text-sm md:text-lg leading-relaxed text-muted-foreground text-center font-dhivehi mt-5">
+            މިއީ ރ. އަތޮޅު ޤުރުއާން މުބާރާތުގެ ބައިވެރިންނަށާއި މުބާރާތުގެ
+            އޮފިޝަލުންނަށާއި އެހެނިހެން ގޮތްގޮތުން މުބާރާތުގެ ކަންކަމުގައި
+            ހަރަކާތްތެރިވާ ފަރާތްތަކަށް ބޭނުންވާނެ މުހިއްމު މަޢުލޫމާތުތައް
+            ފޯރުކޮށްދިނުމަށް ހެދިފައިވާ ޕޯޓަލްއެކެވެ. މިއަހަރު އިންނަމާދޫގައި
+            ބާއްވާ ޤުރުއާން މުބާރާތުގެ ކަންކަން ވީހާވެސް ފުރިހަމައަށް
+            ގެންދިއުމަށްޓަކައި މުބާރާތުގެ ކަންކަމުގައި ޝާމިލްވާ ހުރިހައި
+            ފަރާތްތަކުން މުބާރާތް އިންތިޒާމް ކުރައްވާ ފަރާތަށް އެއްބާރުލުން
+            ދެއްވާ ކަންކަން އަމަން އޮމާންކޮށް ގެންދެވުމަށް ހުރިހައި
+            ފަރާތްތަކުންވެސް ބާރުއަޅުއްވާ އެހީތެރިކަން ފޯރުކޮށްދެއްވުން އެދެމެ.
           </p>
         </div>
 
         {/* Schedule */}
         <div className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-muted">
           <h3 className="mb-4 text-xl font-semibold font-dhivehi text-center">
-            ސެކިއުލް (Schedule)
+            ޝެޑިއުލް
           </h3>
 
           {/* Mobile-friendly list, table-like on md+ */}

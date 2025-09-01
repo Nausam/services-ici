@@ -4,6 +4,7 @@ import HomeInfoTab from "@/components/AtollQuranCompetition/HomeInfoTab";
 import SchedulePage from "@/components/AtollQuranCompetition/Schedule";
 import MealsPage from "@/components/AtollQuranCompetition/MealsPage";
 import HostIslandInfoPage from "@/components/AtollQuranCompetition/HostIslandInfoPage";
+import JudgesPage from "@/components/AtollQuranCompetition/JudgesPage";
 
 const Page = () => {
   const items = [
@@ -75,7 +76,7 @@ const Page = () => {
                   <SchedulePage />
                 </TabsContent>
                 <TabsContent value="judges" className="w-full">
-                  {/* Add judges info here */}
+                  <JudgesPage />
                 </TabsContent>
                 <TabsContent value="eating" className="w-full">
                   <MealsPage />
