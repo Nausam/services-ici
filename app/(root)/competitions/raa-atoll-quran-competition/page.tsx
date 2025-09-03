@@ -5,14 +5,14 @@ import SchedulePage from "@/components/AtollQuranCompetition/Schedule";
 import MealsPage from "@/components/AtollQuranCompetition/MealsPage";
 import HostIslandInfoPage from "@/components/AtollQuranCompetition/HostIslandInfoPage";
 import JudgesPage from "@/components/AtollQuranCompetition/JudgesPage";
-
+import Persons from "@/components/AtollQuranCompetition/Persons";
 const Page = () => {
   const items = [
     { v: "home", label: "ތަޢާރަފް" },
     { v: "schedule", label: "ޝެޑިއުލް" },
     { v: "judges", label: "ފަނޑިޔާރުން" },
     { v: "eating", label: "ކެއުމުގެ ގަޑިތައް" },
-    { v: "phone", label: "މުޙިންމު ފޯނު ނަންބަރު" },
+    { v: "phone", label: "ކޯޑިނޭޓަރުން" },
     { v: "innamaadhoo", label: "އިންނަމާދޫގެ މަޢުލޫމާތު" },
   ];
 
@@ -82,7 +82,7 @@ const Page = () => {
                   <MealsPage />
                 </TabsContent>
                 <TabsContent value="phone" className="w-full">
-                  {/* Add phone info here */}
+                  <Persons />
                 </TabsContent>
                 <TabsContent value="innamaadhoo" className="w-full">
                   <HostIslandInfoPage />

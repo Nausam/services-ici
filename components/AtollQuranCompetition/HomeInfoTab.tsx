@@ -1,4 +1,5 @@
 // components/HomeInfoTab.tsx
+import Image from "next/image";
 import React from "react";
 
 type ScheduleItem = {
@@ -73,7 +74,7 @@ export default function HomeInfoTab() {
       <div className="mx-auto max-w-5xl px-4 space-y-6">
         {/* Intro */}
         <div className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-muted">
-          <h2 className="mb-2 text-2xl md:text-3xl font-semibold font-dhivehi text-center">
+          <h2 className="mb-6 text-center font-dhivehi text-2xl md:text-3xl font-semibold">
             ރ. އަތޮޅު ޤުރުއާން މުބާރާތް 2025
           </h2>
           <p className="text-sm md:text-lg leading-relaxed text-muted-foreground text-center font-dhivehi mt-5">
@@ -92,19 +93,19 @@ export default function HomeInfoTab() {
         {/* Schedule */}
         <div className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-muted">
           <h3 className="mb-4 text-xl font-semibold font-dhivehi text-center">
-            ޝެޑިއުލް
+            ދަތުރު ޝެޑިއުލް{" "}
           </h3>
 
           {/* Mobile-friendly list, table-like on md+ */}
           <div className="grid gap-3 md:gap-2">
-            <div className="hidden md:grid grid-cols-12 items-center rounded-lg bg-muted/40 px-3 py-2 text-sm font-medium">
+            {/* <div className="hidden md:grid grid-cols-12 items-center rounded-lg bg-muted/40 px-3 py-2 text-sm font-medium">
               <div className="col-span-3">Date</div>
               <div className="col-span-3">Time</div>
               <div className="col-span-4">Event</div>
               <div className="col-span-2">Location</div>
-            </div>
+            </div> */}
 
-            {schedule.map((s, idx) => (
+            {/* {schedule.map((s, idx) => (
               <div
                 key={`${s.date}-${idx}`}
                 className="grid grid-cols-1 gap-1 rounded-xl border px-3 py-3 md:grid-cols-12 md:items-center md:gap-2 md:border-0 md:border-b md:rounded-none"
@@ -123,12 +124,23 @@ export default function HomeInfoTab() {
                   {s.location ?? "-"}
                 </div>
               </div>
-            ))}
+            ))} */}
+
+            <div className="overflow-hidden rounded-xl shadow-md ring-1 ring-gray-200">
+              <Image
+                src="/assets/images/dhathuruSchedule.png"
+                alt="Reciters schedule table"
+                width={1200}
+                height={800}
+                className="w-full h-auto object-contain"
+                priority
+              />
+            </div>
           </div>
         </div>
 
         {/* Participating islands */}
-        <div className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-muted">
+        {/* <div className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-muted">
           <h3 className="mb-4 text-xl font-semibold font-dhivehi text-center">
             ބައިވެރިވެފައިވާ ރަށްތައް
           </h3>
@@ -150,7 +162,7 @@ export default function HomeInfoTab() {
               </figure>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
