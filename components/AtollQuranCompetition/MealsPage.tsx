@@ -91,9 +91,6 @@ export default function MealsPage() {
                       <th className="px-4 py-3 text-right font-dhivehi font-medium text-xl">
                         ތަން
                       </th>
-                      <th className="px-4 py-3 text-right font-dhivehi font-medium text-xl">
-                        އިތުރު މަޢުލޫމާތު
-                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -107,9 +104,6 @@ export default function MealsPage() {
                         </td>
                         <td className="px-4 py-3 font-dhivehi text-sm">
                           {r.venue}
-                        </td>
-                        <td className="px-4 py-3 font-dhivehi text-sm text-muted-foreground">
-                          {r.notes ?? "—"}
                         </td>
                       </tr>
                     ))}
