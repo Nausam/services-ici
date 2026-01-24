@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getAllQuranCompetitionRegistrations } from "@/lib/actions/quranCompetition.actions";
-import Q_ParticipantCard from "./Q_ParticipantCard";
 import { QuranCompetitionRegistration } from "@/types";
 import JSZip from "jszip";
+import React, { useEffect, useState } from "react";
+import Q_ParticipantCard from "./Q_ParticipantCard";
 
 const QuranCompetitionDashboard = () => {
   const [registrations, setRegistrations] = useState<
@@ -16,6 +15,7 @@ const QuranCompetitionDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [selectedYear, setSelectedYear] = useState<string>("");
 
   const fetchRegistrations = async (page: number) => {
     setLoading(true);
@@ -23,10 +23,9 @@ const QuranCompetitionDashboard = () => {
       const offset = (page - 1) * itemsPerPage;
       const { documents, total } = await getAllQuranCompetitionRegistrations(
         itemsPerPage,
-        offset
+        offset,
+        selectedYear || undefined
       );
-
-      // Simulate total items count (if Appwrite doesn't provide it)
       setRegistrations(documents);
       setTotalItems(total);
     } catch (error) {
@@ -38,7 +37,7 @@ const QuranCompetitionDashboard = () => {
 
   useEffect(() => {
     fetchRegistrations(currentPage);
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, selectedYear]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -165,6 +164,20 @@ const QuranCompetitionDashboard = () => {
     setCurrentPage(1);
   };
 
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const currentYear = new Date().getFullYear();
+  const yearOptions = [
+    { value: "", label: "ހުރިހާ އަހަރު" },
+    ...Array.from({ length: currentYear - 2021 }, (_, i) => {
+      const y = currentYear - i;
+      return { value: String(y), label: String(y) };
+    }),
+  ];
+
   if (loading)
     return (
       <div className="flex justify-center h-screen items-center">
@@ -174,8 +187,6 @@ const QuranCompetitionDashboard = () => {
         </div>
       </div>
     );
-
-  if (registrations.length === 0) return <p>No registrations found.</p>;
 
   return (
     <div className="p-4 mt-10">
@@ -197,36 +208,65 @@ const QuranCompetitionDashboard = () => {
         </Button>
       </div>
 
-      <select
-        value={itemsPerPage}
-        onChange={handleItemsPerPageChange}
-        className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out mt-10 cursor-pointer"
-      >
-        <option value={3}>ޕޭޖެއްގަ 3</option>
-        <option value={6}>ޕޭޖެއްގަ 6</option>
-        <option value={9}>ޕޭޖެއްގަ 9</option>
-        <option value={12}>ޕޭޖެއްގަ 12</option>
-        <option value={15}>ޕޭޖެއްގަ 15</option>
-        <option value={-1}>ހުރިހާ</option>
-      </select>
+      <div className="flex flex-wrap items-center gap-4 mt-10">
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="year-filter"
+            className="font-dhivehi text-cyan-800 text-md"
+          >
+            އަހަރު
+          </label>
+          <select
+            id="year-filter"
+            value={selectedYear}
+            onChange={handleYearChange}
+            className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out cursor-pointer"
+          >
+            {yearOptions.map((opt) => (
+              <option key={opt.value || "all"} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <select
+          value={itemsPerPage}
+          onChange={handleItemsPerPageChange}
+          className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out cursor-pointer"
+        >
+          <option value={3}>ޕޭޖެއްގަ 3</option>
+          <option value={6}>ޕޭޖެއްގަ 6</option>
+          <option value={9}>ޕޭޖެއްގަ 9</option>
+          <option value={12}>ޕޭޖެއްގަ 12</option>
+          <option value={15}>ޕޭޖެއްގަ 15</option>
+          <option value={-1}>ހުރިހާ</option>
+        </select>
+      </div>
 
       <div
         dir="rtl"
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
       >
-        {registrations.map((reg: any, index) => (
-          <Q_ParticipantCard
-            key={reg.idCardNumber + index}
-            fullName={reg.fullName}
-            idCardNumber={reg.idCardNumber}
-            contactNumber={reg.contactNumber}
-            href={`/competitions/quran-competition/${reg.idCardNumber}`}
-            idCardUrl={reg.idCard}
-          />
-        ))}
+        {registrations.length === 0 ? (
+          <p className="col-span-full font-dhivehi text-cyan-800 text-lg text-center py-10">
+         މިއަހަރު އަދި އެއްވެސް ބޭފުޅަކު ރެޖިސްޓާ ކޮށްފައެއްނުވޭ!
+          </p>
+        ) : (
+          registrations.map((reg: any, index) => (
+            <Q_ParticipantCard
+              key={reg.idCardNumber + index}
+              fullName={reg.fullName}
+              idCardNumber={reg.idCardNumber}
+              contactNumber={reg.contactNumber}
+              href={`/competitions/quran-competition/${reg.idCardNumber}`}
+              idCardUrl={reg.idCard}
+            />
+          ))
+        )}
       </div>
 
       {/* Pagination Controls */}
+      {totalItems > 0 && (
       <div className="flex justify-center items-center gap-4 mt-10">
         <Button
           onClick={nextPage}
@@ -247,6 +287,7 @@ const QuranCompetitionDashboard = () => {
           Previous
         </Button>
       </div>
+      )}
     </div>
   );
 };

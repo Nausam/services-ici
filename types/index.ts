@@ -41,6 +41,7 @@ export type QuranCompetitionRegistration = {
   finalRoundBalaigenKiyevunNimey?: boolean;
 
   idCard: string;
+  year?: string;
 };
 
 export type QuizQuestion = {

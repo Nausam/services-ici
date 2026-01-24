@@ -44,13 +44,39 @@ export const createQuranCompetitionRegistration = async (
   try {
     const { databases } = await createAdminClient();
     const documentId = ID.unique();
+    const currentYear = String(new Date().getFullYear());
+
+    // Prevent duplicate: same idCardNumber in the same year
+    const idForCheck = (registration.idCardNumber || "").trim();
+    if (idForCheck) {
+      const checkExisting = async (id: string) =>
+        databases.listDocuments(
+          appwriteConfig.databaseId,
+          appwriteConfig.quranCompetitionId,
+          [
+            Query.equal("idCardNumber", [id]),
+            Query.equal("year", [currentYear]),
+            Query.limit(1),
+          ]
+        );
+
+      let existing = await checkExisting(idForCheck);
+      if (existing.total === 0 && idForCheck.startsWith("A")) {
+        existing = await checkExisting(idForCheck.replace(/^A/, ""));
+      }
+      if (existing.total > 0) {
+        throw new Error("ALREADY_REGISTERED_THIS_YEAR");
+      }
+    }
+
+    const data = { ...registration } as Record<string, unknown>;
+    data.year = currentYear; // always set for new registrations (required in Appwrite)
 
     const QuranCompetitionRegistration = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.quranCompetitionId,
       documentId,
-
-      { ...registration }
+      data
     );
 
     // Send email notification after successful registration
@@ -59,26 +85,36 @@ export const createQuranCompetitionRegistration = async (
     return parseStringify(QuranCompetitionRegistration);
   } catch (error) {
     console.error("Failed to register:", error);
+    if (
+      error instanceof Error &&
+      error.message === "ALREADY_REGISTERED_THIS_YEAR"
+    ) {
+      throw error;
+    }
     throw new Error("Failed to register");
   }
 };
 
 // GET ALL QURAN COMPETITION REGISTRATIONS
+// Optional year: filter by registration year (e.g. "2025"). Omit to get all years.
 export const getAllQuranCompetitionRegistrations = async (
   limit: number,
-  offset: number
+  offset: number,
+  year?: string
 ) => {
   try {
     const { databases } = await createAdminClient();
 
+    const queries = [
+      ...(year ? [Query.equal("year", [year])] : []),
+      Query.limit(limit),
+      Query.offset(offset),
+    ];
+
     const quranCompetitionRegistrations = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quranCompetitionId,
-      [
-        // Appwrite's pagination queries
-        Query.limit(limit),
-        Query.offset(offset),
-      ]
+      queries
     );
 
     return {
@@ -92,6 +128,8 @@ export const getAllQuranCompetitionRegistrations = async (
 };
 
 // Function to get a Quran competition registration by ID Card Number
+// Tries exact match first, then without "A" prefix if not found (for legacy data)
+// Returns the most recent registration when multiple exist (e.g. multiple years)
 export const getQuranRegistrationById = async (
   idCardNumber: string | string[] | undefined
 ) => {
@@ -103,20 +141,31 @@ export const getQuranRegistrationById = async (
       throw new Error("Invalid ID card number provided.");
     }
 
-    // Fetch the participant based on the ID card number
-    const response = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quranCompetitionId,
-      [Query.equal("idCardNumber", [idCardNumber])] // Query expects an array
-    );
+    const id = String(idCardNumber).trim();
 
-    // Check if the participant exists
+    const fetchByCard = async (card: string) =>
+      databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.quranCompetitionId,
+        [
+          Query.equal("idCardNumber", [card]),
+          Query.orderDesc("$createdAt"),
+          Query.limit(1),
+        ]
+      );
+
+    let response = await fetchByCard(id);
+
+    // If not found and id starts with "A", try without prefix (legacy data)
+    if (response.total === 0 && id.startsWith("A")) {
+      response = await fetchByCard(id.replace(/^A/, ""));
+    }
+
     if (response.total === 0) {
       throw new Error("Participant not found");
     }
 
-    // Return the first matched document
-    return response.documents[0];
+    return parseStringify(response.documents[0]);
   } catch (error) {
     console.error("Failed to fetch registration:", error);
     throw new Error("Failed to fetch participant details");

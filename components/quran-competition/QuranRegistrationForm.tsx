@@ -45,12 +45,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
 
   const router = useRouter();
 
-  const initialValues =
-    registration && type === "Update"
-      ? {
-          ...registration,
-        }
-      : QuranCompetitionregistrationDefaultValues;
+  // Use registration when provided (Update or Create with prefill from previous year)
+  const initialValues = registration
+    ? { ...registration }
+    : QuranCompetitionregistrationDefaultValues;
 
   const form = useForm<
     z.infer<typeof createQuranCompetitionRegistrationSchema>
@@ -91,6 +89,17 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         `Failed to ${type === "Create" ? "create" : "update"} product:`,
         error
       );
+
+      if (
+        error instanceof Error &&
+        error.message === "ALREADY_REGISTERED_THIS_YEAR"
+      ) {
+        toast({
+          title: "މި އަހަރު އިތުރަށް މި އައިޑީކާޑް ނަންބަރުގެ ރެޖިސްޓާސަކު ކުރެވިއްޖެ. އެއްބަސް އިތުރު ރެޖިސްޓާ ކުރެވޭނެއެވެ.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: `Failed to ${type === "Create" ? "create" : "update"} product`,
