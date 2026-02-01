@@ -229,9 +229,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </Button>
           </Link>
 
-          {/* Update Button */}
+          {/* Update Button - edit the competition card (title, link, due date, etc.) */}
           {isSuperAdmin && (
-            <Link href={`/competitions/edit/${id}`}>
+            <Link href={`/services/edit/${id}`}>
               <Button
                 size="lg"
                 className="bg-gradient-to-br from-green-500 text-white to-green-700 hover:bg-gradient-to-br hover:from-green-700 hover:to-green-500 transition duration-300 px-6 py-3 rounded-md shadow-md font-dhivehi text-xl"

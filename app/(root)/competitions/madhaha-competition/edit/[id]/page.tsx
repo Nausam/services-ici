@@ -40,7 +40,7 @@ const UpdateMadhahaPage = () => {
             groupName: data.groupName || "",
           });
         } else {
-          router.push("/competitions/madhaha-competition");
+          router.push("/admin");
         }
       } catch (error) {
         console.error("Failed to fetch participant:", error);

@@ -9,9 +9,13 @@ import { QuranCompetitionRegistration } from "@/types";
 import { useState } from "react";
 
 // Map Appwrite document to form prefill. Resets agreement fields for this year.
-function mapDocToPrefill(doc: Record<string, unknown>): QuranCompetitionRegistration {
+function mapDocToPrefill(
+  doc: Record<string, unknown>
+): QuranCompetitionRegistration {
   const toDate = (v: unknown) =>
-    typeof v === "string" && v.includes("T") ? v.slice(0, 10) : (v as string) || "";
+    typeof v === "string" && v.includes("T")
+      ? v.slice(0, 10)
+      : (v as string) || "";
 
   return {
     fullName: (doc.fullName as string) || "",
@@ -52,7 +56,9 @@ function normalizeIdCard(input: string): string {
 
 const QuranCompetitionRegistrationPage = () => {
   const [step, setStep] = useState<"id_lookup" | "form">("id_lookup");
-  const [prefill, setPrefill] = useState<QuranCompetitionRegistration | null>(null);
+  const [prefill, setPrefill] = useState<QuranCompetitionRegistration | null>(
+    null
+  );
   const [idInput, setIdInput] = useState("");
   const [lookupLoading, setLookupLoading] = useState(false);
 
@@ -110,7 +116,7 @@ const QuranCompetitionRegistrationPage = () => {
             dir="rtl"
           >
             <p className="font-dhivehi text-2xl text-right text-cyan-800">
-            {`މުބާރާތުގައި 2025 ވަނަ އަހަރު ބައިވެރިވެފައިވާނަމަ އަ.އި.ޑީ.ކާޑު ނަންބަރު ޖައްސަވާ ސާރޗް ކުރައްވާ! އަދި 2025 ވަނަ އަހަރު ބައިވެރިވެފައި ނުވާނަމަ އަލުން ރެޖިސްކޮށްލައްވާ!`}
+              {`މުބާރާތުގައި 2025 ވަނަ އަހަރު ބައިވެރިވެފައިވާނަމަ އަ.އި.ޑީ.ކާޑު ނަންބަރު ޖައްސަވާ ސާރޗް ކުރައްވާ! އަދި 2025 ވަނަ އަހަރު ބައިވެރިވެފައި ނުވާނަމަ އަލުން ރެޖިސްކޮށްލައްވާ!`}
             </p>
             <div>
               <p className="font-dhivehi text-xl text-right text-cyan-950 mb-2">
@@ -119,7 +125,9 @@ const QuranCompetitionRegistrationPage = () => {
               <Input
                 value={idInput}
                 onChange={(e) => {
-                  const digits = e.target.value.replace(/^A/i, "").replace(/\D/g, "");
+                  const digits = e.target.value
+                    .replace(/^A/i, "")
+                    .replace(/\D/g, "");
                   setIdInput(digits ? `A${digits}` : "");
                 }}
                 placeholder="A123456"
@@ -141,22 +149,16 @@ const QuranCompetitionRegistrationPage = () => {
                 onClick={handleNewParticipant}
                 className="font-dhivehi text-lg border-cyan-600 text-cyan-700 hover:bg-cyan-50"
               >
-               ރެޖިސްޓާ ކުރުމަށް
+                ރެޖިސްޓާ ކުރުމަށް
               </Button>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <div dir="rtl" className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => { setStep("id_lookup"); setIdInput(""); setPrefill(null); }}
-                className="font-dhivehi text-cyan-700 hover:underline text-lg"
-              >
-                {prefill ? "އައިޑީކާޑް އެންމެން ބަދަލައި ހޯދަން" : "އައިޑީކާޑް ލިޔުއްވުމަށް ދިޔައިރުވޭ"}
-              </button>
-            </div>
-            <QuranRegistrationForm type="Create" registration={prefill || undefined} />
+            <QuranRegistrationForm
+              type="Create"
+              registration={prefill || undefined}
+            />
           </div>
         )}
       </div>
