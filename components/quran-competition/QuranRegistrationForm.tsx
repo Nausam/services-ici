@@ -1,7 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -10,27 +8,30 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+import { QuranCompetitionregistrationDefaultValues } from "@/constants";
 import { createQuranCompetitionRegistrationSchema } from "@/lib/validations";
 import { QuranCompetitionRegistration } from "@/types";
-import { QuranCompetitionregistrationDefaultValues } from "@/constants";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
-import { FileUploader } from "../waste-management/FileUploader";
-import QDropdown from "./QDropDown";
-import { Checkbox } from "../ui/checkbox";
 import {
   createQuranCompetitionRegistration,
   uploadImage,
 } from "@/lib/actions/quranCompetition.actions";
+import { cn } from "@/lib/utils";
+import { Checkbox } from "../ui/checkbox";
+import { FileUploader } from "../waste-management/FileUploader";
 import BDropdown from "./BDropdown";
+import QDropdown from "./QDropDown";
 import QKeyStageDropDown from "./QKeyStageDropDown";
 
 type ProductFormProps = {
@@ -55,10 +56,11 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
   >({
     resolver: zodResolver(createQuranCompetitionRegistrationSchema),
     defaultValues: initialValues,
+    mode: "onTouched",
   });
 
   const handleSubmit = async (
-    values: z.infer<typeof createQuranCompetitionRegistrationSchema>
+    values: z.infer<typeof createQuranCompetitionRegistrationSchema>,
   ) => {
     setIsSubmitting(true);
 
@@ -87,7 +89,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
     } catch (error) {
       console.error(
         `Failed to ${type === "Create" ? "create" : "update"} product:`,
-        error
+        error,
       );
 
       if (
@@ -95,7 +97,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         error.message === "ALREADY_REGISTERED_THIS_YEAR"
       ) {
         toast({
-          title: "މި އަހަރު އިތުރަށް މި އައިޑީކާޑް ނަންބަރުގެ ރެޖިސްޓާސަކު ކުރެވިއްޖެ. އެއްބަސް އިތުރު ރެޖިސްޓާ ކުރެވޭނެއެވެ.",
+          title: "ކޮންމެ އައިޑީކާޑެއްގެ ދަށުންވެސް ރެޖިސްޓާ ވެވޭނީ އެއްފަހަރު",
           variant: "destructive",
         });
         return;
@@ -153,7 +155,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           <p className="font-dhivehi text-xl text-right text-red-600 mt-5">
             {" "}
             ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އިތުރު
-            މަޢުލޫމާތު ހޯއްދެވުމަށް 9892099 އަށް ގުޅުއްވުން އެދެން!
+            މަޢުލޫމާތު ހޯއްދެވުމަށް 7981984 އަށް ގުޅުއްވުން އެދެން!
           </p>
         </div>
 
@@ -168,7 +170,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="fullName"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
@@ -178,10 +180,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ފުރިހަމަ ނަން "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right "
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -190,7 +197,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="idCardNumber"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     އައިޑީކާޑް ނަންބަރު
@@ -215,10 +222,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         field.onChange(`A${numericPart}`);
                       }}
                       placeholder="A123456"
-                      className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right font-bold tracking-widest text-cyan-950",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -227,7 +239,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="address"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     ދާއިމީ އެޑްރެސް
@@ -236,10 +248,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ދާއިމީ އެޑްރެސް "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -248,7 +265,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="sex"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
@@ -258,9 +275,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <QDropdown
                       value={field.value}
                       onChangeHandler={(value) => field.onChange(value)}
+                      hasError={!!fieldState.error}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -269,7 +287,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="dateOfBirth" // Assuming this is for date selection
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p
                     dir="rtl"
@@ -282,10 +300,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                       type="date" // Native date picker
                       placeholder="އުފަން ތާރީހް"
                       {...field}
-                      className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 text-cyan-950"
+                      className={cn(
+                        "w-full h-9 rounded-md border bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 text-cyan-950",
+                        fieldState.error
+                          ? "border-red-600 focus:ring-red-500"
+                          : "border-gray-300 focus:ring-cyan-500",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -294,7 +317,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="contactNumber"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p
                     dir="rtl"
@@ -306,10 +329,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ފޯނު ނަންބަރު "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -318,19 +346,27 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="keyStage"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
-                    ކީސްޓޭޖް{" "}
+                    އުމުރުފުރާ{" "}
                   </p>
                   <FormControl>
                     <QKeyStageDropDown
                       value={field.value}
-                      onChangeHandler={(value) => field.onChange(value)}
+                      onChangeHandler={(val) => field.onChange(val)}
+                      hasError={!!fieldState.error}
                     />
                   </FormControl>
-                  <FormMessage />
+                  {form.formState.errors.keyStage?.message ? (
+                    <p
+                      role="alert"
+                      className="text-base font-medium text-red-600 font-dhivehi text-right"
+                    >
+                      {form.formState.errors.keyStage.message}
+                    </p>
+                  ) : null}{" "}
                 </FormItem>
               )}
             />
@@ -348,7 +384,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="parentName"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
@@ -358,10 +394,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ބެލެނިވެރިޔާގެ ނަން "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -370,7 +411,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="parentIdCardNumber"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     އައިޑީކާޑް ނަންބަރު
@@ -395,10 +436,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         field.onChange(`A${numericPart}`);
                       }}
                       placeholder="A123456"
-                      className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right font-bold tracking-widest",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -407,7 +453,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="parentAddress"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     ދާއިމީ އެޑްރެސް
@@ -416,10 +462,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ދާއިމީ އެޑްރެސް "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -428,7 +479,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="relationship"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
@@ -438,10 +489,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ހުރިގާތްކަން "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -450,7 +506,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="parentContactNumber"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p
                     dir="rtl"
@@ -462,10 +518,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ފޯނު ނަންބަރު "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -494,7 +555,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -519,7 +580,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -549,7 +610,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -574,7 +635,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -610,7 +671,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -635,7 +696,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -665,7 +726,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -690,7 +751,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -711,7 +772,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="bankAccountName"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     އެކައުންޓް ނަން (އިނގިރޭސިން)
@@ -721,10 +782,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                       allowAllLanguages
                       placeholder=" އެކައުންޓް ނަން "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -733,7 +799,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="bankAccountNumber"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p
                     dir="rtl"
@@ -745,10 +811,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" އެކައުންޓް ނަންބަރު "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -757,7 +828,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="bankName"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p
                     dir="rtl"
@@ -769,9 +840,10 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <BDropdown
                       value={field.value}
                       onChangeHandler={(value) => field.onChange(value)}
+                      hasError={!!fieldState.error}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -799,19 +871,24 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
               <FormField
                 control={form.control}
                 name="agreeToTerms"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem className="flex items-center gap-4 mt-4">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                        className={cn(
+                          "focus:ring-cyan-500",
+                          fieldState.error
+                            ? "border-red-600 text-red-600 focus:ring-red-500"
+                            : "text-cyan-700 border-cyan-600",
+                        )}
                       />
                     </FormControl>
                     <FormLabel className="font-dhivehi text-lg text-right text-cyan-950">
                       އިޤްރާރުވަމެވެ.
                     </FormLabel>
-                    <FormMessage />
+                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                   </FormItem>
                 )}
               />
@@ -823,7 +900,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="agreeyerName"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     ނަން
@@ -832,10 +909,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                     <Input
                       placeholder=" ނަން "
                       {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right"
+                      className={cn(
+                        "rounded-md font-dhivehi border text-right",
+                        fieldState.error
+                          ? "border-red-600 focus-visible:ring-red-500"
+                          : "border-gray-300",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -844,7 +926,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
             <FormField
               control={form.control}
               name="agreedDate"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     ތާރީހް
@@ -854,10 +936,15 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                       type="date" // Native date picker
                       placeholder="ތާރީހް"
                       {...field}
-                      className="w-full h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className={cn(
+                        "w-full h-9 rounded-md border bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2",
+                        fieldState.error
+                          ? "border-red-600 focus:ring-red-500"
+                          : "border-gray-300 focus:ring-cyan-500",
+                      )}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
                 </FormItem>
               )}
             />
@@ -872,16 +959,23 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
           <FormField
             control={form.control}
             name="idCard"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormControl>
-                  <FileUploader
-                    onFieldChange={field.onChange}
-                    imageUrl={field.value}
-                    setFile={setFile}
-                  />
+                  <div
+                    className={cn(
+                      "rounded-md border-2 border-dashed transition-colors",
+                      fieldState.error ? "border-red-600" : "border-gray-300",
+                    )}
+                  >
+                    <FileUploader
+                      onFieldChange={field.onChange}
+                      imageUrl={field.value}
+                      setFile={setFile}
+                    />
+                  </div>
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
               </FormItem>
             )}
           />

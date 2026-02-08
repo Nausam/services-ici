@@ -8,7 +8,7 @@ import { getQuranRegistrationById } from "@/lib/actions/quranCompetition.actions
 import { QuranCompetitionRegistration } from "@/types";
 import { useState } from "react";
 
-// Map Appwrite document to form prefill. Resets agreement fields for this year.
+// Map Appwrite document to form prefill. Resets agreement fields and keyStage for this year.
 function mapDocToPrefill(
   doc: Record<string, unknown>
 ): QuranCompetitionRegistration {
@@ -24,7 +24,7 @@ function mapDocToPrefill(
     sex: (doc.sex as string) || "",
     dateOfBirth: toDate(doc.dateOfBirth),
     contactNumber: (doc.contactNumber as string) || "",
-    keyStage: (doc.keyStage as string) || "",
+    keyStage: "", // Cleared so user must re-select އުމުރުފުރާ (options may have changed)
     parentName: (doc.parentName as string) || "",
     parentAddress: (doc.parentAddress as string) || "",
     relationship: (doc.relationship as string) || "",

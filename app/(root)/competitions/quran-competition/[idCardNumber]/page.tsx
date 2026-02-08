@@ -101,7 +101,7 @@ const ParticipantDetails = () => {
           )}
           {infoSection("ބޭންކުގެ ނަން", registration.bankName)}
           {infoSection("އިޤްރާރުވި ތާރީހް", registration.agreedDate)}
-          {infoSection("ކީސްޓޭޖް", registration.keyStage)}
+          {infoSection("އުމުރުފުރާ", registration.keyStage)}
           {infoSection(
             " އިޤްރާރުގައި ސޮއިކުރި ފަރާތް ",
             registration.agreeyerName

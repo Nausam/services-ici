@@ -12,13 +12,15 @@ export const createRegistrationSchema = z.object({
 
 // QURAN COMPETITION FORM SCHEMA
 export const createQuranCompetitionRegistrationSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  idCardNumber: z.string().min(1, "ID card number is required"),
-  address: z.string().min(1, "Address is required"),
-  sex: z.string().min(1, "Sex is required"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  contactNumber: z.string().min(1, "Contact number is required"),
-  keyStage: z.string().optional(),
+  fullName: z.string().min(1, "ފުރިހަމަ ނަން ލިޔުއްވާ!"),
+  idCardNumber: z.string().min(1, "އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
+  address: z.string().min(1, "ދާއިމީ އެޑްރެސް ލިޔުއްވާ!"),
+  sex: z.string().min(1, "ޖިންސު ނަންގަވާ!"),
+  dateOfBirth: z.string().min(1, "އުފަން ތާރީހް ނަންގަވާ!"),
+  contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
+  keyStage: z
+    .string({ required_error: "އުމުރުފުރާ ނަންގަވާ!" })
+    .min(1, "އުމުރުފުރާ ނަންގަވާ!"),
 
   parentName: z.string().optional(),
   parentAddress: z.string().optional(),
@@ -26,15 +28,17 @@ export const createQuranCompetitionRegistrationSchema = z.object({
   parentIdCardNumber: z.string().optional(),
   parentContactNumber: z.string().optional(),
 
-  bankAccountName: z.string().min(1, "Bank account name is required"),
-  bankAccountNumber: z.string().min(1, "Bank account number is required"),
-  bankName: z.string().min(1, "Bank name is required"),
+  bankAccountName: z.string().min(1, "ބޭންކު އެކައުންޓްގެ ނަން ލިޔުއްވާ!"),
+  bankAccountNumber: z
+    .string()
+    .min(1, "ބޭންކު އެކައުންޓްގެ ނަންބަރު ލިޔުއްވާ!"),
+  bankName: z.string().min(1, "ބޭންކުގެ ނަން ނަންގަވާ!"),
 
   agreeToTerms: z.boolean().refine((val) => val === true, {
-    message: "",
+    message: "މި ގޮޅީގައި ރަނގަޅު ފާހަގަ ޖައްސަވާ!",
   }),
-  agreeyerName: z.string().min(1, "Agreeyer name is required"),
-  agreedDate: z.string().min(1, "Agreed date is required"),
+  agreeyerName: z.string().min(1, "އިޤްރާރުގައި ނަން ލިޔުއްވާ!"),
+  agreedDate: z.string().min(1, "އިޤުރާރުވީ ދުވަސް ނަންގަވާ!"),
 
   balaigenKiyevunFeshey: z.boolean().optional(),
   balaigenKiyevunNimey: z.boolean().optional(),
@@ -46,7 +50,7 @@ export const createQuranCompetitionRegistrationSchema = z.object({
   finalRoundBalaigenKiyevunFeshey: z.boolean().optional(),
   finalRoundBalaigenKiyevunNimey: z.boolean().optional(),
 
-  idCard: z.string().min(1, "ID card is required"),
+  idCard: z.string().min(1, "އައިޑީކާޑު އަޕްލޯޑް ކުރައްވާ!"),
 });
 
 // RAMDAN QUIZ FORM SCHEMA
@@ -95,7 +99,7 @@ export const madhahaSchema = z
     {
       message: " ގްރޫޕަށް ބައިވެރިން އިތުރު ކުރައްވާ!",
       path: ["groupMembers"],
-    }
+    },
   )
 
   // ✅ Require groupName if groupOrSolo is "ގްރޫޕްކޮން"
@@ -109,7 +113,7 @@ export const madhahaSchema = z
     {
       message: " ގްރޫޕްގެ ނަން ލިޔުއްވާ!",
       path: ["groupName"],
-    }
+    },
   )
 
   // ✅ Require ageGroup only if groupOrSolo is "ވަކިވަކިން"
@@ -123,7 +127,7 @@ export const madhahaSchema = z
     {
       message: "ވަކިވަކިން ހެދުމުގައި، އުމުރުފުރާ ނަންގަވާ!",
       path: ["ageGroup"],
-    }
+    },
   );
 
 // PERMISSION REQUEST FORM SCHEMA

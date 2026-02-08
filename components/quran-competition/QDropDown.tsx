@@ -5,6 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { startTransition, useEffect, useState } from "react";
 import {
   AlertDialog,
@@ -21,12 +22,22 @@ import {
 type DropdownProps = {
   value?: string;
   onChangeHandler?: (value: string) => void;
+  hasError?: boolean;
 };
 
-const QDropdown = ({ value, onChangeHandler }: DropdownProps) => {
+const QDropdown = ({
+  value,
+  onChangeHandler,
+  hasError,
+}: DropdownProps) => {
   return (
     <Select onValueChange={onChangeHandler} defaultValue={value}>
-      <SelectTrigger className="select-field flex justify-end font-dhivehi text-cyan-950">
+      <SelectTrigger
+        className={cn(
+          "select-field flex justify-end font-dhivehi text-cyan-950",
+          hasError && "border-red-600 focus-visible:ring-red-500"
+        )}
+      >
         <SelectValue className="text-slate-100" placeholder=" ޖިންސު " />
       </SelectTrigger>
       <SelectContent
