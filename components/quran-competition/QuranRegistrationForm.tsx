@@ -60,7 +60,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
   });
 
   const handleSubmit = async (
-    values: z.infer<typeof createQuranCompetitionRegistrationSchema>,
+    values: z.infer<typeof createQuranCompetitionRegistrationSchema>
   ) => {
     setIsSubmitting(true);
 
@@ -89,7 +89,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
     } catch (error) {
       console.error(
         `Failed to ${type === "Create" ? "create" : "update"} product:`,
-        error,
+        error
       );
 
       if (
@@ -115,8 +115,8 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
   // Function to handle PDF download
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "/assets/files/Quran_Mubaaraathuge_Gavaidhu_2025.pdf";
-    link.download = "Quran_Mubaaraathuge_Gavaidhu_2025.pdf";
+    link.href = "/assets/files/Quran_Mubaaraathuge_Gavaidhu_2026.pdf";
+    link.download = "Quran_Mubaaraathuge_Gavaidhu_2026.pdf";
     link.click();
   };
 
@@ -184,7 +184,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -226,7 +226,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right font-bold tracking-widest text-cyan-950",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -252,7 +252,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -304,7 +304,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "w-full h-9 rounded-md border bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2 text-cyan-950",
                         fieldState.error
                           ? "border-red-600 focus:ring-red-500"
-                          : "border-gray-300 focus:ring-cyan-500",
+                          : "border-gray-300 focus:ring-cyan-500"
                       )}
                     />
                   </FormControl>
@@ -333,7 +333,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -398,7 +398,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -440,7 +440,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right font-bold tracking-widest",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -466,7 +466,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -493,7 +493,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -522,7 +522,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -786,7 +786,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -815,7 +815,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -881,7 +881,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                           "focus:ring-cyan-500",
                           fieldState.error
                             ? "border-red-600 text-red-600 focus:ring-red-500"
-                            : "text-cyan-700 border-cyan-600",
+                            : "text-cyan-700 border-cyan-600"
                         )}
                       />
                     </FormControl>
@@ -913,7 +913,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "rounded-md font-dhivehi border text-right",
                         fieldState.error
                           ? "border-red-600 focus-visible:ring-red-500"
-                          : "border-gray-300",
+                          : "border-gray-300"
                       )}
                     />
                   </FormControl>
@@ -940,7 +940,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                         "w-full h-9 rounded-md border bg-white px-3 py-1 text-right font-dhivehi shadow-sm focus:outline-none focus:ring-2",
                         fieldState.error
                           ? "border-red-600 focus:ring-red-500"
-                          : "border-gray-300 focus:ring-cyan-500",
+                          : "border-gray-300 focus:ring-cyan-500"
                       )}
                     />
                   </FormControl>
@@ -965,7 +965,7 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
                   <div
                     className={cn(
                       "rounded-md border-2 border-dashed transition-colors",
-                      fieldState.error ? "border-red-600" : "border-gray-300",
+                      fieldState.error ? "border-red-600" : "border-gray-300"
                     )}
                   >
                     <FileUploader
