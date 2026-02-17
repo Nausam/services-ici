@@ -110,6 +110,21 @@ export const formatTime = (milliseconds: number) => {
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };
 
+// Quiz competition years (e.g. 2025, 2026)
+export const QUIZ_COMPETITION_YEARS = [2025, 2026];
+export const QUIZ_COMPETITION_DEFAULT_YEAR = 2026;
+
+/** Returns the next 00:00 (midnight) in Maldives time (UTC+5) as a Date. */
+export const getNextMidnightMaldives = (): Date => {
+  const now = Date.now();
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  const MALDIVES_OFFSET_MS = 5 * 60 * 60 * 1000;
+  const maldivesDay = Math.floor((now + MALDIVES_OFFSET_MS) / MS_PER_DAY);
+  const nextMidnightMs =
+    (maldivesDay + 1) * MS_PER_DAY - MALDIVES_OFFSET_MS;
+  return new Date(nextMidnightMs);
+};
+
 export const AGE_GROUPS = [
   "6 އަހަރުން ދަށް",
   "6 އަހަރާއި 9 އަހަރާއި ދެމެދު",

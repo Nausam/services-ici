@@ -17,6 +17,8 @@ export const appwriteConfig = {
   quizCompetitionId: process.env.NEXT_PUBLIC_APPWRITE_QUIZ_COLLECTION!,
   quizCompetitionAnswersId:
     process.env.NEXT_PUBLIC_APPWRITE_QUIZ_ANSWERS_COLLECTION!,
+  quizCountdownSettingsId:
+    process.env.NEXT_PUBLIC_APPWRITE_QUIZ_COUNTDOWN_SETTINGS_COLLECTION ?? "",
   homeCardsCollectionId:
     process.env.NEXT_PUBLIC_APPWRITE_HOME_CARDS_COLLECTION!,
   madhahaCompetitionId:

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { getQuizStatistics } from "@/lib/actions/quizCompetition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -12,9 +11,70 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useUser } from "@/providers/UserProvider";
 import Link from "next/link";
-import ShufflePicker from "./ShufflePicker";
+import {
+  QUIZ_COMPETITION_DEFAULT_YEAR,
+  QUIZ_COMPETITION_YEARS,
+} from "@/constants";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+function QuizStatisticsSkeleton() {
+  return (
+    <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
+      <div className="flex flex-col items-center justify-center border border-cyan-200 rounded-xl p-6 bg-gradient-to-t from-cyan-50 to-cyan-100 shadow-md w-full">
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-2">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-9 w-[100px]" />
+        </div>
+        <div className="flex gap-4 mt-10 w-full justify-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton
+                key={i}
+                className="h-10 rounded-full min-w-[140px] max-w-[200px]"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-8 w-64 mx-auto" />
+        </CardHeader>
+        <CardContent>
+          <div className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
+            <div className="bg-gradient-to-br from-slate-100 to-slate-200 p-4 grid grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-6" />
+              ))}
+            </div>
+            <div className="bg-white divide-y">
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <div
+                  key={i}
+                  className="p-3 grid grid-cols-4 gap-4 items-center"
+                >
+                  <Skeleton className="h-5 w-8" />
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="h-5 w-12" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 const QuizStatistics = () => {
   const [stats, setStats] = useState<{
@@ -29,13 +89,22 @@ const QuizStatistics = () => {
   } | null>(null);
 
   const [loading, setLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(
+    QUIZ_COMPETITION_DEFAULT_YEAR,
+  );
 
-  const { currentUser, isSuperAdmin } = useUser();
+  const { isSuperAdmin } = useUser();
 
   useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
     const fetchStats = async () => {
       try {
-        const data = await getQuizStatistics();
+        // When 2025 is selected, fetch with no year filter (null) for legacy/all data
+        const yearParam =
+          selectedYear === 2025 ? undefined : selectedYear;
+        const data = await getQuizStatistics(yearParam);
+        if (cancelled) return;
 
         // ✅ Keep `idCardNumber` when setting to state
         const formattedTopCorrect = data.topCorrect?.map((user) => ({
@@ -47,7 +116,7 @@ const QuizStatistics = () => {
         // ✅ Filter to show only the highest scoring participants
         const highestCount = formattedTopCorrect?.[0]?.count || 0;
         const filteredTopCorrect = formattedTopCorrect?.filter(
-          (user) => user.count === highestCount
+          (user) => user.count === highestCount,
         );
 
         const formattedTopIncorrect = data.topIncorrect?.map((user) => ({
@@ -62,24 +131,25 @@ const QuizStatistics = () => {
           topIncorrect: formattedTopIncorrect || null,
         });
       } catch (error) {
-        console.error("Error fetching quiz statistics:", error);
+        if (!cancelled) console.error("Error fetching quiz statistics:", error);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchStats();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedYear]);
 
-  if (loading)
+  if (loading && !stats) {
     return (
-      <div className="flex justify-center h-screen items-center">
-        <div className="flex flex-col items-center gap-4">
-          {/* Spinner */}
-          <div className="w-16 h-16 border-4 border-cyan-600 border-dashed rounded-full animate-spin"></div>
-        </div>
-      </div>
+      <>
+        {isSuperAdmin && <QuizStatisticsSkeleton />}
+      </>
     );
+  }
 
   if (!stats) {
     return (
@@ -92,16 +162,47 @@ const QuizStatistics = () => {
       {isSuperAdmin && (
         <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
           <div className="flex flex-col items-center justify-center border border-cyan-200 rounded-xl p-6 bg-gradient-to-t from-cyan-50 to-cyan-100 shadow-md w-full">
-            <h2 className="font-dhivehi text-3xl text-cyan-950 font-bold mb-2">
-              އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
-            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-2">
+              <h2 className="font-dhivehi text-3xl text-cyan-950 font-bold">
+                އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
+              </h2>
+              <div className="relative">
+                <Select
+                value={String(selectedYear)}
+                onValueChange={(v) => setSelectedYear(Number(v))}
+              >
+                <SelectTrigger className="w-[100px] font-dhivehi">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {QUIZ_COMPETITION_YEARS.map((y) => (
+                    <SelectItem key={y} value={String(y)}>
+                      {y}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+                {loading && (
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 border-2 border-cyan-600/30 border-t-cyan-600 rounded-full animate-spin" />
+                )}
+              </div>
+            </div>
             <div className="flex gap-4 mt-10">
-              {stats?.topCorrect?.length ? (
+              {loading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 justify-center">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Skeleton
+                      key={i}
+                      className="h-10 rounded-full min-w-[140px] max-w-[200px]"
+                    />
+                  ))}
+                </div>
+              ) : stats?.topCorrect?.length ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 justify-center">
                   {stats.topCorrect.map((user, index) => (
                     <Link
                       key={user.idCardNumber + index}
-                      href={`competitions/quiz-competition/${user.idCardNumber}`}
+                      href={`/competitions/quiz-competition/${user.idCardNumber}?year=${selectedYear}`}
                     >
                       <div
                         key={user.idCardNumber + index}
@@ -130,20 +231,39 @@ const QuizStatistics = () => {
             </div>
           </div>
 
-          {/* <div>
-            <ShufflePicker
-              participants={stats?.topCorrect || []}
-              onWinnersSelected={(winners) => {
-                console.log("🏆 Winners:", winners);
-                // You can store the winners or update state elsewhere
-              }}
-            />
-          </div> */}
-
+          {loading ? (
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-8 w-64 mx-auto" />
+              </CardHeader>
+              <CardContent>
+                <div className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
+                  <div className="bg-gradient-to-br from-slate-100 to-slate-200 p-4 grid grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Skeleton key={i} className="h-6" />
+                    ))}
+                  </div>
+                  <div className="bg-white divide-y">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <div
+                        key={i}
+                        className="p-3 grid grid-cols-4 gap-4 items-center"
+                      >
+                        <Skeleton className="h-5 w-8" />
+                        <Skeleton className="h-5 w-12" />
+                        <Skeleton className="h-5 w-12" />
+                        <Skeleton className="h-5 w-12" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
           <Card>
             <CardHeader>
               <CardTitle className="text-center md:text-3xl text-2xl text-cyan-950">
-                ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1446
+                ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1447
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -186,12 +306,13 @@ const QuizStatistics = () => {
                           {data.incorrect}
                         </TableCell>
                       </TableRow>
-                    )
+                    ),
                   )}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
+          )}
         </div>
       )}
     </>

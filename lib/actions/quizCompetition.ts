@@ -2,9 +2,11 @@
 
 import { createAdminClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
+import { QUIZ_COMPETITION_DEFAULT_YEAR } from "@/constants";
 import { ID, Query } from "node-appwrite";
 import { parseStringify } from "../utils";
 import * as XLSX from "xlsx";
+import { getQuranParticipantByIdCard } from "./madhaha.actions";
 
 interface QuizQuestion {
   questionNumber: string;
@@ -111,9 +113,6 @@ export const submitQuizForm = async (quizData: {
     const formattedStart = todayStart.toISOString();
     const formattedEnd = todayEnd.toISOString();
 
-    console.log("🌍 Maldives Today Start (UTC):", formattedStart);
-    console.log("🌍 Maldives Today End (UTC):", formattedEnd);
-
     // ✅ Query for today's quiz question
     const quizResult = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -132,12 +131,15 @@ export const submitQuizForm = async (quizData: {
     const correctAnswer = quizQuestion.correctAnswer; // Correct answer field from the database
     const isCorrect = quizData.answer.trim() === correctAnswer.trim(); // Compare user's answer
 
-    // ✅ Query for existing submissions matching idCardNumber
+    const year = new Date(Date.now() + 5 * 60 * 60 * 1000).getUTCFullYear();
+
+    // ✅ Query for existing submissions matching idCardNumber + same day + same year
     const idCardMatches = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
       [
         Query.equal("idCardNumber", quizData.idCardNumber),
+        Query.equal("year", year),
         Query.greaterThanEqual("submissionDate", formattedStart),
         Query.lessThanEqual("submissionDate", formattedEnd),
       ]
@@ -152,7 +154,7 @@ export const submitQuizForm = async (quizData: {
       };
     }
 
-    // ✅ Store new submission in Maldives Time (UTC+5)
+    // ✅ Store new submission in Maldives Time (UTC+5) with year
     const response = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
@@ -165,6 +167,7 @@ export const submitQuizForm = async (quizData: {
         submissionDate: todayStart.toISOString(), // ✅ Corrected Maldives Time Submission Date
         questionNumber: quizQuestion.questionNumber,
         correct: isCorrect,
+        year,
       }
     );
 
@@ -179,7 +182,8 @@ export const submitQuizForm = async (quizData: {
 export const getAllQuizSubmissions = async (
   limit: number,
   offset: number,
-  selectedDate?: string
+  selectedDate?: string,
+  selectedYear?: number
 ) => {
   try {
     const { databases } = await createAdminClient();
@@ -189,6 +193,10 @@ export const getAllQuizSubmissions = async (
       Query.offset(offset),
       Query.orderDesc("$createdAt"),
     ];
+
+    if (selectedYear != null) {
+      filters.push(Query.equal("year", selectedYear));
+    }
 
     if (selectedDate) {
       const startDate = new Date(selectedDate);
@@ -220,9 +228,12 @@ export const getAllQuizSubmissions = async (
   }
 };
 
-export const getQuizStatistics = async (): Promise<QuizStatistics> => {
+export const getQuizStatistics = async (
+  year?: number | null
+): Promise<QuizStatistics> => {
   try {
     const { databases } = await createAdminClient();
+    const filterByYear = year != null;
 
     // ✅ Step 1: Get Total Number of Questions
     const quizQuestions = await databases.listDocuments(
@@ -232,17 +243,19 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
     );
 
     const totalQuestionsCount = quizQuestions.total;
-    console.log("✅ Total Quiz Questions:", totalQuestionsCount);
-
     if (totalQuestionsCount === 0) {
       throw new Error("No quiz questions found.");
     }
 
-    // ✅ Step 2: Get All Submissions
+    // ✅ Step 2: Get All Submissions (filter by year only when year is provided)
+    const submissionFilters = [Query.limit(5000)];
+    if (filterByYear) {
+      submissionFilters.unshift(Query.equal("year", year as number));
+    }
     const submissions = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [Query.limit(5000)] // ⬆️ Increased Limit to Ensure All Entries Are Fetched
+      submissionFilters
     );
 
     if (submissions.total === 0) {
@@ -305,9 +318,9 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
 
     // ✅ Step 5: Identify Current Question Day (based on answered questions)
     const currentDayCount = Math.max(
-      ...Object.keys(dailyStats).map((q) => parseInt(q))
+      0,
+      ...Object.keys(dailyStats).map((q) => parseInt(q, 10) || 0)
     );
-    console.log("✅ Current Question Day:", currentDayCount);
 
     // ✅ Step 6: Top Correct Answers (No Limit)
     const topCorrect: TopUser[] = Object.entries(userCorrectCount)
@@ -321,15 +334,13 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
 
     // ✅ Step 7: Keep Top Scorers Based on Current Day Count
     const highestCount =
-      topCorrect.find((user) => user.count <= currentDayCount)?.count || 0;
-
-    console.log("✅ Highest Count (based on current day):", highestCount);
+      topCorrect.find((user) => user.count <= currentDayCount)?.count ||
+      topCorrect[0]?.count ||
+      0;
 
     const filteredTopCorrect = topCorrect.filter(
       (user) => user.count === highestCount
     );
-
-    console.log("✅ Filtered Top Correct:", filteredTopCorrect);
 
     // ✅ Step 8: Top Incorrect Answers (Top 5)
     const topIncorrect: TopUser[] = Object.entries(userIncorrectCount)
@@ -340,8 +351,6 @@ export const getQuizStatistics = async (): Promise<QuizStatistics> => {
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
-
-    console.log("✅ Top Incorrect:", topIncorrect);
 
     return {
       dailyStats,
@@ -388,20 +397,26 @@ export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
 };
 
 export const getQuizSubmissionsById = async (
-  idCardNumber: string | string[] | undefined
+  idCardNumber: string | string[] | undefined,
+  year?: number
 ) => {
   try {
     const { databases } = await createAdminClient();
+    const selectedYear = year ?? QUIZ_COMPETITION_DEFAULT_YEAR;
 
     if (!idCardNumber || Array.isArray(idCardNumber)) {
       throw new Error("Invalid ID card number provided.");
     }
 
-    // ✅ Fetch all submissions by the same user
+    // ✅ Fetch all submissions by the same user for the selected year
     const submissionResult = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.quizCompetitionAnswersId,
-      [Query.equal("idCardNumber", idCardNumber), Query.limit(50)]
+      [
+        Query.equal("idCardNumber", idCardNumber),
+        Query.equal("year", selectedYear),
+        Query.limit(50),
+      ]
     );
 
     if (submissionResult.total === 0) {
@@ -440,5 +455,98 @@ export const getQuizSubmissionsById = async (
   } catch (error) {
     console.error("Failed to fetch quiz submissions:", error);
     throw new Error("Failed to fetch quiz submissions.");
+  }
+};
+
+/** Returns fullName and contactNumber for a participant by ID card (quiz answers first, then Quran competition). */
+export const getParticipantDetailsByIdCard = async (idCardNumber: string) => {
+  try {
+    const { databases } = await createAdminClient();
+    const normalized = idCardNumber.trim().toUpperCase();
+    if (!normalized || normalized.length < 5) return null;
+
+    const quizResult = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.quizCompetitionAnswersId,
+      [Query.equal("idCardNumber", normalized), Query.limit(1)]
+    );
+    if (quizResult.documents.length > 0) {
+      const doc = quizResult.documents[0] as any;
+      return {
+        fullName: doc.fullName ?? "",
+        contactNumber: doc.contactNumber ?? "",
+      };
+    }
+    const quran = await getQuranParticipantByIdCard(normalized);
+    if (quran) {
+      const doc = quran as any;
+      return {
+        fullName: doc.fullName ?? "",
+        contactNumber: doc.contactNumber ?? "",
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch participant details:", error);
+    return null;
+  }
+};
+
+const QUIZ_COUNTDOWN_CONFIG_DOC_ID = "quiz-countdown-config";
+
+export const getQuizCountdownSettings = async (): Promise<{
+  countdownEnabled: boolean;
+  countdownTargetAt: string | null;
+}> => {
+  try {
+    if (!appwriteConfig.quizCountdownSettingsId) {
+      return { countdownEnabled: false, countdownTargetAt: null };
+    }
+    const { databases } = await createAdminClient();
+    const doc = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.quizCountdownSettingsId,
+      QUIZ_COUNTDOWN_CONFIG_DOC_ID
+    );
+    const d = doc as any;
+    return {
+      countdownEnabled: Boolean(d?.countdownEnabled),
+      countdownTargetAt: d?.countdownTargetAt ?? null,
+    };
+  } catch {
+    return { countdownEnabled: false, countdownTargetAt: null };
+  }
+};
+
+export const updateQuizCountdownSettings = async (settings: {
+  countdownEnabled: boolean;
+  countdownTargetAt: string | null;
+}) => {
+  if (!appwriteConfig.quizCountdownSettingsId) return;
+  try {
+    const { databases } = await createAdminClient();
+    try {
+      await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.quizCountdownSettingsId,
+        QUIZ_COUNTDOWN_CONFIG_DOC_ID,
+        {
+          countdownEnabled: settings.countdownEnabled,
+          countdownTargetAt: settings.countdownTargetAt,
+        }
+      );
+    } catch {
+      await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.quizCountdownSettingsId,
+        QUIZ_COUNTDOWN_CONFIG_DOC_ID,
+        {
+          countdownEnabled: settings.countdownEnabled,
+          countdownTargetAt: settings.countdownTargetAt,
+        }
+      );
+    }
+  } catch (error) {
+    console.error("Failed to update quiz countdown settings:", error);
   }
 };

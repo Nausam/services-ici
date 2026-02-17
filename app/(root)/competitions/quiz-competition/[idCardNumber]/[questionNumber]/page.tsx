@@ -1,13 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useParams, useSearchParams } from "next/navigation";
 import { getQuizSubmissionsById } from "@/lib/actions/quizCompetition";
 import { Models } from "node-appwrite";
+import { QUIZ_COMPETITION_DEFAULT_YEAR } from "@/constants";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const QuizSubmissionDetails = () => {
-  const { idCardNumber, questionNumber } = useParams();
+  const { idCardNumber } = useParams();
+  const searchParams = useSearchParams();
+  const yearParam = searchParams.get("year");
+  const year = yearParam ? parseInt(yearParam, 10) : QUIZ_COMPETITION_DEFAULT_YEAR;
   const [submissions, setSubmissions] = useState<Models.Document[] | null>(
     null
   );
@@ -18,7 +22,7 @@ const QuizSubmissionDetails = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await getQuizSubmissionsById(idCardNumber);
+        const response = await getQuizSubmissionsById(idCardNumber, year);
         setSubmissions(response);
       } catch (err) {
         setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު");
@@ -29,12 +33,24 @@ const QuizSubmissionDetails = () => {
     };
 
     fetchSubmissions();
-  }, [idCardNumber]);
+  }, [idCardNumber, year]);
 
   if (loading)
     return (
-      <div className="flex justify-center h-screen items-center">
-        <div className="w-16 h-16 border-4 border-cyan-600 border-dashed rounded-full animate-spin"></div>
+      <div dir="rtl" className="max-w-5xl w-full mx-auto p-4 mt-10 space-y-6">
+        {[1, 2].map((i) => (
+          <div key={i} className="bg-white shadow-lg rounded-xl overflow-hidden border">
+            <Skeleton className="h-24 w-full rounded-t-xl" />
+            <div className="p-6 space-y-4">
+              {[1, 2, 3, 4, 5].map((j) => (
+                <div key={j} className="flex justify-between items-center py-3 border-b last:border-none">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-32" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
 
