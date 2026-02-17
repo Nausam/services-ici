@@ -23,10 +23,7 @@ import {
 import { QuizQuestion } from "@/types";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { quizSchema } from "@/lib/validations";
-import {
-  formatTime,
-  getNextMidnightMaldives,
-} from "@/constants";
+import { formatTime, getNextMidnightMaldives } from "@/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/providers/UserProvider";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,7 +38,9 @@ const QuizCompetitionForm = () => {
   const [detailsFetched, setDetailsFetched] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [countdownToMidnight, setCountdownToMidnight] = useState<number>(0);
-  const [countdownLabel, setCountdownLabel] = useState<"midnight" | "custom">("midnight");
+  const [countdownLabel, setCountdownLabel] = useState<"midnight" | "custom">(
+    "midnight",
+  );
   const { isSuperAdmin } = useUser();
 
   const form = useForm<z.infer<typeof quizSchema>>({
@@ -162,7 +161,10 @@ const QuizCompetitionForm = () => {
 
   if (isLoading)
     return (
-      <div className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg max-w-2xl mx-auto" dir="rtl">
+      <div
+        className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg max-w-2xl mx-auto"
+        dir="rtl"
+      >
         <Skeleton className="h-5 w-full max-w-md ml-auto" />
         <div className="space-y-3">
           <Skeleton className="h-8 w-full max-w-xl ml-auto" />
@@ -201,11 +203,6 @@ const QuizCompetitionForm = () => {
             ? "ސުވާލު މުބާރާތް ފެށޭނީ މި ގަޑަށް"
             : "ސުވާލު މުބާރާތް ފެށޭނީ މިރޭ 12:00 ގައި"}
         </h2>
-        {countdownLabel === "midnight" && (
-          <p className="font-dhivehi text-center text-cyan-600 mt-4">
-            މިރޭ ހަވީ ދުވަހު 00:00 (މަލެއް ދުވަހެއްގެ ތާރީޚު)
-          </p>
-        )}
       </div>
     );
   }
@@ -378,16 +375,18 @@ const QuizCompetitionForm = () => {
                         const v = field.value.replace(/^A/, "").trim();
                         if (v.length >= 6) {
                           setLoadingDetails(true);
-                          const details =
-                            await getParticipantDetailsByIdCard(
-                              field.value.startsWith("A")
-                                ? field.value
-                                : `A${field.value}`
-                            );
+                          const details = await getParticipantDetailsByIdCard(
+                            field.value.startsWith("A")
+                              ? field.value
+                              : `A${field.value}`,
+                          );
                           setLoadingDetails(false);
                           if (details) {
                             form.setValue("fullName", details.fullName);
-                            form.setValue("contactNumber", details.contactNumber);
+                            form.setValue(
+                              "contactNumber",
+                              details.contactNumber,
+                            );
                           }
                           setDetailsFetched(true);
                         }
@@ -476,16 +475,14 @@ const QuizCompetitionForm = () => {
           </div>
 
           {loadingDetails && (
-            <p className="font-dhivehi text-cyan-600 text-right">
-              ހޯދަނީ...
-            </p>
+            <p className="font-dhivehi text-cyan-600 text-right">ހޯދަނީ...</p>
           )}
           {!detailsFetched &&
             form.watch("idCardNumber").replace(/^A/, "").length >= 6 && (
-            <p className="font-dhivehi text-gray-500 text-right text-sm">
-              އައިޑީކާޑް ނަންބަރު ލިޔުމުގެ ފަހު މަސައްކަތް ކުރޭ
-            </p>
-          )}
+              <p className="font-dhivehi text-gray-500 text-right text-sm">
+                އައިޑީކާޑް ނަންބަރު ލިޔުމުގެ ފަހު މަސައްކަތް ކުރޭ
+              </p>
+            )}
 
           <div className="flex justify-start">
             <Button
