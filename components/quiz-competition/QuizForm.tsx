@@ -53,7 +53,8 @@ const QuizCompetitionForm = () => {
     },
   });
 
-  // Countdown: load admin settings and compute target (admin target or next midnight Maldives)
+  // Countdown: load admin settings and compute target (admin target or next midnight Maldives).
+  // Once we reach 0 we stay at 0 (do not reset to next day's countdown).
   useEffect(() => {
     let mounted = true;
     const updateCountdown = async () => {
@@ -68,7 +69,12 @@ const QuizCompetitionForm = () => {
         if (mounted) setCountdownLabel("midnight");
       }
       const diff = targetMs - now;
-      if (mounted) setCountdownToMidnight(diff > 0 ? diff : 0);
+      // Past the target: keep at 0 and do not set a new positive value (avoids resetting to ~24h)
+      if (diff <= 0) {
+        if (mounted) setCountdownToMidnight(0);
+        return;
+      }
+      if (mounted) setCountdownToMidnight(diff);
     };
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
@@ -79,28 +85,44 @@ const QuizCompetitionForm = () => {
   }, []);
 
   // Fetch today's quiz question and set a timer for "next quiz date" if necessary
-  useEffect(() => {
-    const fetchQuizQuestion = async () => {
-      setIsLoading(true);
-      const data = await getTodaysQuizQuestion();
+  const fetchQuizQuestion = React.useCallback(async () => {
+    setIsLoading(true);
+    const data = await getTodaysQuizQuestion();
 
-      if (data?.nextQuizDate) {
-        const nextQuizTime = new Date(data.nextQuizDate).getTime();
-        const now = Date.now();
-        const maldivesNow = now + 5 * 60 * 60 * 1000;
-        const diff = nextQuizTime - maldivesNow;
+    if (data?.nextQuizDate && !data?.question) {
+      const nextQuizTime = new Date(data.nextQuizDate).getTime();
+      const now = Date.now();
+      const maldivesNow = now + 5 * 60 * 60 * 1000;
+      const diff = nextQuizTime - maldivesNow;
 
-        if (diff > 0) {
-          setTimeLeft(diff);
-        }
+      if (diff > 0) {
+        setTimeLeft(diff);
+      } else {
+        setTimeLeft(0);
       }
+    } else {
+      setTimeLeft(0);
+    }
 
-      setQuizData(data);
-      setIsLoading(false);
-    };
-
-    fetchQuizQuestion();
+    setQuizData(data);
+    setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchQuizQuestion();
+  }, [fetchQuizQuestion]);
+
+  // When countdown hits 0, re-fetch once so we get today's question (instead of stale nextQuizDate)
+  const hasRefetchedAfterZero = React.useRef(false);
+  useEffect(() => {
+    if (countdownToMidnight !== 0) {
+      hasRefetchedAfterZero.current = false;
+      return;
+    }
+    if (hasRefetchedAfterZero.current) return;
+    hasRefetchedAfterZero.current = true;
+    fetchQuizQuestion();
+  }, [countdownToMidnight, fetchQuizQuestion]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -191,8 +213,15 @@ const QuizCompetitionForm = () => {
       </div>
     );
 
-  // Countdown to start: show until target time (or next midnight) unless super admin
-  if (countdownToMidnight > 0 && !isSuperAdmin) {
+  // If today's quiz is available, show the form and no timer
+  const hasQuizForToday = Boolean(quizData?.question);
+
+  // Countdown to start: only show when no quiz for today yet (unless super admin)
+  if (
+    !hasQuizForToday &&
+    countdownToMidnight > 0 &&
+    !isSuperAdmin
+  ) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <p className="font-dhivehi text-7xl text-cyan-700 mt-20">
@@ -207,10 +236,10 @@ const QuizCompetitionForm = () => {
     );
   }
 
-  // Next quiz date countdown (skip for super admin so they can test)
+  // Next quiz date countdown: only when no quiz for today (skip for super admin so they can test)
   if (
+    !hasQuizForToday &&
     !isSuperAdmin &&
-    !quizData?.question &&
     quizData?.nextQuizDate &&
     timeLeft > 0
   ) {
