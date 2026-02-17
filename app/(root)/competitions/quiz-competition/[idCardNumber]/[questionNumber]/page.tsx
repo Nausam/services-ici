@@ -1,13 +1,18 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getQuizSubmissionsById } from "@/lib/actions/quizCompetition";
 import { Models } from "node-appwrite";
+import { QUIZ_COMPETITION_DEFAULT_YEAR } from "@/constants";
 
 const QuizSubmissionDetails = () => {
   const { idCardNumber, questionNumber } = useParams();
+  const searchParams = useSearchParams();
+  const yearParam = searchParams.get("year");
+  const year = yearParam ? Number(yearParam) : QUIZ_COMPETITION_DEFAULT_YEAR;
+
   const [submissions, setSubmissions] = useState<Models.Document[] | null>(
     null
   );
@@ -18,7 +23,7 @@ const QuizSubmissionDetails = () => {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await getQuizSubmissionsById(idCardNumber);
+        const response = await getQuizSubmissionsById(idCardNumber, year);
         setSubmissions(response);
       } catch (err) {
         setError("ޕާޓިސިޕަންޓް ތަފްޞީލް ނުފެނުނު");
@@ -29,7 +34,7 @@ const QuizSubmissionDetails = () => {
     };
 
     fetchSubmissions();
-  }, [idCardNumber]);
+  }, [idCardNumber, year]);
 
   if (loading)
     return (

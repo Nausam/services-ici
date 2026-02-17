@@ -8,6 +8,10 @@ import Q_ParticipantCard from "../quran-competition/Q_ParticipantCard";
 import { Input } from "../ui/input";
 import { useUser } from "@/providers/UserProvider";
 import PlaceholderCard from "../PlaceholderCard";
+import {
+  QUIZ_COMPETITION_DEFAULT_YEAR,
+  QUIZ_COMPETITION_YEARS,
+} from "@/constants";
 
 interface QuizSubmission {
   fullName: string;
@@ -31,6 +35,9 @@ const QuizSubmissionsList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedDate, setSelectedDate] = useState<string>(getTodayDate());
+  const [selectedYear, setSelectedYear] = useState<number>(
+    QUIZ_COMPETITION_DEFAULT_YEAR
+  );
   const limit = 15;
 
   const { currentUser, isSuperAdmin } = useUser();
@@ -43,7 +50,8 @@ const QuizSubmissionsList = () => {
         const response = await getAllQuizSubmissions(
           limit,
           offset,
-          selectedDate
+          selectedDate,
+          selectedYear
         );
         setSubmissions(response.documents);
         setTotalPages(Math.ceil(response.total / limit)); // Calculate total pages
@@ -55,7 +63,7 @@ const QuizSubmissionsList = () => {
     };
 
     fetchSubmissions();
-  }, [currentPage, selectedDate]);
+  }, [currentPage, selectedDate, selectedYear]);
 
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -77,15 +85,35 @@ const QuizSubmissionsList = () => {
             މިއަދުގެ ސުވާލަށް ޖަވާބުދެއްވި ފަރާތްތައް
           </h1>
 
-          {/* Date Filter Input */}
-          <div className="flex  gap-4 mb-5">
-            <div className="w-32">
+          {/* Year and Date Filter */}
+          <div className="flex flex-wrap gap-4 mb-5">
+            <div className="flex flex-col gap-1">
+              <label className="font-dhivehi text-sm text-cyan-900">
+                އަހަރު
+              </label>
+              <select
+                dir="rtl"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="border border-cyan-600 rounded-md px-3 py-1.5 w-28 bg-white"
+              >
+                {QUIZ_COMPETITION_YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="font-dhivehi text-sm text-cyan-900">
+                ދުވަހު
+              </label>
               <Input
                 dir="rtl"
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="border justify-end border-cyan-600 rounded-md px-3 py-1 w-full mt-5"
+                className="border justify-end border-cyan-600 rounded-md px-3 py-1 w-32"
               />
             </div>
           </div>
@@ -114,7 +142,7 @@ const QuizSubmissionsList = () => {
                   fullName={submission.fullName}
                   idCardNumber={submission.idCardNumber}
                   contactNumber={submission.contactNumber}
-                  href={`/competitions/quiz-competition/${submission.idCardNumber}/${submission.questionNumber}`}
+                  href={`/competitions/quiz-competition/${submission.idCardNumber}/${submission.questionNumber}?year=${selectedYear}`}
                   idCardUrl={submission.idCardUrl}
                 />
               ))}

@@ -16,23 +16,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/hooks/use-toast";
 import {
-  getQuizSubmissionById,
+  getParticipantDetailsByIdCard,
   getTodaysQuizQuestion,
   submitQuizForm,
 } from "@/lib/actions/quizCompetition";
 import { QuizQuestion } from "@/types";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { quizSchema } from "@/lib/validations";
-import { formatTime } from "@/constants";
+import { formatTime, getNextMidnightMaldives } from "@/constants";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@/providers/UserProvider";
 
 const QuizCompetitionForm = () => {
+  const { isSuperAdmin } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [quizData, setQuizData] = useState<QuizQuestion | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isWrongAnswer, setIsWrongAnswer] = useState(false);
+  const [detailsFetched, setDetailsFetched] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [countdownToMidnight, setCountdownToMidnight] = useState<number>(0);
 
   const form = useForm<z.infer<typeof quizSchema>>({
     resolver: zodResolver(quizSchema),
@@ -43,6 +48,18 @@ const QuizCompetitionForm = () => {
       answer: "",
     },
   });
+
+  // Countdown to tonight 12:00 (midnight) Maldives – quiz start time
+  useEffect(() => {
+    const update = () => {
+      const next = getNextMidnightMaldives().getTime();
+      const diff = next - Date.now();
+      setCountdownToMidnight(diff > 0 ? diff : 0);
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Fetch today's quiz question and set a timer if necessary
   useEffect(() => {
@@ -118,6 +135,7 @@ const QuizCompetitionForm = () => {
         setIsWrongAnswer(false);
       }, 2500);
 
+      setDetailsFetched(false);
       form.reset();
     } catch (error) {
       console.error("Error submitting the form:", error);
@@ -136,8 +154,25 @@ const QuizCompetitionForm = () => {
       </div>
     );
 
-  // Timer display
-  if (!quizData?.question && quizData?.nextQuizDate && timeLeft > 0) {
+  // Countdown to tonight 12:00 (midnight) Maldives – skip for super admin so they can test
+  if (countdownToMidnight > 0 && !isSuperAdmin) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center h-full min-h-[320px]"
+        dir="rtl"
+      >
+        <p className="font-dhivehi text-6xl md:text-7xl text-cyan-700 mt-12 font-bold tabular-nums">
+          {formatTime(countdownToMidnight)}
+        </p>
+        <h2 className="font-dhivehi text-center md:text-3xl text-xl text-cyan-700 mt-8 px-4">
+          ސުވާލު މުބާރާތް ފެށޭނީ މިރޭ 12:00 ގައި
+        </h2>
+      </div>
+    );
+  }
+
+  // Timer display when no quiz today but next quiz date exists – skip for super admin (testing)
+  if (!quizData?.question && quizData?.nextQuizDate && timeLeft > 0 && !isSuperAdmin) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <p className="font-dhivehi text-7xl text-cyan-700 mt-20">
@@ -266,29 +301,9 @@ const QuizCompetitionForm = () => {
             />
           </div>
 
+          {/* ID Card (right), Full Name, Phone – name and phone grayed out until ID lookup */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
-            {/* Full Name */}
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <p className="font-dhivehi text-xl text-right text-cyan-950">
-                    ފުރިހަމަ ނަން
-                  </p>
-                  <FormControl>
-                    <Input
-                      placeholder=" ފުރިހަމަ ނަން "
-                      {...field}
-                      className="rounded-md font-dhivehi border-gray-300  text-right "
-                    />
-                  </FormControl>
-                  <FormMessage className="font-dhivehi text-md" />
-                </FormItem>
-              )}
-            />
-
-            {/* ID Card */}
+            {/* ID Card – rightmost in RTL */}
             <FormField
               control={form.control}
               name="idCardNumber"
@@ -298,26 +313,89 @@ const QuizCompetitionForm = () => {
                     އައިޑީކާޑް ނަންބަރު
                   </p>
                   <FormControl>
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        {...field}
+                        value={
+                          field.value.startsWith("A")
+                            ? field.value
+                            : `A${field.value}`
+                        }
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const numericPart = inputValue
+                            .replace(/^A/, "")
+                            .replace(/\D/g, "")
+                            .slice(0, 6);
+                          const newValue = `A${numericPart}`;
+                          field.onChange(newValue);
+                          if (detailsFetched && newValue !== field.value) {
+                            setDetailsFetched(false);
+                            form.setValue("fullName", "");
+                            form.setValue("contactNumber", "");
+                          }
+                        }}
+                        onBlur={async () => {
+                          const value = field.value.trim();
+                          const numericPart = value
+                            .replace(/^A/, "")
+                            .replace(/\D/g, "");
+                          if (numericPart.length < 6) return;
+                          setLoadingDetails(true);
+                          try {
+                            const details =
+                              await getParticipantDetailsByIdCard(value);
+                            if (details) {
+                              form.setValue("fullName", details.fullName);
+                              form.setValue(
+                                "contactNumber",
+                                details.contactNumber,
+                              );
+                            }
+                            setDetailsFetched(true);
+                          } catch {
+                            setDetailsFetched(true);
+                          } finally {
+                            setLoadingDetails(false);
+                          }
+                        }}
+                        placeholder="A123456"
+                        className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950"
+                        disabled={loadingDetails}
+                      />
+                      {loadingDetails && (
+                        <p className="font-dhivehi text-sm text-cyan-600 text-right">
+                          ހޯދަނީ...
+                        </p>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage className="font-dhivehi text-md" />
+                </FormItem>
+              )}
+            />
+
+            {/* Full Name – grayed until details fetched */}
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <p
+                    className={`font-dhivehi text-xl text-right ${!detailsFetched ? "text-gray-400" : "text-cyan-950"}`}
+                  >
+                    ފުރިހަމަ ނަން
+                  </p>
+                  <FormControl>
                     <Input
-                      {...field}
-                      value={
-                        field.value.startsWith("A")
-                          ? field.value
-                          : `A${field.value}`
+                      placeholder={
+                        !detailsFetched
+                          ? "އައިޑީކާޑު ނަންބަރު ލިޔުއްވާ"
+                          : " ފުރިހަމަ ނަން "
                       }
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-
-                        // Remove non-digit characters after "A"
-                        const numericPart = inputValue
-                          .replace(/^A/, "")
-                          .replace(/\D/g, "")
-                          .slice(0, 6); // Ensure max 6 digits
-
-                        field.onChange(`A${numericPart}`);
-                      }}
-                      placeholder="A123456"
-                      className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950"
+                      {...field}
+                      disabled={!detailsFetched}
+                      className={`rounded-md font-dhivehi border-gray-300 text-right ${!detailsFetched ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
                     />
                   </FormControl>
                   <FormMessage className="font-dhivehi text-md" />
@@ -325,25 +403,33 @@ const QuizCompetitionForm = () => {
               )}
             />
 
-            {/* Contact Number */}
+            {/* Contact Number – grayed until details fetched */}
             <FormField
               control={form.control}
               name="contactNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                  <p
+                    className={`font-dhivehi text-xl text-right ${!detailsFetched ? "text-gray-400" : "text-cyan-950"}`}
+                  >
                     ފޯނު ނަންބަރު
                   </p>
                   <FormControl>
                     <Input
                       {...field}
-                      value={field.value.replace(/\D/g, "").slice(0, 7)} // Ensure only 7 digits
+                      value={field.value.replace(/\D/g, "").slice(0, 7)}
                       onChange={(e) => {
-                        const inputValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric values
-                        field.onChange(inputValue.slice(0, 7)); // Allow max 7 digits
+                        field.onChange(
+                          e.target.value.replace(/\D/g, "").slice(0, 7),
+                        );
                       }}
-                      placeholder="ފޯނު ނަންބަރު"
-                      className="rounded-md font-dhivehi border-gray-300 text-right"
+                      placeholder={
+                        !detailsFetched
+                          ? "އައިޑީކާޑު ނަންބަރު ލިޔުއްވާ"
+                          : "ފޯނު ނަންބަރު"
+                      }
+                      disabled={!detailsFetched}
+                      className={`rounded-md font-dhivehi border-gray-300 text-right ${!detailsFetched ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
                     />
                   </FormControl>
                   <FormMessage className="font-dhivehi text-md" />

@@ -98,6 +98,10 @@ export const permissionOptions = [
   },
 ];
 
+// Quiz competition: years available for filtering (e.g. 2025, 2026)
+export const QUIZ_COMPETITION_YEARS = [2025, 2026];
+export const QUIZ_COMPETITION_DEFAULT_YEAR = 2026;
+
 export const formatTime = (milliseconds: number) => {
   if (milliseconds <= 0) return "00:00:00"; // Avoid negative countdown
 
@@ -108,6 +112,17 @@ export const formatTime = (milliseconds: number) => {
   return `${hours.toString().padStart(2, "0")}:${minutes
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};
+
+/** Next midnight (00:00) in Maldives time (UTC+5), as a Date for countdown */
+export const getNextMidnightMaldives = (): Date => {
+  const now = new Date();
+  const maldivesNow = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+  const y = maldivesNow.getUTCFullYear();
+  const m = maldivesNow.getUTCMonth();
+  const d = maldivesNow.getUTCDate();
+  // Tomorrow 00:00 Maldives = UTC(y, m, d+1, 0,0,0,0) - 5h
+  return new Date(Date.UTC(y, m, d + 1, 0, 0, 0, 0) - 5 * 60 * 60 * 1000);
 };
 
 export const AGE_GROUPS = [

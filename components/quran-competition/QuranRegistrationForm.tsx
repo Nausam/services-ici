@@ -104,8 +104,8 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
   // Function to handle PDF download
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "/assets/files/Quran_Mubaaraathuge_Gavaidhu_2025.pdf";
-    link.download = "Quran_Mubaaraathuge_Gavaidhu_2025.pdf";
+    link.href = "/assets/files/Quran_Mubaaraathuge_Gavaidhu_2026.pdf";
+    link.download = "Quran_Mubaaraathuge_Gavaidhu_2026.pdf";
     link.click();
   };
 

@@ -15,6 +15,10 @@ import {
 import { useUser } from "@/providers/UserProvider";
 import Link from "next/link";
 import ShufflePicker from "./ShufflePicker";
+import {
+  QUIZ_COMPETITION_DEFAULT_YEAR,
+  QUIZ_COMPETITION_YEARS,
+} from "@/constants";
 
 const QuizStatistics = () => {
   const [stats, setStats] = useState<{
@@ -29,13 +33,16 @@ const QuizStatistics = () => {
   } | null>(null);
 
   const [loading, setLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState<number>(
+    QUIZ_COMPETITION_DEFAULT_YEAR
+  );
 
   const { currentUser, isSuperAdmin } = useUser();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const data = await getQuizStatistics();
+        const data = await getQuizStatistics(selectedYear);
 
         // ✅ Keep `idCardNumber` when setting to state
         const formattedTopCorrect = data.topCorrect?.map((user) => ({
@@ -69,7 +76,7 @@ const QuizStatistics = () => {
     };
 
     fetchStats();
-  }, []);
+  }, [selectedYear]);
 
   if (loading)
     return (
@@ -92,16 +99,30 @@ const QuizStatistics = () => {
       {isSuperAdmin && (
         <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
           <div className="flex flex-col items-center justify-center border border-cyan-200 rounded-xl p-6 bg-gradient-to-t from-cyan-50 to-cyan-100 shadow-md w-full">
-            <h2 className="font-dhivehi text-3xl text-cyan-950 font-bold mb-2">
-              އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
-            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+              <h2 className="font-dhivehi text-3xl text-cyan-950 font-bold">
+                އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
+              </h2>
+              <select
+                dir="rtl"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="border border-cyan-600 rounded-md px-3 py-1.5 w-28 bg-white text-cyan-900 font-semibold"
+              >
+                {QUIZ_COMPETITION_YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex gap-4 mt-10">
               {stats?.topCorrect?.length ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 justify-center">
                   {stats.topCorrect.map((user, index) => (
                     <Link
                       key={user.idCardNumber + index}
-                      href={`competitions/quiz-competition/${user.idCardNumber}`}
+                      href={`competitions/quiz-competition/${user.idCardNumber}?year=${selectedYear}`}
                     >
                       <div
                         key={user.idCardNumber + index}
