@@ -20,10 +20,10 @@ const Header = () => {
 
   return (
     <header
-      className="bg-gradient-to-r from-blue-100 to-blue-50 backdrop-blur-md  px-6 z-50 sticky top-0 shadow-sm"
+      className="bg-gradient-to-r from-blue-100 to-blue-50 backdrop-blur-md px-4 sm:px-6 z-50 sticky top-0 shadow-sm overflow-x-hidden max-w-[100vw]"
       dir="rtl"
     >
-      <nav className="container mx-auto flex justify-between items-center">
+      <nav className="container mx-auto flex justify-between items-center min-w-0 max-w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image

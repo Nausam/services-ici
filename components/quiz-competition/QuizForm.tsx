@@ -27,6 +27,7 @@ import { formatTime, getNextMidnightMaldives } from "@/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/providers/UserProvider";
 import { Skeleton } from "@/components/ui/skeleton";
+import QuizNotAvailable from "./QuizNotAvailable";
 
 const QuizCompetitionForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -184,7 +185,7 @@ const QuizCompetitionForm = () => {
   if (isLoading)
     return (
       <div
-        className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg max-w-2xl mx-auto"
+        className="flex flex-col gap-8 bg-white shadow-lg px-4 sm:px-8 pb-8 rounded-lg w-full min-w-0 max-w-full"
         dir="rtl"
       >
         <Skeleton className="h-5 w-full max-w-md ml-auto" />
@@ -255,8 +256,17 @@ const QuizCompetitionForm = () => {
     );
   }
 
+  // No quiz available for today and no countdown to show → ask to try again later
+  if (!hasQuizForToday && !isSuperAdmin) {
+    return (
+      <div className="w-full max-w-2xl mx-auto min-w-0 px-4">
+        <QuizNotAvailable />
+      </div>
+    );
+  }
+
   return (
-    <>
+    <div className="w-full max-w-[100%] min-w-0 overflow-x-hidden">
       {/* ✅ Success Animation */}
       <AnimatePresence>
         {showSuccess && (
@@ -316,10 +326,11 @@ const QuizCompetitionForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
+          className="flex flex-col gap-8 bg-white shadow-lg px-4 sm:px-8 pb-8 pt-6 rounded-lg w-full min-w-0 max-w-full box-border"
           dir="rtl"
+          style={{ overflowWrap: "break-word" }}
         >
-          <p className="font-dhivehi text-lg text-right text-red-500">
+          <p className="font-dhivehi text-lg text-right text-red-500 break-words min-w-0">
             ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އެއްވެސް
             ސުވާލެއްގެ ޖަވާބު ސަބްމިޓް ކުރުމުގައި މައްސަލައެއް ދިމާވެއްޖެނަމަ
             7481126 އަށް ގުޅުއްވާ!
@@ -328,11 +339,11 @@ const QuizCompetitionForm = () => {
           {/* <p className="font-dhivehi text-5xl text-right text-cyan-950 mt-5">
           މިއަދުގެ ސުވާލު
         </p> */}
-          <div className="text-right font-dhivehi md:text-3xl text-2xl text-cyan-900 mt-5">
+          <div className="text-right font-dhivehi md:text-3xl text-2xl text-cyan-900 mt-5 break-words min-w-0">
             {quizData?.questionNumber} - {quizData?.question}
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 min-w-0">
             <FormField
               control={form.control}
               name="answer"
@@ -342,22 +353,22 @@ const QuizCompetitionForm = () => {
                     <RadioGroup
                       onValueChange={field.onChange}
                       value={field.value}
-                      className="space-y-4"
+                      className="space-y-4 min-w-0"
                       dir="rtl"
                     >
                       {quizData?.options?.map((option, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-2"
+                          className="flex items-center gap-2 min-w-0"
                         >
                           <RadioGroupItem
-                            className="ml-2"
+                            className="ml-2 shrink-0"
                             value={option}
                             id={`option-${index}`}
                           />
                           <label
                             htmlFor={`option-${index}`}
-                            className="font-dhivehi text-xl text-cyan-950 cursor-pointer"
+                            className="font-dhivehi text-xl text-cyan-950 cursor-pointer break-words min-w-0 flex-1"
                           >
                             {option}
                           </label>
@@ -371,14 +382,14 @@ const QuizCompetitionForm = () => {
             />
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5 min-w-0">
             {/* ID Card first (right in RTL) */}
             <FormField
               control={form.control}
               name="idCardNumber"
               render={({ field }) => (
                 <FormItem>
-                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                  <p className="font-dhivehi text-2xl text-right text-cyan-950 mb-1.5">
                     އައިޑީކާޑް ނަންބަރު
                   </p>
                   <FormControl>
@@ -421,7 +432,7 @@ const QuizCompetitionForm = () => {
                         }
                       }}
                       placeholder="A123456"
-                      className="rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950"
+                      className="h-12 text-lg rounded-md font-dhivehi border-gray-300 text-right font-bold tracking-widest text-cyan-950 px-4"
                     />
                   </FormControl>
                   <FormMessage className="font-dhivehi text-md" />
@@ -436,7 +447,7 @@ const QuizCompetitionForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <p
-                    className={`font-dhivehi text-xl text-right ${
+                    className={`font-dhivehi text-2xl text-right mb-1.5 ${
                       detailsFetched ? "text-cyan-950" : "text-gray-400"
                     }`}
                   >
@@ -451,7 +462,7 @@ const QuizCompetitionForm = () => {
                       }
                       disabled={!detailsFetched}
                       {...field}
-                      className={`rounded-md font-dhivehi text-right ${
+                      className={`h-12 text-lg rounded-md font-dhivehi text-right px-4 ${
                         detailsFetched
                           ? "border-gray-300 text-cyan-950"
                           : "border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -470,7 +481,7 @@ const QuizCompetitionForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <p
-                    className={`font-dhivehi text-xl text-right ${
+                    className={`font-dhivehi text-2xl text-right mb-1.5 ${
                       detailsFetched ? "text-cyan-950" : "text-gray-400"
                     }`}
                   >
@@ -490,7 +501,7 @@ const QuizCompetitionForm = () => {
                         const inputValue = e.target.value.replace(/\D/g, "");
                         field.onChange(inputValue.slice(0, 7));
                       }}
-                      className={`rounded-md font-dhivehi text-right ${
+                      className={`h-12 text-lg rounded-md font-dhivehi text-right px-4 ${
                         detailsFetched
                           ? "border-gray-300 text-cyan-950"
                           : "border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -525,7 +536,7 @@ const QuizCompetitionForm = () => {
           </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

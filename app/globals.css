@@ -23,8 +23,15 @@
   font-style: normal;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   font-family: "Geist", "Geist Mono", system-ui, Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 .font-geist {
