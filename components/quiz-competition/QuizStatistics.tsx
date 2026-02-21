@@ -1,24 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { getQuizStatistics } from "@/lib/actions/quizCompetition";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUser } from "@/providers/UserProvider";
-import Link from "next/link";
-import {
-  QUIZ_COMPETITION_DEFAULT_YEAR,
-  QUIZ_COMPETITION_YEARS,
-} from "@/constants";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,9 +9,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  QUIZ_COMPETITION_DEFAULT_YEAR,
+  QUIZ_COMPETITION_YEARS,
+} from "@/constants";
+import { getQuizStatistics } from "@/lib/actions/quizCompetition";
+import { useUser } from "@/providers/UserProvider";
+import { ChevronLeft, ChevronRight, Download, Search } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 function QuizStatisticsSkeleton() {
   return (
@@ -94,17 +94,13 @@ const QuizStatistics = () => {
     if (!stats?.topCorrect) return [];
     const term = searchTerm.trim().toLowerCase();
     if (!term) return stats.topCorrect;
-    return stats.topCorrect.filter((u) =>
-      u.name.toLowerCase().includes(term),
-    );
+    return stats.topCorrect.filter((u) => u.name.toLowerCase().includes(term));
   }, [stats?.topCorrect, searchTerm]);
 
   const totalFiltered = filteredTopCorrect.length;
   const totalPages = Math.max(
     1,
-    itemsPerPage === -1
-      ? 1
-      : Math.ceil(totalFiltered / itemsPerPage),
+    itemsPerPage === -1 ? 1 : Math.ceil(totalFiltered / itemsPerPage),
   );
   const paginatedTopCorrect = useMemo(() => {
     if (itemsPerPage === -1) return filteredTopCorrect;
@@ -114,6 +110,26 @@ const QuizStatistics = () => {
 
   const goToPage = (page: number) =>
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+
+  const downloadTopCorrectCSV = () => {
+    if (!stats?.topCorrect?.length) return;
+    const BOM = "\uFEFF";
+    const header = "Name,ID Card Number\n";
+    const rows = stats.topCorrect
+      .map(
+        (u) =>
+          `"${(u.name ?? "").replace(/"/g, '""')}","${(u.idCardNumber ?? "").replace(/"/g, '""')}"`
+      )
+      .join("\n");
+    const csv = BOM + header + rows;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `top-correct-answers-${selectedYear}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     setCurrentPage(1);
@@ -125,8 +141,7 @@ const QuizStatistics = () => {
     const fetchStats = async () => {
       try {
         // When 2025 is selected, fetch with no year filter (null) for legacy/all data
-        const yearParam =
-          selectedYear === 2025 ? undefined : selectedYear;
+        const yearParam = selectedYear === 2025 ? undefined : selectedYear;
         const data = await getQuizStatistics(yearParam);
         if (cancelled) return;
 
@@ -168,11 +183,7 @@ const QuizStatistics = () => {
   }, [selectedYear]);
 
   if (loading && !stats) {
-    return (
-      <>
-        {isSuperAdmin && <QuizStatisticsSkeleton />}
-      </>
-    );
+    return <>{isSuperAdmin && <QuizStatisticsSkeleton />}</>;
   }
 
   if (!stats) {
@@ -214,8 +225,14 @@ const QuizStatistics = () => {
               <h2 className="font-dhivehi text-xl sm:text-2xl text-cyan-950 font-bold text-center">
                 އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
               </h2>
-              <div className="flex items-center justify-end" aria-hidden="true">
-                <div className="w-[88px]" />
+              <div className="flex items-center justify-end min-w-[88px]">
+                {stats?.topCorrect?.length ? (
+                  <span className="font-dhivehi text-sm font-medium text-cyan-800 whitespace-nowrap">
+                    {totalFiltered} ބައިވެރިން
+                  </span>
+                ) : (
+                  <div className="w-[88px]" aria-hidden="true" />
+                )}
               </div>
             </div>
 
@@ -234,23 +251,32 @@ const QuizStatistics = () => {
                       className="w-full font-dhivehi text-right pr-10 pl-3 h-9 border-cyan-200 focus:ring-cyan-500 focus:border-cyan-400 rounded-lg bg-slate-50/50"
                     />
                   </div>
-                  <select
-                    value={itemsPerPage}
-                    onChange={(e) =>
-                      setItemsPerPage(
-                        e.target.value === "all"
-                          ? -1
-                          : Number(e.target.value),
-                      )
-                    }
-                    className="h-9 rounded-lg border border-cyan-200 bg-slate-50/50 text-cyan-800 px-3 text-sm font-dhivehi focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 cursor-pointer"
-                  >
-                    <option value={8}>ޕޭޖެއްގަ 8</option>
-                    <option value={12}>ޕޭޖެއްގަ 12</option>
-                    <option value={24}>ޕޭޖެއްގަ 24</option>
-                    <option value={48}>ޕޭޖެއްގަ 48</option>
-                    <option value="all">ހުރިހާ</option>
-                  </select>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      onClick={downloadTopCorrectCSV}
+                      variant="outline"
+                      size="sm"
+                      className="h-9 border-cyan-200 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-300 font-dhivehi"
+                    >
+                      <Download className="size-4 shrink-0 ml-1.5" />
+                      Download CSV
+                    </Button>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) =>
+                        setItemsPerPage(
+                          e.target.value === "all" ? -1 : Number(e.target.value),
+                        )
+                      }
+                      className="h-9 rounded-lg border border-cyan-200 bg-slate-50/50 text-cyan-800 px-3 text-sm font-dhivehi focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 cursor-pointer"
+                    >
+                      <option value={8}>ޕޭޖެއްގަ 8</option>
+                      <option value={12}>ޕޭޖެއްގަ 12</option>
+                      <option value={24}>ޕޭޖެއްގަ 24</option>
+                      <option value={48}>ޕޭޖެއްގަ 48</option>
+                      <option value="all">ހުރިހާ</option>
+                    </select>
+                  </div>
                 </div>
 
                 {loading ? (
@@ -328,147 +354,166 @@ const QuizStatistics = () => {
               <div className="px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
                 <Skeleton className="h-7 w-64 mx-auto rounded" />
               </div>
-            <div className="p-5">
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <Skeleton className="h-[320px] w-full rounded-lg" />
-              </div>
-            </div>
-          </div>
-          ) : (
-          <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
-            <div className="px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
-              <h2 className="font-dhivehi text-xl sm:text-2xl text-cyan-950 font-bold text-center">
-                ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1447
-              </h2>
-            </div>
-            <div className="p-5">
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <div className="h-[340px] w-full font-dhivehi">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={Object.entries(stats.dailyStats).map(
-                        ([questionNumber, data]) => ({
-                          question: questionNumber,
-                          total: data.total,
-                          correct: data.correct,
-                          incorrect: data.incorrect,
-                        })
-                      )}
-                      margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
-                      barCategoryGap={6}
-                      barGap={2}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#e2e8f0"
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="question"
-                        tick={{ fill: "#0e7490", fontSize: 11 }}
-                        tickLine={false}
-                        axisLine={{ stroke: "#cbd5e1" }}
-                        interval={0}
-                      />
-                      <YAxis
-                        tick={{ fill: "#64748b", fontSize: 12 }}
-                        tickLine={false}
-                        axisLine={false}
-                        allowDecimals={false}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          borderRadius: "12px",
-                          border: "1px solid #e2e8f0",
-                          fontFamily: "inherit",
-                        }}
-                        formatter={(value, name) => {
-                          const labels: Record<string, string> = {
-                            correct: "ރަނގަޅު ޖަވާބު ދިން",
-                            incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
-                            total: "ޖަވާބު ދިން ފަރާތްތައް",
-                          };
-                          return [value ?? 0, labels[String(name)] ?? name];
-                        }}
-                        labelFormatter={(label) => `ސުވާލު ${label}`}
-                        labelStyle={{ color: "#0e7490" }}
-                        itemStyle={{ paddingTop: 4 }}
-                        cursor={{ fill: "#f0fdfa", opacity: 0.6 }}
-                        content={({ active, payload, label }) => {
-                          if (!active || !payload?.length || payload[0].payload == null) return null;
-                          const { total, correct, incorrect } = payload[0].payload;
-                          return (
-                            <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-md text-sm">
-                              <p className="font-semibold text-cyan-800 mb-2 font-dhivehi">ސުވާލު {label}</p>
-                              <div className="space-y-1 font-dhivehi">
-                                <p className="text-slate-700">ޖަވާބު ދިން ފަރާތްތައް: <strong>{total}</strong></p>
-                                <p className="text-emerald-600">ރަނގަޅު ޖަވާބު ދިން: <strong>{correct}</strong></p>
-                                <p className="text-rose-600">ރަނގަޅު ނޫން ޖަވާބު ދިން: <strong>{incorrect}</strong></p>
-                              </div>
-                            </div>
-                          );
-                        }}
-                      />
-                      <Legend
-                        wrapperStyle={{ fontSize: 12 }}
-                        formatter={(value) => {
-                          const labels: Record<string, string> = {
-                            correct: "ރަނގަޅު ޖަވާބު ދިން",
-                            incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
-                          };
-                          return labels[value] ?? value;
-                        }}
-                        content={({ payload }) => (
-                          <div className="flex flex-wrap justify-center gap-4 pt-2 font-dhivehi text-sm">
-                            {payload?.map((entry) => {
-                              const labels: Record<string, string> = {
-                                correct: "ރަނގަޅު ޖަވާބު ދިން",
-                                incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
-                              };
-                              const label = labels[String(entry.value ?? "")] ?? entry.value;
-                              return (
-                                <div
-                                  key={String(entry.value ?? "")}
-                                  className="flex items-center gap-2"
-                                  style={{ color: entry.color }}
-                                >
-                                  <span
-                                    className="shrink-0 rounded-sm"
-                                    style={{
-                                      width: 12,
-                                      height: 12,
-                                      backgroundColor: entry.color,
-                                    }}
-                                  />
-                                  <span>{label}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      />
-                      <Bar
-                        dataKey="correct"
-                        name="correct"
-                        fill="#059669"
-                        stackId="answers"
-                        radius={[0, 0, 0, 0]}
-                        maxBarSize={28}
-                      />
-                      <Bar
-                        dataKey="incorrect"
-                        name="incorrect"
-                        fill="#e11d48"
-                        stackId="answers"
-                        radius={[4, 4, 0, 0]}
-                        maxBarSize={28}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+              <div className="p-5">
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <Skeleton className="h-[320px] w-full rounded-lg" />
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+              <div className="px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+                <h2 className="font-dhivehi text-xl sm:text-2xl text-cyan-950 font-bold text-center">
+                  ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1447
+                </h2>
+              </div>
+              <div className="p-5">
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="h-[340px] w-full font-dhivehi">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={Object.entries(stats.dailyStats).map(
+                          ([questionNumber, data]) => ({
+                            question: questionNumber,
+                            total: data.total,
+                            correct: data.correct,
+                            incorrect: data.incorrect,
+                          }),
+                        )}
+                        margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
+                        barCategoryGap={6}
+                        barGap={2}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#e2e8f0"
+                          vertical={false}
+                        />
+                        <XAxis
+                          dataKey="question"
+                          tick={{ fill: "#0e7490", fontSize: 11 }}
+                          tickLine={false}
+                          axisLine={{ stroke: "#cbd5e1" }}
+                          interval={0}
+                        />
+                        <YAxis
+                          tick={{ fill: "#64748b", fontSize: 12 }}
+                          tickLine={false}
+                          axisLine={false}
+                          allowDecimals={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: "12px",
+                            border: "1px solid #e2e8f0",
+                            fontFamily: "inherit",
+                          }}
+                          formatter={(value, name) => {
+                            const labels: Record<string, string> = {
+                              correct: "ރަނގަޅު ޖަވާބު ދިން",
+                              incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
+                              total: "ޖަވާބު ދިން ފަރާތްތައް",
+                            };
+                            return [value ?? 0, labels[String(name)] ?? name];
+                          }}
+                          labelFormatter={(label) => `ސުވާލު ${label}`}
+                          labelStyle={{ color: "#0e7490" }}
+                          itemStyle={{ paddingTop: 4 }}
+                          cursor={{ fill: "#f0fdfa", opacity: 0.6 }}
+                          content={({ active, payload, label }) => {
+                            if (
+                              !active ||
+                              !payload?.length ||
+                              payload[0].payload == null
+                            )
+                              return null;
+                            const { total, correct, incorrect } =
+                              payload[0].payload;
+                            return (
+                              <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-md text-sm">
+                                <p className="font-semibold text-cyan-800 mb-2 font-dhivehi">
+                                  ސުވާލު {label}
+                                </p>
+                                <div className="space-y-1 font-dhivehi">
+                                  <p className="text-slate-700">
+                                    ޖަވާބު ދިން ފަރާތްތައް:{" "}
+                                    <strong>{total}</strong>
+                                  </p>
+                                  <p className="text-emerald-600">
+                                    ރަނގަޅު ޖަވާބު ދިން:{" "}
+                                    <strong>{correct}</strong>
+                                  </p>
+                                  <p className="text-rose-600">
+                                    ރަނގަޅު ނޫން ޖަވާބު ދިން:{" "}
+                                    <strong>{incorrect}</strong>
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          }}
+                        />
+                        <Legend
+                          wrapperStyle={{ fontSize: 12 }}
+                          formatter={(value) => {
+                            const labels: Record<string, string> = {
+                              correct: "ރަނގަޅު ޖަވާބު ދިން",
+                              incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
+                            };
+                            return labels[value] ?? value;
+                          }}
+                          content={({ payload }) => (
+                            <div className="flex flex-wrap justify-center gap-4 pt-2 font-dhivehi text-sm">
+                              {payload?.map((entry) => {
+                                const labels: Record<string, string> = {
+                                  correct: "ރަނގަޅު ޖަވާބު ދިން",
+                                  incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
+                                };
+                                const label =
+                                  labels[String(entry.value ?? "")] ??
+                                  entry.value;
+                                return (
+                                  <div
+                                    key={String(entry.value ?? "")}
+                                    className="flex items-center gap-2"
+                                    style={{ color: entry.color }}
+                                  >
+                                    <span
+                                      className="shrink-0 rounded-sm"
+                                      style={{
+                                        width: 12,
+                                        height: 12,
+                                        backgroundColor: entry.color,
+                                      }}
+                                    />
+                                    <span>{label}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        />
+                        <Bar
+                          dataKey="correct"
+                          name="correct"
+                          fill="#059669"
+                          stackId="answers"
+                          radius={[0, 0, 0, 0]}
+                          maxBarSize={28}
+                        />
+                        <Bar
+                          dataKey="incorrect"
+                          name="incorrect"
+                          fill="#e11d48"
+                          stackId="answers"
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={28}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       )}
