@@ -6,9 +6,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ import {
   LayoutDashboard,
   ListChecks,
   Mic2,
-  PanelsTopLeft,
+  PanelLeft,
   Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -68,22 +68,20 @@ function SidebarInner({
   return (
     <div
       dir="rtl"
-      className="h-full flex flex-col gap-4 p-4 bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-xl supports-[backdrop-filter]:bg-white/80 shadow-xl ring-1 ring-gray-200/50 rounded-3xl"
+      className="h-full flex flex-col bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 pt-2 pb-4 border-b border-gray-200/50">
-        <div className="inline-flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-cyan-600 to-teal-600 rounded-xl shadow-md">
-            <PanelsTopLeft className="h-5 w-5 text-white" />
-          </div>
-          <span className="font-dhivehi text-2xl font-semibold bg-gradient-to-l from-cyan-900 to-teal-800 bg-clip-text text-transparent">
-            އެޑްމިން ޑޭޝްބޯޑް
-          </span>
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-600 text-white">
+          <PanelLeft className="h-5 w-5" />
         </div>
+        <span className="font-dhivehi text-2xl font-semibold text-slate-800">
+          އެޑްމިން ޑޭޝްބޯޑް
+        </span>
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="flex flex-col gap-2 px-2 pb-2">
+        <nav className="p-3 flex flex-col gap-1" aria-label="Admin sections">
           {ITEMS.map((item, i) => {
             const Icon = item.icon;
             const active = i === activeIndex;
@@ -94,41 +92,25 @@ function SidebarInner({
                   onChange(item.key);
                   onItemSelect?.();
                 }}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative group w-full rounded-2xl font-dhivehi text-lg transition-all duration-300 ease-out overflow-hidden",
-                  "hover:scale-[1.02] hover:shadow-lg",
+                  "flex flex-row-reverse items-center gap-3 w-full rounded-xl px-3 py-2.5 text-right font-dhivehi text-lg font-medium transition-colors",
                   active
-                    ? "bg-gradient-to-l from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30"
-                    : "bg-white/60 hover:bg-white text-gray-700 hover:text-cyan-900 shadow-sm hover:shadow-md"
+                    ? "bg-cyan-600 text-white"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
-                {/* Accent border indicator for active item */}
-                {active && (
-                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/90 rounded-r-full transition-all duration-500" />
-                )}
-                
-                {/* Hover glow effect */}
-                <div
+                <Icon
                   className={cn(
-                    "absolute inset-0 bg-gradient-to-l from-cyan-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                    active && "opacity-0"
+                    "h-5 w-5 shrink-0",
+                    active ? "text-white" : "text-slate-500"
                   )}
                 />
-
-                {/* Content */}
-                <div className="relative w-full flex flex-row-reverse items-center justify-start gap-3 px-4 py-3 text-right">
-                  <Icon
-                    className={cn(
-                      "h-5 w-5 shrink-0 transition-transform duration-300 group-hover:scale-110",
-                      active ? "text-white" : "text-cyan-600"
-                    )}
-                  />
-                  <span className="truncate font-medium">{item.label}</span>
-                </div>
+                <span className="truncate">{item.label}</span>
               </button>
             );
           })}
-        </div>
+        </nav>
       </ScrollArea>
     </div>
   );
@@ -139,13 +121,12 @@ export default function AdminSidebar({
   onChange,
   className,
 }: AdminSidebarProps) {
-  // Control mobile drawer so we can close it after click
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={cn("lg:w-72 w-full", className)}>
+    <div className={cn("lg:w-64 w-full", className)}>
       {/* Desktop */}
-      <div className="hidden lg:block h-[calc(100vh-4rem)] sticky top-6">
+      <div className="hidden lg:block h-[calc(100vh-5rem)] sticky top-6 min-h-0">
         <SidebarInner value={value} onChange={onChange} />
       </div>
 
@@ -155,25 +136,24 @@ export default function AdminSidebar({
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="w-full rounded-xl mb-4 flex flex-row-reverse gap-2"
+              className="w-full rounded-xl h-11 font-dhivehi justify-center gap-2 border-slate-200 bg-white hover:bg-slate-50"
             >
-              <span className="font-dhivehi text-xl">މެނޫ</span>
               <AlignJustify className="h-4 w-4 shrink-0" />
+              <span>މެނޫ</span>
             </Button>
           </SheetTrigger>
 
-          {/* Add title/description to satisfy Radix a11y */}
-          <SheetContent side="right" className="w-[320px]" dir="rtl">
+          <SheetContent side="right" className="w-[300px] p-0" dir="rtl">
             <SheetHeader className="sr-only">
               <SheetTitle>Admin Menu</SheetTitle>
               <SheetDescription>Navigate admin sections</SheetDescription>
             </SheetHeader>
 
-            <div className="pt-6 h-full">
+            <div className="h-full pt-4">
               <SidebarInner
                 value={value}
                 onChange={onChange}
-                onItemSelect={() => setOpen(false)} // close after selecting
+                onItemSelect={() => setOpen(false)}
               />
             </div>
           </SheetContent>

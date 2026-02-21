@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getQuizStatistics } from "@/lib/actions/quizCompetition";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUser } from "@/providers/UserProvider";
 import Link from "next/link";
@@ -25,53 +26,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 function QuizStatisticsSkeleton() {
   return (
     <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
-      <div className="flex flex-col items-center justify-center border border-cyan-200 rounded-xl p-6 bg-gradient-to-t from-cyan-50 to-cyan-100 shadow-md w-full">
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-2">
-          <Skeleton className="h-9 w-48" />
-          <Skeleton className="h-9 w-[100px]" />
+      <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+        <div className="flex justify-between items-center gap-3 px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-9 w-[88px]" />
+            <Skeleton className="h-6 w-40 rounded-full" />
+          </div>
+          <Skeleton className="h-7 w-56" />
         </div>
-        <div className="flex gap-4 mt-10 w-full justify-center">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton
-                key={i}
-                className="h-10 rounded-full min-w-[140px] max-w-[200px]"
-              />
+        <div className="p-5 space-y-4">
+          <div className="flex gap-3">
+            <Skeleton className="h-9 flex-1 max-w-[16rem]" />
+            <Skeleton className="h-9 w-24" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton key={i} className="h-14 rounded-xl" />
             ))}
           </div>
         </div>
       </div>
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-8 w-64 mx-auto" />
-        </CardHeader>
-        <CardContent>
-          <div className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
-            <div className="bg-gradient-to-br from-slate-100 to-slate-200 p-4 grid grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-6" />
-              ))}
-            </div>
-            <div className="bg-white divide-y">
-              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                <div
-                  key={i}
-                  className="p-3 grid grid-cols-4 gap-4 items-center"
-                >
-                  <Skeleton className="h-5 w-8" />
-                  <Skeleton className="h-5 w-12" />
-                  <Skeleton className="h-5 w-12" />
-                  <Skeleton className="h-5 w-12" />
-                </div>
-              ))}
-            </div>
+      <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+        <div className="px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+          <Skeleton className="h-7 w-64 mx-auto rounded" />
+        </div>
+        <div className="p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <Skeleton className="h-[320px] w-full rounded-lg" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
@@ -92,8 +83,41 @@ const QuizStatistics = () => {
   const [selectedYear, setSelectedYear] = useState(
     QUIZ_COMPETITION_DEFAULT_YEAR,
   );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   const { isSuperAdmin } = useUser();
+
+  // Filter and paginate top correct users
+  const filteredTopCorrect = useMemo(() => {
+    if (!stats?.topCorrect) return [];
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return stats.topCorrect;
+    return stats.topCorrect.filter((u) =>
+      u.name.toLowerCase().includes(term),
+    );
+  }, [stats?.topCorrect, searchTerm]);
+
+  const totalFiltered = filteredTopCorrect.length;
+  const totalPages = Math.max(
+    1,
+    itemsPerPage === -1
+      ? 1
+      : Math.ceil(totalFiltered / itemsPerPage),
+  );
+  const paginatedTopCorrect = useMemo(() => {
+    if (itemsPerPage === -1) return filteredTopCorrect;
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredTopCorrect.slice(start, start + itemsPerPage);
+  }, [filteredTopCorrect, currentPage, itemsPerPage]);
+
+  const goToPage = (page: number) =>
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, itemsPerPage]);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,157 +185,290 @@ const QuizStatistics = () => {
     <>
       {isSuperAdmin && (
         <div dir="rtl" className="grid gap-6 mt-10 font-dhivehi">
-          <div className="flex flex-col items-center justify-center border border-cyan-200 rounded-xl p-6 bg-gradient-to-t from-cyan-50 to-cyan-100 shadow-md w-full">
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-2">
-              <h2 className="font-dhivehi text-3xl text-cyan-950 font-bold">
+          {/* Redesigned "Most Correct Answers" card */}
+          <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+            {/* Header */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+              <div className="flex items-center justify-start">
+                <div className="relative">
+                  <Select
+                    value={String(selectedYear)}
+                    onValueChange={(v) => setSelectedYear(Number(v))}
+                  >
+                    <SelectTrigger className="w-[88px] h-9 font-dhivehi bg-white border-cyan-200 shadow-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {QUIZ_COMPETITION_YEARS.map((y) => (
+                        <SelectItem key={y} value={String(y)}>
+                          {y}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {loading && (
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 border-2 border-cyan-400/40 border-t-cyan-600 rounded-full animate-spin" />
+                  )}
+                </div>
+              </div>
+              <h2 className="font-dhivehi text-xl sm:text-2xl text-cyan-950 font-bold text-center">
                 އެންމެ ގިނައިން ރަނގަޅު ޖަވާބުދިން
               </h2>
-              <div className="relative">
-                <Select
-                value={String(selectedYear)}
-                onValueChange={(v) => setSelectedYear(Number(v))}
-              >
-                <SelectTrigger className="w-[100px] font-dhivehi">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {QUIZ_COMPETITION_YEARS.map((y) => (
-                    <SelectItem key={y} value={String(y)}>
-                      {y}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-                {loading && (
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 border-2 border-cyan-600/30 border-t-cyan-600 rounded-full animate-spin" />
-                )}
+              <div className="flex items-center justify-end" aria-hidden="true">
+                <div className="w-[88px]" />
               </div>
             </div>
-            <div className="flex gap-4 mt-10">
-              {loading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 justify-center">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Skeleton
-                      key={i}
-                      className="h-10 rounded-full min-w-[140px] max-w-[200px]"
+
+            {/* Content */}
+            {stats?.topCorrect?.length ? (
+              <div className="p-5 space-y-4">
+                {/* Toolbar */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-cyan-600/70 pointer-events-none" />
+                    <Input
+                      type="text"
+                      placeholder="ނަން ސަރޗްކުރައްވާ..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full font-dhivehi text-right pr-10 pl-3 h-9 border-cyan-200 focus:ring-cyan-500 focus:border-cyan-400 rounded-lg bg-slate-50/50"
                     />
-                  ))}
+                  </div>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) =>
+                      setItemsPerPage(
+                        e.target.value === "all"
+                          ? -1
+                          : Number(e.target.value),
+                      )
+                    }
+                    className="h-9 rounded-lg border border-cyan-200 bg-slate-50/50 text-cyan-800 px-3 text-sm font-dhivehi focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-400 cursor-pointer"
+                  >
+                    <option value={8}>ޕޭޖެއްގަ 8</option>
+                    <option value={12}>ޕޭޖެއްގަ 12</option>
+                    <option value={24}>ޕޭޖެއްގަ 24</option>
+                    <option value={48}>ޕޭޖެއްގަ 48</option>
+                    <option value="all">ހުރިހާ</option>
+                  </select>
                 </div>
-              ) : stats?.topCorrect?.length ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 justify-center">
-                  {stats.topCorrect.map((user, index) => (
-                    <Link
-                      key={user.idCardNumber + index}
-                      href={`/competitions/quiz-competition/${user.idCardNumber}?year=${selectedYear}`}
-                    >
-                      <div
-                        key={user.idCardNumber + index}
-                        className="flex justify-between items-center gap-2 bg-gradient-to-br from-cyan-400 to-cyan-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full shadow-lg border border-cyan-500 hover:shadow-xl transition-transform transform hover:-translate-y-1"
-                        style={{
-                          minWidth: "140px", // Smaller size for mobile
-                          maxWidth: "200px", // Prevents stretching
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        <span className="text-sm sm:text-lg font-semibold truncate">
-                          {user.name}
+
+                {loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <Skeleton key={i} className="h-14 rounded-xl" />
+                    ))}
+                  </div>
+                ) : totalFiltered === 0 ? (
+                  <p className="text-slate-500 text-center py-10 font-dhivehi text-lg">
+                    ސަރޗް ނަމަކު ނުފެނުނީ
+                  </p>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                      {paginatedTopCorrect.map((user, index) => (
+                        <Link
+                          key={user.idCardNumber + index}
+                          href={`/competitions/quiz-competition/${user.idCardNumber}?year=${selectedYear}`}
+                          className="group block"
+                        >
+                          <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/30 px-4 py-3 transition-all hover:border-cyan-300 hover:bg-cyan-50/50 hover:shadow-sm">
+                            <span className="flex-shrink-0 w-9 h-9 rounded-full bg-cyan-600 text-white font-bold text-sm flex items-center justify-center">
+                              {user.count}
+                            </span>
+                            <span className="font-dhivehi font-medium text-cyan-900 truncate flex-1 min-w-0 group-hover:text-cyan-800">
+                              {user.name}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {itemsPerPage !== -1 && totalPages > 1 && (
+                      <div className="flex flex-row-reverse items-center justify-center gap-2 pt-2">
+                        <Button
+                          onClick={() => goToPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          variant="outline"
+                          className="size-9 p-0 border-cyan-200 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-300 disabled:opacity-40 disabled:pointer-events-none"
+                          aria-label="ކުރީން"
+                        >
+                          <ChevronLeft className="size-5" />
+                        </Button>
+                        <span className="min-w-[4rem] text-center text-slate-600 font-dhivehi text-sm">
+                          {currentPage} / {totalPages}
                         </span>
-                        <span className="bg-cyan-600 border border-cyan-500 text-white w-8 h-8 aspect-square rounded-full font-bold shadow-md flex items-center justify-center text-center text-sm sm:text-base">
-                          {user.count}
-                        </span>
+                        <Button
+                          onClick={() => goToPage(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          variant="outline"
+                          className="size-9 p-0 border-cyan-200 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-300 disabled:opacity-40 disabled:pointer-events-none"
+                          aria-label="ދެނެވޭ"
+                        >
+                          <ChevronRight className="size-5" />
+                        </Button>
                       </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-center">No top users yet.</p>
-              )}
-            </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ) : !loading ? (
+              <div className="px-5 py-10 text-center">
+                <p className="text-slate-500 font-dhivehi text-lg">
+                  {stats?.topCorrect?.length === 0
+                    ? "މި އަދުގެ ސުވާލަށް އެންމެން ރަނގަޅު ޖަވާބު ނުދިނީ"
+                    : "މި އަދުގެ ސުވާލަށް ރަނގަޅު ޖަވާބު ދިނި ބޭފުޅަކު ނެތް"}
+                </p>
+              </div>
+            ) : null}
           </div>
 
           {loading ? (
-            <Card>
-              <CardHeader>
-                <Skeleton className="h-8 w-64 mx-auto" />
-              </CardHeader>
-              <CardContent>
-                <div className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
-                  <div className="bg-gradient-to-br from-slate-100 to-slate-200 p-4 grid grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                      <Skeleton key={i} className="h-6" />
-                    ))}
-                  </div>
-                  <div className="bg-white divide-y">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <div
-                        key={i}
-                        className="p-3 grid grid-cols-4 gap-4 items-center"
-                      >
-                        <Skeleton className="h-5 w-8" />
-                        <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-5 w-12" />
-                        <Skeleton className="h-5 w-12" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+              <div className="px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+                <Skeleton className="h-7 w-64 mx-auto rounded" />
+              </div>
+            <div className="p-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <Skeleton className="h-[320px] w-full rounded-lg" />
+              </div>
+            </div>
+          </div>
           ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center md:text-3xl text-2xl text-cyan-950">
+          <div className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+            <div className="px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+              <h2 className="font-dhivehi text-xl sm:text-2xl text-cyan-950 font-bold text-center">
                 ރަމަޟާން ދީނީ ސުވާލު މުބާރާތް 1447
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table className="border border-gray-300 shadow-md rounded-lg overflow-hidden mt-5">
-                <TableHeader className="bg-gradient-to-br from-slate-100 to-slate-200">
-                  <TableRow>
-                    <TableHead className="text-lg text-center p-4 text-cyan-900">
-                      ސުވާލު ނަންބަރު
-                    </TableHead>
-                    <TableHead className="text-lg text-center p-4 text-cyan-900">
-                      ޖަވާބު ދިން ފަރާތްތައް
-                    </TableHead>
-                    <TableHead className="text-lg text-center p-4 text-cyan-900">
-                      ރަނގަޅު ޖަވާބު ދިން
-                    </TableHead>
-                    <TableHead className="text-lg text-center p-4 text-cyan-900">
-                      ރަނގަޅު ނޫން ޖަވާބު ދިން
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="bg-white">
-                  {Object.entries(stats.dailyStats).map(
-                    ([questionNumber, data], index) => (
-                      <TableRow
-                        key={questionNumber}
-                        className={`border-b ${
-                          index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        } hover:bg-gray-100 transition-all`}
-                      >
-                        <TableCell className="text-center text-lg font-semibold text-cyan-800 p-3">
-                          {questionNumber}
-                        </TableCell>
-                        <TableCell className="text-center text-lg font-medium text-gray-700 p-3">
-                          {data.total}
-                        </TableCell>
-                        <TableCell className="text-center text-lg font-bold text-green-600 p-3">
-                          {data.correct}
-                        </TableCell>
-                        <TableCell className="text-center text-lg font-bold text-red-600 p-3">
-                          {data.incorrect}
-                        </TableCell>
-                      </TableRow>
-                    ),
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+              </h2>
+            </div>
+            <div className="p-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="h-[340px] w-full font-dhivehi">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={Object.entries(stats.dailyStats).map(
+                        ([questionNumber, data]) => ({
+                          question: questionNumber,
+                          total: data.total,
+                          correct: data.correct,
+                          incorrect: data.incorrect,
+                        })
+                      )}
+                      margin={{ top: 12, right: 12, left: 0, bottom: 8 }}
+                      barCategoryGap={6}
+                      barGap={2}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#e2e8f0"
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="question"
+                        tick={{ fill: "#0e7490", fontSize: 11 }}
+                        tickLine={false}
+                        axisLine={{ stroke: "#cbd5e1" }}
+                        interval={0}
+                      />
+                      <YAxis
+                        tick={{ fill: "#64748b", fontSize: 12 }}
+                        tickLine={false}
+                        axisLine={false}
+                        allowDecimals={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          borderRadius: "12px",
+                          border: "1px solid #e2e8f0",
+                          fontFamily: "inherit",
+                        }}
+                        formatter={(value, name) => {
+                          const labels: Record<string, string> = {
+                            correct: "ރަނގަޅު ޖަވާބު ދިން",
+                            incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
+                            total: "ޖަވާބު ދިން ފަރާތްތައް",
+                          };
+                          return [value ?? 0, labels[String(name)] ?? name];
+                        }}
+                        labelFormatter={(label) => `ސުވާލު ${label}`}
+                        labelStyle={{ color: "#0e7490" }}
+                        itemStyle={{ paddingTop: 4 }}
+                        cursor={{ fill: "#f0fdfa", opacity: 0.6 }}
+                        content={({ active, payload, label }) => {
+                          if (!active || !payload?.length || payload[0].payload == null) return null;
+                          const { total, correct, incorrect } = payload[0].payload;
+                          return (
+                            <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-md text-sm">
+                              <p className="font-semibold text-cyan-800 mb-2 font-dhivehi">ސުވާލު {label}</p>
+                              <div className="space-y-1 font-dhivehi">
+                                <p className="text-slate-700">ޖަވާބު ދިން ފަރާތްތައް: <strong>{total}</strong></p>
+                                <p className="text-emerald-600">ރަނގަޅު ޖަވާބު ދިން: <strong>{correct}</strong></p>
+                                <p className="text-rose-600">ރަނގަޅު ނޫން ޖަވާބު ދިން: <strong>{incorrect}</strong></p>
+                              </div>
+                            </div>
+                          );
+                        }}
+                      />
+                      <Legend
+                        wrapperStyle={{ fontSize: 12 }}
+                        formatter={(value) => {
+                          const labels: Record<string, string> = {
+                            correct: "ރަނގަޅު ޖަވާބު ދިން",
+                            incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
+                          };
+                          return labels[value] ?? value;
+                        }}
+                        content={({ payload }) => (
+                          <div className="flex flex-wrap justify-center gap-4 pt-2 font-dhivehi text-sm">
+                            {payload?.map((entry) => {
+                              const labels: Record<string, string> = {
+                                correct: "ރަނގަޅު ޖަވާބު ދިން",
+                                incorrect: "ރަނގަޅު ނޫން ޖަވާބު ދިން",
+                              };
+                              const label = labels[String(entry.value ?? "")] ?? entry.value;
+                              return (
+                                <div
+                                  key={String(entry.value ?? "")}
+                                  className="flex items-center gap-2"
+                                  style={{ color: entry.color }}
+                                >
+                                  <span
+                                    className="shrink-0 rounded-sm"
+                                    style={{
+                                      width: 12,
+                                      height: 12,
+                                      backgroundColor: entry.color,
+                                    }}
+                                  />
+                                  <span>{label}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      />
+                      <Bar
+                        dataKey="correct"
+                        name="correct"
+                        fill="#059669"
+                        stackId="answers"
+                        radius={[0, 0, 0, 0]}
+                        maxBarSize={28}
+                      />
+                      <Bar
+                        dataKey="incorrect"
+                        name="incorrect"
+                        fill="#e11d48"
+                        stackId="answers"
+                        radius={[4, 4, 0, 0]}
+                        maxBarSize={28}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </div>
           )}
         </div>
       )}

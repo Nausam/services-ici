@@ -1,34 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getAllQuizSubmissions } from "@/lib/actions/quizCompetition";
+import { useUser } from "@/providers/UserProvider";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import PlaceholderCard from "../PlaceholderCard";
 import Q_ParticipantCard from "../quran-competition/Q_ParticipantCard";
 import { Input } from "../ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUser } from "@/providers/UserProvider";
-import PlaceholderCard from "../PlaceholderCard";
-import {
-  QUIZ_COMPETITION_DEFAULT_YEAR,
-  QUIZ_COMPETITION_YEARS,
-} from "@/constants";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 function SubmissionCardSkeleton() {
   return (
-    <div className="flex items-center justify-between border border-slate-200 rounded-xl p-5 bg-cyan-50/30">
-      <div className="flex-1 min-w-0 space-y-2">
-        <Skeleton className="h-7 w-[180px]" />
-        <Skeleton className="h-4 w-[100px]" />
-      </div>
-      <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
+    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/30 px-4 py-3">
+      <Skeleton className="h-9 w-9 shrink-0 rounded-lg" />
+      <Skeleton className="h-6 flex-1 max-w-[180px] rounded" />
     </div>
   );
 }
@@ -55,8 +42,8 @@ const QuizSubmissionsList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedDate, setSelectedDate] = useState<string>(getTodayDate());
-  const [selectedYear, setSelectedYear] = useState(QUIZ_COMPETITION_DEFAULT_YEAR);
   const limit = 15;
+  const selectedYear = new Date(selectedDate).getFullYear();
 
   const { isSuperAdmin } = useUser();
 
@@ -69,7 +56,7 @@ const QuizSubmissionsList = () => {
           limit,
           offset,
           selectedDate,
-          selectedYear
+          selectedYear,
         );
         setSubmissions(response.documents);
         setTotalPages(Math.ceil(response.total / limit));
@@ -98,100 +85,89 @@ const QuizSubmissionsList = () => {
   return (
     <>
       {isSuperAdmin ? (
-        <div className="w-full mx-auto p-5 mt-20">
-          <h1 className="md:text-3xl text-2xl font-dhivehi text-start text-cyan-950 mb-5">
-            މިއަދުގެ ސުވާލަށް ޖަވާބުދެއްވި ފަރާތްތައް
-          </h1>
+        <div className="w-full mx-auto p-5 mt-20 max-w-6xl">
+          <div
+            className="rounded-2xl border border-cyan-100 bg-white shadow-sm overflow-hidden"
+            dir="rtl"
+          >
+            {/* Header */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-4 bg-gradient-to-l from-cyan-50/80 to-white border-b border-cyan-100">
+              <div className="flex items-center justify-start">
+                <div className="w-40">
+                  <Input
+                    dir="rtl"
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="border border-cyan-200 rounded-lg px-3 py-2 h-9 text-sm focus:ring-cyan-500 focus:border-cyan-400"
+                  />
+                </div>
+              </div>
+              <h2 className="font-dhivehi text-xl sm:text-2xl text-cyan-950 font-bold text-center">
+                މިއަދުގެ ސުވާލަށް ޖަވާބުދެއްވި ފަރާތްތައް
+              </h2>
+              <div className="flex items-center justify-end" aria-hidden="true">
+                <div className="w-40" />
+              </div>
+            </div>
 
-          {/* Year and Date Filters */}
-          <div className="flex flex-wrap gap-4 mb-5">
-            <div className="w-32">
-              <label className="font-dhivehi text-cyan-900 block mb-1">
-                އަހަރު
-              </label>
-              <Select
-                value={String(selectedYear)}
-                onValueChange={(v) => setSelectedYear(Number(v))}
-              >
-                <SelectTrigger className="border-cyan-600 font-dhivehi">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {QUIZ_COMPETITION_YEARS.map((y) => (
-                    <SelectItem key={y} value={String(y)}>
-                      {y}
-                    </SelectItem>
+            {/* Content */}
+            <div className="p-5">
+              {loading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <SubmissionCardSkeleton key={i} />
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-40">
-              <label className="font-dhivehi text-cyan-900 block mb-1">
-                ދުވަސް
-              </label>
-              <Input
-                dir="rtl"
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="border border-cyan-600 rounded-md px-3 py-1 w-full"
-              />
-            </div>
-          </div>
+                </div>
+              ) : error ? (
+                <p className="text-center text-red-500 py-8">{error}</p>
+              ) : submissions.length === 0 ? (
+                <p className="text-center text-lg font-dhivehi text-slate-500 py-12">
+                  ނެތް!
+                </p>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {submissions.map((submission, index) => (
+                      <Q_ParticipantCard
+                        key={`${submission.idCardNumber}-${index}`}
+                        fullName={submission.fullName}
+                        idCardNumber={submission.idCardNumber}
+                        contactNumber={submission.contactNumber}
+                        href={`/competitions/quiz-competition/${submission.idCardNumber}/${submission.questionNumber}?year=${selectedYear}`}
+                        idCardUrl={submission.idCardUrl}
+                      />
+                    ))}
+                  </div>
 
-          {loading ? (
-            <div
-              dir="rtl"
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
-            >
-              {Array.from({ length: 9 }).map((_, i) => (
-                <SubmissionCardSkeleton key={i} />
-              ))}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                      <Button
+                        onClick={nextPage}
+                        disabled={currentPage === totalPages}
+                        variant="outline"
+                        className="size-9 p-0 border-cyan-200 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-300 disabled:opacity-40 disabled:pointer-events-none"
+                        aria-label="ދެނެވޭ"
+                      >
+                        <ChevronRight className="size-5" />
+                      </Button>
+                      <span className="min-w-[4rem] text-center text-slate-600 font-dhivehi text-sm">
+                        {currentPage} / {totalPages}
+                      </span>
+                      <Button
+                        onClick={prevPage}
+                        disabled={currentPage === 1}
+                        variant="outline"
+                        className="size-9 p-0 border-cyan-200 text-cyan-700 hover:bg-cyan-50 hover:border-cyan-300 disabled:opacity-40 disabled:pointer-events-none"
+                        aria-label="ކުރީން"
+                      >
+                        <ChevronLeft className="size-5" />
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : submissions.length === 0 ? (
-            <p className="text-center text-3xl font-dhivehi text-slate-500">
-              ނެތް!
-            </p>
-          ) : (
-            <div
-              dir="rtl"
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
-            >
-              {submissions.map((submission, index) => (
-                <Q_ParticipantCard
-                  key={index}
-                  fullName={submission.fullName}
-                  idCardNumber={submission.idCardNumber}
-                  contactNumber={submission.contactNumber}
-                  href={`/competitions/quiz-competition/${submission.idCardNumber}/${submission.questionNumber}?year=${selectedYear}`}
-                  idCardUrl={submission.idCardUrl}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination Controls */}
-          <div className="flex justify-center items-center gap-4 mt-10">
-            <Button
-              onClick={nextPage}
-              disabled={currentPage === totalPages}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white"
-            >
-              Next
-            </Button>
-            <span className="text-cyan-700 font-semibold">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <Button
-              onClick={prevPage}
-              disabled={currentPage === 1}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white"
-            >
-              Previous
-            </Button>
           </div>
         </div>
       ) : (
