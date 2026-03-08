@@ -79,25 +79,23 @@ export const madhahaSchema = z
 
     groupMembers: z
       .array(z.string().min(1, "Member name is required"))
-      .max(10, "Maximum 10 members allowed")
+      .max(11, "Maximum 12 members allowed")
       .default([]),
 
     madhahaName: z.string().optional(),
     madhahaLyrics: z.string().optional(),
-
-    idCard: z.string().min(1, "އައިޑީ ކާޑް އަޕްލޯޑް ކުރައްވާ!"),
   })
 
-  // ✅ Require at least 3 group members if groupOrSolo is "ގްރޫޕްކޮން"
+  // ✅ Require at least 6 group members (5 in array + leader) if groupOrSolo is "ގްރޫޕްކޮން"
   .refine(
     (data) => {
-      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 2) {
+      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 5) {
         return false;
       }
       return true;
     },
     {
-      message: " ގްރޫޕަށް ބައިވެރިން އިތުރު ކުރައްވާ!",
+      message: " ގްރޫޕަށް މަދުވެގެން 6 ބައިވެރިން އިތުރު ކުރައްވާ!",
       path: ["groupMembers"],
     },
   )
@@ -147,6 +145,5 @@ export const huthubaBangiSchema = z.object({
   idCardNumber: z.string().min(1, "އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
   contactNumber: z.string().min(1, "ފޯނު ނަންބަރު ލިޔުއްވާ!"),
   competitionType: z.enum(["ޙުތުބާ", "ބަންގި", "ދެބައި"]),
-  idCard: z.string().min(1, "އައިޑީ ކާޑް އަޕްލޯޑް ކުރައްވާ!"),
   ageGroup: z.string().min(1, "އުމުރުފުރާ ނަންގަވާ!"),
 });

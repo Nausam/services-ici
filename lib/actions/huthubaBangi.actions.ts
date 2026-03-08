@@ -36,24 +36,87 @@ export const uploadImage = async (file: File): Promise<string> => {
   }
 };
 
+const HUTHUBA_BANGI_DEFAULT_YEAR = "2025";
+
 export const createHuthubaBangiCompetitionRegistration = async (
   registration: HuthubaBangiCompetitionRegistration
 ) => {
   try {
     const { databases } = await createAdminClient();
     const documentId = ID.unique();
+    const currentYear = String(new Date().getFullYear());
 
-    const HuthubaBangiCompetitionRegistration = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.HuthubaBangiCompetitionId,
-      documentId,
+    // Optional duplicate check: same idCardNumber in same year (skip if "year" not in collection)
+    const idForCheck = (registration.idCardNumber || "").trim();
+    if (idForCheck) {
+      try {
+        const checkExisting = async (id: string) =>
+          databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.HuthubaBangiCompetitionId,
+            [
+              Query.equal("idCardNumber", [id]),
+              Query.equal("year", [currentYear]),
+              Query.limit(1),
+            ]
+          );
+        let existing = await checkExisting(idForCheck);
+        if (existing.total === 0 && idForCheck.startsWith("A")) {
+          existing = await checkExisting(idForCheck.replace(/^A/, ""));
+        }
+        if (existing.total > 0) {
+          throw new Error("ALREADY_REGISTERED_THIS_YEAR");
+        }
+      } catch (err: unknown) {
+        const msg =
+          err && typeof err === "object" && "message" in err
+            ? String((err as { message: unknown }).message)
+            : "";
+        if (msg === "ALREADY_REGISTERED_THIS_YEAR") throw err;
+      }
+    }
 
-      { ...registration }
-    );
+    const data = { ...registration } as Record<string, unknown>;
+    data.year = currentYear;
 
-    return parseStringify(HuthubaBangiCompetitionRegistration);
+    let result;
+    try {
+      result = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.HuthubaBangiCompetitionId,
+        documentId,
+        data
+      );
+    } catch (createError: unknown) {
+      const msg =
+        createError &&
+        typeof createError === "object" &&
+        "message" in createError
+          ? String((createError as { message: unknown }).message)
+          : "";
+      if (msg.includes("year")) {
+        const dataWithoutYear = { ...data };
+        delete dataWithoutYear.year;
+        result = await databases.createDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.HuthubaBangiCompetitionId,
+          documentId,
+          dataWithoutYear
+        );
+      } else {
+        throw createError;
+      }
+    }
+
+    return parseStringify(result);
   } catch (error) {
     console.error("Failed to register:", error);
+    if (
+      error instanceof Error &&
+      error.message === "ALREADY_REGISTERED_THIS_YEAR"
+    ) {
+      throw error;
+    }
     throw new Error("Failed to register");
   }
 };
@@ -81,29 +144,93 @@ export const getHuthubaBangiParticipantByIdCard = async (
   }
 };
 
+// Optional year: filter by registration year. Documents with no year are treated as 2025.
 export const getAllHuthubaBangiCompetitionRegistrations = async (
   limit: number,
-  offset: number
+  offset: number,
+  year?: string
 ) => {
-  try {
-    const { databases } = await createAdminClient();
+  const { databases } = await createAdminClient();
 
-    const huthubaBangiCompetitionRegistrations = await databases.listDocuments(
+  const effectiveYear = (doc: { year?: string | null }) =>
+    doc.year && String(doc.year).trim()
+      ? String(doc.year)
+      : HUTHUBA_BANGI_DEFAULT_YEAR;
+
+  const fetchAllThenFilter = async () => {
+    const all: unknown[] = [];
+    const pageSize = 100;
+    let hasMore = true;
+    while (hasMore) {
+      const res = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.HuthubaBangiCompetitionId,
+        [Query.limit(pageSize), Query.offset(all.length)]
+      );
+      all.push(...res.documents);
+      hasMore = res.documents.length === pageSize;
+    }
+    const filtered =
+      year && year.trim()
+        ? all.filter(
+            (d) => effectiveYear(d as { year?: string | null }) === year
+          )
+        : all;
+    return {
+      documents: filtered.slice(offset, offset + limit),
+      total: filtered.length,
+    };
+  };
+
+  if (year === HUTHUBA_BANGI_DEFAULT_YEAR) {
+    try {
+      return await fetchAllThenFilter();
+    } catch (err) {
+      console.error("Failed to fetch registrations:", err);
+      throw new Error("Failed to fetch registrations");
+    }
+  }
+
+  if (year && year.trim()) {
+    try {
+      const result = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.HuthubaBangiCompetitionId,
+        [
+          Query.equal("year", [year]),
+          Query.limit(limit),
+          Query.offset(offset),
+        ]
+      );
+      return {
+        documents: parseStringify(result.documents),
+        total: result.total,
+      };
+    } catch (error: unknown) {
+      const msg =
+        error && typeof error === "object" && "message" in error
+          ? String((error as { message: unknown }).message)
+          : "";
+      if (msg.includes("year")) {
+        return await fetchAllThenFilter();
+      }
+      console.error("Failed to fetch registrations:", error);
+      throw new Error("Failed to fetch registrations");
+    }
+  }
+
+  try {
+    const result = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.HuthubaBangiCompetitionId,
-      [
-        // Appwrite's pagination queries
-        Query.limit(limit),
-        Query.offset(offset),
-      ]
+      [Query.limit(limit), Query.offset(offset)]
     );
-
     return {
-      documents: parseStringify(huthubaBangiCompetitionRegistrations.documents),
-      total: huthubaBangiCompetitionRegistrations.total,
+      documents: parseStringify(result.documents),
+      total: result.total,
     };
-  } catch (error) {
-    console.error("Failed to fetch registrations:", error);
+  } catch (err) {
+    console.error("Failed to fetch registrations:", err);
     throw new Error("Failed to fetch registrations");
   }
 };

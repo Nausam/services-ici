@@ -65,7 +65,8 @@ export type MadhahaCompetitionRegistration = {
   groupMembers?: string[];
   madhahaName?: string;
   madhahaLyrics?: string;
-  idCard: string;
+  idCard?: string;
+  year?: string;
 };
 
 export type HomeCard = {
@@ -89,8 +90,9 @@ export type HuthubaBangiCompetitionRegistration = {
   idCardNumber: string;
   contactNumber: string;
   competitionType: CompetitionType;
-  idCard: string;
+  idCard?: string;
   ageGroup: string;
+  year?: string;
 };
 
 

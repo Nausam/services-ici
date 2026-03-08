@@ -23,6 +23,10 @@ const BangiHuthubaCompetitionDashboard = () => {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<string>(
+    String(currentYear)
+  );
 
   const router = useRouter();
 
@@ -31,11 +35,14 @@ const BangiHuthubaCompetitionDashboard = () => {
     try {
       const offset = (page - 1) * itemsPerPage;
       const { documents, total } =
-        await getAllHuthubaBangiCompetitionRegistrations(itemsPerPage, offset);
+        await getAllHuthubaBangiCompetitionRegistrations(
+          itemsPerPage,
+          offset,
+          selectedYear || undefined
+        );
 
       let filteredDocuments = documents;
 
-      // Filter based on idCardNumber if search term exists
       if (debouncedSearchTerm) {
         filteredDocuments = documents.filter(
           (reg: HuthubaBangiCompetitionRegistration) =>
@@ -46,7 +53,7 @@ const BangiHuthubaCompetitionDashboard = () => {
       }
 
       setRegistrations(filteredDocuments);
-      setTotalItems(filteredDocuments.length);
+      setTotalItems(debouncedSearchTerm ? filteredDocuments.length : total);
     } catch (error) {
       console.error("Failed to fetch registrations:", error);
     } finally {
@@ -56,7 +63,7 @@ const BangiHuthubaCompetitionDashboard = () => {
 
   useEffect(() => {
     fetchRegistrations(currentPage);
-  }, [currentPage, itemsPerPage, debouncedSearchTerm]);
+  }, [currentPage, itemsPerPage, debouncedSearchTerm, selectedYear]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -108,6 +115,19 @@ const BangiHuthubaCompetitionDashboard = () => {
     setSearchTerm(e.target.value);
   };
 
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const yearOptions = [
+    { value: "", label: "ހުރިހާ އަހަރު" },
+    ...Array.from({ length: currentYear - 2021 }, (_, i) => {
+      const y = currentYear - i;
+      return { value: String(y), label: String(y) };
+    }),
+  ];
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -126,14 +146,7 @@ const BangiHuthubaCompetitionDashboard = () => {
       </div>
     );
 
-  if (registrations.length === 0)
-    return (
-      <div className="flex items-center justify-center">
-        <PlaceholderCard title="ބަންގި ގޮވުމާއި އަދި ޙުތުބާ ކިޔުމުގެ މުބާރާތުގައި އެއްވެސް ބައިވެރިއަކު ނެތް!" />
-      </div>
-    );
-
-    const downloadCSV = () => {
+  const downloadCSV = () => {
   if (registrations.length === 0) return;
 
   const csvHeader = `
@@ -172,16 +185,37 @@ const BangiHuthubaCompetitionDashboard = () => {
         ބަންގި އަދި ޙުތުބާގެ ބައިވެރިން ({totalItems})
       </h2>
 
-       <div className="flex justify-start mb-4 gap-4">
-                   
-                    <Button
-                      onClick={downloadCSV}
-                      className="bg-cyan-600 hover:bg-cyan-700 text-white"
-                    >
-                      Download CSV
-                    </Button>
-                  </div>
-      
+      <div className="flex justify-start mb-4 gap-4">
+        <Button
+          onClick={downloadCSV}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Download CSV
+        </Button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4 mt-4">
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="year-filter"
+            className="font-dhivehi text-cyan-800 text-md"
+          >
+            އަހަރު
+          </label>
+          <select
+            id="year-filter"
+            value={selectedYear}
+            onChange={handleYearChange}
+            className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out cursor-pointer"
+          >
+            {yearOptions.map((opt) => (
+              <option key={opt.value || "all"} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="flex justify-between items-center mb-6">
         <Input
@@ -193,6 +227,12 @@ const BangiHuthubaCompetitionDashboard = () => {
         />
       </div>
 
+      {registrations.length === 0 ? (
+        <div className="flex items-center justify-center mt-10">
+          <PlaceholderCard title="މި އަހަރުގައި ބައިވެރިއަކު ނެތް. އަހަރު ބަދަލުކުރައްވާ ނުވަތަ ހުރިހާ އަހަރު ނަގާ." />
+        </div>
+      ) : (
+        <>
       {/* Items Per Page */}
       <select
         value={itemsPerPage}
@@ -247,6 +287,8 @@ const BangiHuthubaCompetitionDashboard = () => {
           Previous
         </Button>
       </div>
+        </>
+      )}
     </div>
   );
 };

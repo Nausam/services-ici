@@ -27,6 +27,10 @@ const MadhahaCompetitionDashboard = () => {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<string>(
+    String(currentYear)
+  );
 
   const router = useRouter();
 
@@ -37,7 +41,8 @@ const MadhahaCompetitionDashboard = () => {
       const { documents, total } = await getAllMadhahaCompetitionRegistrations(
         itemsPerPage,
         offset,
-        debouncedSearchTerm // ✅ Pass search term to backend
+        debouncedSearchTerm,
+        selectedYear || undefined
       );
 
       setRegistrations(
@@ -55,6 +60,7 @@ const MadhahaCompetitionDashboard = () => {
           madhahaName: doc.madhahaName,
           madhahaLyrics: doc.madhahaLyrics,
           groupName: doc.groupName,
+          year: doc.year,
         })) as MadhahaCompetitionRegistration[]
       );
 
@@ -68,7 +74,7 @@ const MadhahaCompetitionDashboard = () => {
 
   useEffect(() => {
     fetchRegistrations(currentPage);
-  }, [currentPage, itemsPerPage, debouncedSearchTerm]);
+  }, [currentPage, itemsPerPage, debouncedSearchTerm, selectedYear]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -120,6 +126,19 @@ const MadhahaCompetitionDashboard = () => {
     setSearchTerm(e.target.value);
   };
 
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const yearOptions = [
+    { value: "", label: "ހުރިހާ އަހަރު" },
+    ...Array.from({ length: currentYear - 2021 }, (_, i) => {
+      const y = currentYear - i;
+      return { value: String(y), label: String(y) };
+    }),
+  ];
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -138,14 +157,7 @@ const MadhahaCompetitionDashboard = () => {
       </div>
     );
 
-  if (registrations.length === 0)
-    return (
-      <div className="flex items-center justify-center">
-        <PlaceholderCard title="މަދަޙަ ކިޔުމުގެ މުބާރާތުގައި އެއްވެސް ބައިވެރިއަކު ނެތް!" />
-      </div>
-    );
-
-    const downloadCSV = () => {
+  const downloadCSV = () => {
   if (registrations.length === 0) return;
 
   const csvHeader = `
@@ -190,14 +202,36 @@ const MadhahaCompetitionDashboard = () => {
       </h2>
 
       <div className="flex justify-start mb-4 gap-4">
-             
-              <Button
-                onClick={downloadCSV}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white"
-              >
-                Download CSV
-              </Button>
-            </div>
+        <Button
+          onClick={downloadCSV}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+        >
+          Download CSV
+        </Button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4 mt-4">
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="year-filter"
+            className="font-dhivehi text-cyan-800 text-md"
+          >
+            އަހަރު
+          </label>
+          <select
+            id="year-filter"
+            value={selectedYear}
+            onChange={handleYearChange}
+            className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out cursor-pointer"
+          >
+            {yearOptions.map((opt) => (
+              <option key={opt.value || "all"} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       {/* <div className="flex justify-between items-center mb-6">
         <Input
@@ -209,60 +243,71 @@ const MadhahaCompetitionDashboard = () => {
         />
       </div> */}
 
-      {/* Items Per Page */}
-      <select
-        value={itemsPerPage}
-        onChange={handleItemsPerPageChange}
-        className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out mt-5 cursor-pointer"
-      >
-        <option value={3}>ޕޭޖެއްގަ 3</option>
-        <option value={6}>ޕޭޖެއްގަ 6</option>
-        <option value={9}>ޕޭޖެއްގަ 9</option>
-        <option value={12}>ޕޭޖެއްގަ 12</option>
-        <option value={15}>ޕޭޖެއްގަ 15</option>
-        <option value={-1}>ހުރިހާ</option>
-      </select>
-
-      {/* Participants Grid */}
-      <div
-        dir="rtl"
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
-      >
-        {registrations.map((reg: any, index) => (
-          <Q_ParticipantCard
-            key={reg.$id + index}
-            fullName={reg.groupName || reg.fullName}
-            idCardNumber={reg.idCardNumber}
-            contactNumber={reg.contactNumber}
-            href={`/competitions/madhaha-competition/${reg.$id}`}
-            idCardUrl={reg.idCard}
-            onEdit={() => handleEdit(reg.$id)}
-            onDelete={() => handleDelete(reg.$id)}
-          />
-        ))}
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="flex justify-center items-center gap-4 mt-10">
-        <Button
-          onClick={nextPage}
-          disabled={currentPage === totalPages}
-          className="bg-cyan-600 hover:bg-cyan-700 text-white"
+      {/* Items Per Page - only show when there are registrations */}
+      {registrations.length > 0 && (
+        <select
+          value={itemsPerPage}
+          onChange={handleItemsPerPageChange}
+          className="border border-cyan-600 bg-white text-cyan-800 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:border-cyan-700 text-md font-dhivehi shadow-sm transition duration-200 ease-in-out mt-5 cursor-pointer"
         >
-          Next
-        </Button>
-        <span className="text-cyan-700 font-semibold">
-          Page {currentPage} of {totalPages}
-        </span>
+          <option value={3}>ޕޭޖެއްގަ 3</option>
+          <option value={6}>ޕޭޖެއްގަ 6</option>
+          <option value={9}>ޕޭޖެއްގަ 9</option>
+          <option value={12}>ޕޭޖެއްގަ 12</option>
+          <option value={15}>ޕޭޖެއްގަ 15</option>
+          <option value={-1}>ހުރިހާ</option>
+        </select>
+      )}
 
-        <Button
-          onClick={prevPage}
-          disabled={currentPage === 1}
-          className="bg-cyan-600 hover:bg-cyan-700 text-white"
-        >
-          Previous
-        </Button>
-      </div>
+      {/* Empty state: show placeholder but keep year filter visible */}
+      {registrations.length === 0 ? (
+        <div className="flex items-center justify-center mt-10">
+          <PlaceholderCard title="މި އަހަރުގައި ބައިވެރިއަކު ނެތް. އަހަރު ބަދަލުކުރައްވާ ނުވަތަ ހުރިހާ އަހަރު ނަގާ." />
+        </div>
+      ) : (
+        <>
+          {/* Participants Grid */}
+          <div
+            dir="rtl"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5"
+          >
+            {registrations.map((reg: any, index) => (
+              <Q_ParticipantCard
+                key={reg.$id + index}
+                fullName={reg.groupName || reg.fullName}
+                idCardNumber={reg.idCardNumber}
+                contactNumber={reg.contactNumber}
+                href={`/competitions/madhaha-competition/${reg.$id}`}
+                idCardUrl={reg.idCard}
+                onEdit={() => handleEdit(reg.$id)}
+                onDelete={() => handleDelete(reg.$id)}
+              />
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center gap-4 mt-10">
+            <Button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            >
+              Next
+            </Button>
+            <span className="text-cyan-700 font-semibold">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <Button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            >
+              Previous
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

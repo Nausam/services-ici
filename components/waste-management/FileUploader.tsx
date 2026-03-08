@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback, useId } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/legacy/image";
 import { toast } from "@/hooks/use-toast";
@@ -16,6 +16,7 @@ export function FileUploader({
   onFieldChange,
   setFile,
 }: FileUploaderProps) {
+  const inputId = useId();
   const onDrop = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
 
@@ -98,11 +99,14 @@ export function FileUploader({
         accept="image/*,application/pdf" // Allow images and PDFs
         onChange={onDrop}
         className="hidden"
-        id="file-upload"
+        id={inputId}
       />
 
       {imageUrl ? (
-        <div className="h-full w-full flex items-center justify-center">
+        <label
+          htmlFor={inputId}
+          className="h-full w-full flex flex-col items-center justify-center cursor-pointer gap-2"
+        >
           {imageUrl.endsWith(".pdf") ? (
             <p className="text-gray-700 text-sm">Uploaded: {imageUrl}</p>
           ) : (
@@ -114,10 +118,13 @@ export function FileUploader({
               className="w-full object-cover object-center rounded-md"
             />
           )}
-        </div>
+          <span className="font-dhivehi text-sm text-cyan-700 hover:text-cyan-800 underline">
+            ފޮޓޯ ބަދަލުކުރައްވާ
+          </span>
+        </label>
       ) : (
         <label
-          htmlFor="file-upload"
+          htmlFor={inputId}
           className="flex flex-col items-center justify-center py-5 text-gray-500 cursor-pointer"
         >
           <Image
@@ -136,7 +143,7 @@ export function FileUploader({
           <Button
             type="button"
             className="rounded-full font-dhivehi text-md bg-cyan-700 hover:bg-cyan-600 text-white"
-            onClick={() => document.getElementById("file-upload")?.click()} // Simulate click on hidden file input
+            onClick={() => document.getElementById(inputId)?.click()} // Simulate click on hidden file input
           >
             އަޕްލޯޑް ކުރައްވާ
           </Button>

@@ -19,13 +19,10 @@ import { MadhahaCompetitionRegistration } from "@/types";
 import { madhahaSchema } from "@/lib/validations";
 import { AGE_GROUPS } from "@/constants";
 import ReusableDropdown from "../reusable/ReusableDropdown";
-import { FileUploader } from "../waste-management/FileUploader";
 
 import {
   createMadhahaCompetitionRegistration,
-  getQuranParticipantByIdCard,
   updateMadhahaCompetitionRegistration,
-  uploadImage,
 } from "@/lib/actions/madhaha.actions";
 import { useRouter } from "next/navigation";
 
@@ -38,28 +35,27 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   const router = useRouter();
 
   const form = useForm<z.infer<typeof madhahaSchema>>({
     resolver: zodResolver(madhahaSchema),
     defaultValues: {
-  fullName: registration?.fullName || "",
-  address: registration?.address || "",
-  idCardNumber: registration?.idCardNumber || "",
-  contactNumber: registration?.contactNumber || "",
-  ageGroup: registration?.ageGroup || "",
-  groupOrSolo: registration?.groupOrSolo === "ވަކިވަކިން" || registration?.groupOrSolo === "ގްރޫޕްކޮން"
-    ? registration.groupOrSolo
-    : undefined,
-  groupMembers: registration?.groupMembers || [],
-  madhahaName: registration?.madhahaName || "",
-  madhahaLyrics: registration?.madhahaLyrics || "",
-  idCard: registration?.idCard || "",
-  groupName: registration?.groupName || "",
-}
-,
+      fullName: registration?.fullName || "",
+      address: registration?.address || "",
+      idCardNumber: registration?.idCardNumber || "",
+      contactNumber: registration?.contactNumber || "",
+      ageGroup: registration?.ageGroup || "",
+      groupOrSolo:
+        registration?.groupOrSolo === "ވަކިވަކިން" ||
+        registration?.groupOrSolo === "ގްރޫޕްކޮން"
+          ? registration.groupOrSolo
+          : undefined,
+      groupMembers: registration?.groupMembers || [],
+      madhahaName: registration?.madhahaName || "",
+      madhahaLyrics: registration?.madhahaLyrics || "",
+      groupName: registration?.groupName || "",
+    },
     mode: "onChange",
   });
 
@@ -67,34 +63,17 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
     setIsSubmitting(true);
 
     try {
-      let idCard = values.idCard;
-
-      // ✅ Check if a participant already exists
-      const existingParticipant = await getQuranParticipantByIdCard(
-        values.idCardNumber
-      );
-
-      if (existingParticipant && existingParticipant.idCard) {
-        // ✅ If existing ID card exists, use it
-        idCard = existingParticipant.idCard;
-        console.log("Using existing ID Card:", idCard);
-      } else if (file) {
-        // ✅ If no existing file, upload a new one
-        idCard = await uploadImage(file);
-      }
-
       if (type === "Create") {
         const newRegistration = await createMadhahaCompetitionRegistration({
           ...values,
-          idCard, // ✅ Use existing or newly uploaded file
           groupMembers: values.groupMembers ?? [],
-        });
+        } as MadhahaCompetitionRegistration);
 
         if (newRegistration) {
           form.reset();
           router.push("/");
           toast({
-            title: `އިންނަމާދޫ ކައުންސިލްގެ 3 ވަނަ މަދަޙަ މުބާރާތުގައި ${
+            title: `އިންނަމާދޫ ކައުންސިލްގެ 4 ވަނަ މަދަޙަ މުބާރާތުގައި ${
               newRegistration.groupOrSolo === "ގްރޫޕްކޮން"
                 ? newRegistration.groupName
                 : newRegistration.fullName
@@ -105,35 +84,41 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
       }
     } catch (error) {
       console.error("❌ Error Submitting:", error);
+      if (
+        error instanceof Error &&
+        error.message === "ALREADY_REGISTERED_THIS_YEAR"
+      ) {
+        toast({
+          title: "ކޮންމެ އައިޑީކާޑެއްގެ ދަށުންވެސް ރެޖިސްޓާ ވެވޭނީ އެއްފަހަރު",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({ title: "ރެޖިސްޓާ ނުކުރެވުނު", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
 
     if (type === "Update" && registration) {
-  const updated = await updateMadhahaCompetitionRegistration(
-    registration?.$id || "", // Ensure $id is a string
-    {
-      ...values,
+      const updated = await updateMadhahaCompetitionRegistration(
+        registration?.$id || "",
+        { ...values } as MadhahaCompetitionRegistration,
+      );
+
+      if (updated) {
+        router.push("/");
+        toast({
+          title: "ބައިވެރިޔާ އަޕްޑޭޓް ކުރެވިއްޖެ",
+          variant: "default",
+        });
+      }
     }
-  );
-
-  if (updated) {
-    router.push("/");
-    toast({
-      title: "ބައިވެރިޔާ އަޕްޑޭޓް ކުރެވިއްޖެ",
-      variant: "default",
-    });
-  }
-}
-
-
   };
 
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "/assets/files/Madhaha_Gavaidhu.pdf";
-    link.download = "Madhaha_Gavaidhu.pdf";
+    link.href = "/assets/files/Madhaha_Gavaidhu_2026.pdf";
+    link.download = "Madhaha_Gavaidhu_2026.pdf";
     link.click();
   };
 
@@ -145,20 +130,22 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
           className="flex flex-col gap-8 bg-white shadow-lg pr-8 pl-8 pb-8 rounded-lg"
           dir="rtl"
         >
-          {type === "Create" && (<div className="flex flex-col items-start">
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                onClick={handleDownloadRules}
-                className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-lg"
-              >
-                މުބާރާތުގެ ޤަވާޢިދު
-              </Button>
+          {type === "Create" && (
+            <div className="flex flex-col items-start">
+              <div className="flex gap-4">
+                <Button
+                  type="button"
+                  onClick={handleDownloadRules}
+                  className="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white hover:bg-gradient-to-br hover:from-cyan-700 hover:to-cyan-500  transition-all duration-500 px-6 py-3 rounded-md shadow-md font-dhivehi text-lg"
+                >
+                  މުބާރާތުގެ ޤަވާޢިދު
+                </Button>
+              </div>
+              <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
+                ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
+              </p>
             </div>
-            <p className="font-dhivehi text-lg text-right text-red-500 mt-5">
-              ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ!
-            </p>
-          </div>)}
+          )}
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Group or Solo */}
@@ -414,8 +401,8 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                   އުމުރުފުރާގެ ބައިވެރިން ހިމަނައިގެންވެސް ގްރޫޕް ހެދިދާނެ!
                 </p>
                 <p className="font-dhivehi text-xl text-cyan-950 leading-relaxed">
-                  (ގްރޫޕްގައި ބައިވެރިވެވޭނީ މަދުވެގެން 3 ބައިވެރިން އަދި
-                  ގިނަވެގެން 10 ބައިވެރިންނަށް!)
+                  (ގްރޫޕްގައި ބައިވެރިވެވޭނީ މަދުވެގެން 6 ބައިވެރިން އަދި
+                  ގިނަވެގެން 12 ބައިވެރިންނަށް!)
                 </p>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -447,22 +434,22 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                                 type="button"
                                 onClick={() => {
                                   const newMembers = (field.value ?? []).filter(
-                                    (_, i) => i !== index
+                                    (_, i) => i !== index,
                                   );
                                   field.onChange(newMembers);
                                 }}
                                 className="bg-slate-300 text-white px-2 py-1 rounded-md text-sm "
-                                // disabled={(field.value ?? []).length <= 3}
+                                disabled={(field.value ?? []).length <= 5}
                               >
                                 ❌
                               </Button>
                             </div>
                           ))}
-                          {(field.value ?? []).length < 9 && (
+                          {(field.value ?? []).length < 11 && (
                             <Button
                               type="button"
                               onClick={() => {
-                                if ((field.value ?? []).length < 9) {
+                                if ((field.value ?? []).length < 11) {
                                   field.onChange([...(field.value || []), ""]);
                                 }
                               }}
@@ -483,28 +470,6 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
               </div>
             </div>
           )}
-          <div className="flex flex-col gap-6 mt-2">
-            {/* Image Upload */}
-            <p className="font-dhivehi text-xl text-right text-cyan-950">
-              އައިޑީ ކާޑް (ގްރޫޕެއް ކަމުގައިވާ ވާނަމަ، ގްރޫޕް ލީޑަރުގެ)
-            </p>
-            <FormField
-              control={form.control}
-              name="idCard"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <FileUploader
-                      onFieldChange={field.onChange}
-                      imageUrl={field.value}
-                      setFile={setFile}
-                    />
-                  </FormControl>
-                  <FormMessage className="font-dhivehi text-md" />
-                </FormItem>
-              )}
-            />
-          </div>
 
           <div className="flex justify-start">
             <Button

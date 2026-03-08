@@ -36,28 +36,86 @@ export const uploadImage = async (file: File): Promise<string> => {
   }
 };
 
-// CREATE WASTE MANAGEMENT SERVICE REGISTRATION REQUEST
+// CREATE MADHAHA COMPETITION REGISTRATION (sets year for filtering, like Quran competition)
 export const createMadhahaCompetitionRegistration = async (
   registration: MadhahaCompetitionRegistration
 ) => {
   try {
     const { databases } = await createAdminClient();
     const documentId = ID.unique();
+    const currentYear = String(new Date().getFullYear());
 
-    const MadhahaCompetitionRegistration = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.madhahaCompetitionId,
-      documentId,
+    // Prevent duplicate: same idCardNumber in the same year (skip if "year" not in collection)
+    const idForCheck = (registration.idCardNumber || "").trim();
+    if (idForCheck) {
+      try {
+        const checkExisting = async (id: string) =>
+          databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.madhahaCompetitionId,
+            [
+              Query.equal("idCardNumber", [id]),
+              Query.equal("year", [currentYear]),
+              Query.limit(1),
+            ]
+          );
 
-      { ...registration }
-    );
+        let existing = await checkExisting(idForCheck);
+        if (existing.total === 0 && idForCheck.startsWith("A")) {
+          existing = await checkExisting(idForCheck.replace(/^A/, ""));
+        }
+        if (existing.total > 0) {
+          throw new Error("ALREADY_REGISTERED_THIS_YEAR");
+        }
+      } catch (err: unknown) {
+        const msg = err && typeof err === "object" && "message" in err ? String((err as { message: unknown }).message) : "";
+        if (msg === "ALREADY_REGISTERED_THIS_YEAR") throw err;
+        // Year attribute may not exist in collection yet; skip duplicate check
+      }
+    }
 
-    // Send email notification after successful registration
-    // await sendRegistrationEmail(registration);
+    const data = { ...registration } as Record<string, unknown>;
+    data.year = currentYear;
 
-    return parseStringify(MadhahaCompetitionRegistration);
+    let result;
+    try {
+      result = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.madhahaCompetitionId,
+        documentId,
+        data
+      );
+    } catch (createError: unknown) {
+      const msg =
+        createError &&
+        typeof createError === "object" &&
+        "message" in createError
+          ? String((createError as { message: unknown }).message)
+          : "";
+      const isYearInvalid = msg.includes("year");
+      if (isYearInvalid) {
+        const dataWithoutYear = { ...data };
+        delete dataWithoutYear.year;
+        result = await databases.createDocument(
+          appwriteConfig.databaseId,
+          appwriteConfig.madhahaCompetitionId,
+          documentId,
+          dataWithoutYear
+        );
+      } else {
+        throw createError;
+      }
+    }
+
+    return parseStringify(result);
   } catch (error) {
     console.error("Failed to register:", error);
+    if (
+      error instanceof Error &&
+      error.message === "ALREADY_REGISTERED_THIS_YEAR"
+    ) {
+      throw error;
+    }
     throw new Error("Failed to register");
   }
 };
@@ -100,32 +158,114 @@ export const getMadhahaParticipantByDocumentId = async (documentId: string) => {
   }
 };
 
+const MADHAHA_DEFAULT_YEAR = "2025";
+
+// Optional year: filter by registration year. Documents with no year are treated as 2025.
+// If the collection has no "year" attribute, we fetch all and filter in memory.
 export const getAllMadhahaCompetitionRegistrations = async (
   limit: number,
   offset: number,
-  searchTerm?: string
+  searchTerm?: string,
+  year?: string
 ) => {
+  const { databases } = await createAdminClient();
+
+  const effectiveYear = (doc: { year?: string | null }) =>
+    doc.year && String(doc.year).trim() ? String(doc.year) : MADHAHA_DEFAULT_YEAR;
+
+  const fetchAllThenFilter = async () => {
+    const all: unknown[] = [];
+    const pageSize = 100;
+    let totalFetched = 0;
+    let hasMore = true;
+    while (hasMore) {
+      const queries = [
+        Query.limit(pageSize),
+        Query.offset(all.length),
+      ];
+      if (searchTerm) {
+        queries.push(Query.search("idCardNumber", searchTerm));
+      }
+      const res = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.madhahaCompetitionId,
+        queries
+      );
+      all.push(...res.documents);
+      totalFetched = res.documents.length;
+      hasMore = totalFetched === pageSize;
+    }
+    const filtered =
+      year && year.trim()
+        ? all.filter((d) => effectiveYear(d as { year?: string | null }) === year)
+        : all;
+    const total = filtered.length;
+    const documents = filtered.slice(offset, offset + limit);
+    return { documents, total };
+  };
+
+  if (year === MADHAHA_DEFAULT_YEAR) {
+    try {
+      const { documents, total } = await fetchAllThenFilter();
+      return { documents, total };
+    } catch (err) {
+      console.error("Failed to fetch Madhaha registrations:", err);
+      throw new Error("Failed to fetch Madhaha registrations");
+    }
+  }
+
+  if (year && year.trim()) {
+    try {
+      const queries = [
+        Query.equal("year", [year]),
+        Query.limit(limit),
+        Query.offset(offset),
+      ];
+      if (searchTerm) {
+        queries.push(Query.search("idCardNumber", searchTerm));
+      }
+      const result = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.madhahaCompetitionId,
+        queries
+      );
+      return {
+        documents: result.documents,
+        total: result.total,
+      };
+    } catch (error: unknown) {
+      const isYearQueryInvalid =
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof (error as { message?: string }).message === "string" &&
+        (error as { message: string }).message.includes("year");
+
+      if (isYearQueryInvalid) {
+        const { documents, total } = await fetchAllThenFilter();
+        return { documents, total };
+      }
+      console.error("Failed to fetch Madhaha registrations:", error);
+      throw new Error("Failed to fetch Madhaha registrations");
+    }
+  }
+
   try {
-    const { databases } = await createAdminClient();
-
     const queries = [Query.limit(limit), Query.offset(offset)];
-
     if (searchTerm) {
       queries.push(Query.search("idCardNumber", searchTerm));
     }
-
     const result = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.madhahaCompetitionId,
       queries
     );
-
     return {
       documents: result.documents,
       total: result.total,
     };
-  } catch (error) {
-    console.error("Failed to fetch Madhaha registrations:", error);
+  } catch (err) {
+    console.error("Failed to fetch Madhaha registrations:", err);
     throw new Error("Failed to fetch Madhaha registrations");
   }
 };

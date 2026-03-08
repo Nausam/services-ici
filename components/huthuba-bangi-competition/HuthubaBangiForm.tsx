@@ -14,15 +14,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/hooks/use-toast";
-import { FileUploader } from "../waste-management/FileUploader";
 import ReusableDropdown from "../reusable/ReusableDropdown";
 import { useRouter } from "next/navigation";
 
 import {
   createHuthubaBangiCompetitionRegistration,
-  getHuthubaBangiParticipantByIdCard,
   updateHuthubaBangiCompetitionRegistration,
-  uploadImage,
 } from "@/lib/actions/huthubaBangi.actions";
 import { huthubaBangiSchema } from "@/lib/validations";
 import { AGE_GROUPS_BANGI } from "@/constants";
@@ -34,7 +31,6 @@ type HuthubaBangiFormProps = {
 
 const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   const [filteredAgeGroups, setFilteredAgeGroups] = useState(AGE_GROUPS_BANGI);
 
   const router = useRouter();
@@ -48,7 +44,6 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
       idCardNumber: registration?.idCardNumber || "",
       contactNumber: registration?.contactNumber || "",
       competitionType: registration?.competitionType || "ޙުތުބާ",
-      idCard: registration?.idCard || "",
       ageGroup: registration?.ageGroup || "",
     },
     mode: "onChange",
@@ -59,7 +54,7 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
 
     if (selectedType === "ޙުތުބާ" || selectedType === "ދެބައި") {
       setFilteredAgeGroups(
-        AGE_GROUPS_BANGI.filter((age) => age !== "6 އަހަރުން ދަށް")
+        AGE_GROUPS_BANGI.filter((age) => age !== "6 އަހަރުން ދަށް"),
       );
     } else {
       setFilteredAgeGroups(AGE_GROUPS_BANGI);
@@ -71,20 +66,7 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
     setIsSubmitting(true);
 
     try {
-      let idCard = values.idCard;
-
-      // ✅ Check if existing participant has ID card
-      const existingParticipant = await getHuthubaBangiParticipantByIdCard(
-        values.idCardNumber
-      );
-
-      if (existingParticipant && existingParticipant.idCard) {
-        idCard = existingParticipant.idCard;
-      } else if (file) {
-        idCard = await uploadImage(file);
-      }
-
-      // Create existing registration
+      // Create new registration
       if (type === "Create") {
         const newRegistration = await createHuthubaBangiCompetitionRegistration(
           {
@@ -93,17 +75,16 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
               values.competitionType === "ޙުތުބާ"
                 ? "ޙުތުބާ"
                 : values.competitionType === "ބަންގި"
-                ? "ބަންގި"
-                : "ދެބައި",
-            idCard,
-          }
+                  ? "ބަންގި"
+                  : "ދެބައި",
+          },
         );
 
         if (newRegistration) {
           form.reset();
           router.push("/");
           toast({
-            title: `އިންނަމާދޫ ކައުންސިލްގެ 1 ވަނަ ޙުތުބާ އަދި ބަންގި ގޮވުމުގެ މުބާރާތުގައި ${newRegistration.fullName} ރެޖިސްޓާ ކުރެވިއްޖެ`,
+            title: `އިންނަމާދޫ ކައުންސިލްގެ 2 ވަނަ ޙުތުބާ އަދި ބަންގި ގޮވުމުގެ މުބާރާތުގައި ${newRegistration.fullName} ރެޖިސްޓާ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
@@ -120,10 +101,9 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
                 values.competitionType === "ޙުތުބާ"
                   ? "ޙުތުބާ"
                   : values.competitionType === "ބަންގި"
-                  ? "ބަންގި"
-                  : "ދެބައި",
-              idCard,
-            }
+                    ? "ބަންގި"
+                    : "ދެބައި",
+            },
           );
 
         if (updatedRegistration) {
@@ -137,6 +117,16 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
       }
     } catch (error) {
       console.error("❌ Error Submitting:", error);
+      if (
+        error instanceof Error &&
+        error.message === "ALREADY_REGISTERED_THIS_YEAR"
+      ) {
+        toast({
+          title: "ކޮންމެ އައިޑީކާޑެއްގެ ދަށުންވެސް ރެޖިސްޓާ ވެވޭނީ އެއްފަހަރު",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
         title: "ރެޖިސްޓާ ނުކުރެވުނު",
         variant: "destructive",
@@ -148,8 +138,8 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
 
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "/assets/files/Bangi_And_Huthubaa_Gavaidhu.pdf";
-    link.download = "Bangi_And_Huthubaa_Gavaidhu.pdf";
+    link.href = "/assets/files/Bangi_And_Huthubaa_Gavaidhu_2026.pdf";
+    link.download = "Bangi_And_Huthubaa_Gavaidhu_2026.pdf";
     link.click();
   };
 
@@ -326,29 +316,6 @@ const HuthubaBangiForm = ({ type, registration }: HuthubaBangiFormProps) => {
                     }}
                     placeholder="ފޯނު ނަންބަރު"
                     className="rounded-md font-dhivehi border-gray-300 text-right"
-                  />
-                </FormControl>
-                <FormMessage className="font-dhivehi text-md" />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="flex flex-col gap-6 mt-2">
-          {/* Image Upload */}
-          <p className="font-dhivehi text-xl text-right text-cyan-950">
-            އައިޑީ ކާޑް
-          </p>
-          <FormField
-            control={form.control}
-            name="idCard"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <FileUploader
-                    onFieldChange={field.onChange}
-                    imageUrl={field.value}
-                    setFile={setFile}
                   />
                 </FormControl>
                 <FormMessage className="font-dhivehi text-md" />
