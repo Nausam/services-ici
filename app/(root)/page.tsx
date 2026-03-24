@@ -2,6 +2,7 @@ import React from "react";
 
 import Hero from "@/components/Hero";
 import Registrations from "@/components/registrations";
+import CouncilAwards from "@/components/CouncilAwards";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Competitions from "@/components/competitions";
@@ -48,12 +49,21 @@ const Home = () => {
               >
                 މުބާރާތްތައް
               </TabsTrigger>
+              <TabsTrigger
+                value="council-awards"
+                className="font-dhivehi text-2xl"
+              >
+                ކައުންސިލް އެވޯރޑް
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="competitions" className="w-full ">
               <Competitions />
             </TabsContent>
             <TabsContent value="registrations" className="w-full">
               <Registrations />
+            </TabsContent>
+            <TabsContent value="council-awards" className="w-full">
+              <CouncilAwards />
             </TabsContent>
           </Tabs>
         </div>

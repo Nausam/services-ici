@@ -40,6 +40,12 @@ const H_DropDown = ({ value, onChangeHandler }: DropdownProps) => {
           <SelectItem className="cursor-pointer" value="މުބާރާތް">
             މުބާރާތް
           </SelectItem>
+          <SelectItem
+            className="cursor-pointer"
+            value="ކައުންސިލް އެވޯރޑް"
+          >
+            ކައުންސިލް އެވޯރޑް
+          </SelectItem>
         </AlertDialog>
       </SelectContent>
     </Select>
