@@ -14,6 +14,7 @@ import PermissionRequestsTable from "@/components/permissions/PermissionRequests
 import QuizStatistics from "@/components/quiz-competition/QuizStatistics";
 import QuizSubmissionsList from "@/components/quiz-competition/QuizSubmissionList";
 import UploadQuiz from "@/components/quiz-competition/UploadQuiz";
+import CouncilAwardDashboard from "@/components/council-award/CouncilAwardDashboard";
 import QuranCompetitionTable from "@/components/quran-competition/QuranCompetitionTable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -107,6 +108,14 @@ export default function AdminPage() {
             <Card className="rborder-0 shadow-none ring-0 bg-transparent">
               <CardContent className="p-0">
                 <MadhahaCompetitionDashboard />
+              </CardContent>
+            </Card>
+          )}
+
+          {section === "council-award" && (
+            <Card className="border-0 shadow-none ring-0 bg-transparent">
+              <CardContent className="p-0">
+                <CouncilAwardDashboard />
               </CardContent>
             </Card>
           )}

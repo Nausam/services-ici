@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CalendarDays, ChevronRight, ChevronLeft } from "lucide-react";
+import { createCouncilAwardRegistration } from "@/lib/actions/councilAward.actions";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
   "އިސްލާމްދީނާއި ތަރުބިއްޔަތުގެ ދާއިރާ",
@@ -49,6 +52,10 @@ function getDaysInMonth(year: number, month: number) {
 
 function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
+}
+
+function formatDateISO(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 type CustomDatePickerProps = {
@@ -130,7 +137,6 @@ const CustomDatePicker = ({
 
       {open && (
         <div className="absolute z-50 mt-2 w-72 rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-900/10 p-4 left-0 sm:left-auto sm:right-0">
-          {/* Month/Year nav */}
           <div className="flex items-center justify-between mb-3">
             <button
               type="button"
@@ -151,7 +157,6 @@ const CustomDatePicker = ({
             </button>
           </div>
 
-          {/* Day headers */}
           <div className="grid grid-cols-7 gap-0 mb-1">
             {DAYS_DV.map((d) => (
               <div
@@ -163,7 +168,6 @@ const CustomDatePicker = ({
             ))}
           </div>
 
-          {/* Day grid */}
           <div className="grid grid-cols-7 gap-0">
             {Array.from({ length: firstDay }).map((_, i) => (
               <div key={`e-${i}`} />
@@ -195,14 +199,19 @@ const CustomDatePicker = ({
 };
 
 const CouncilAwardRegisterPage = () => {
+  const [fullName, setFullName] = useState("");
+  const [idCardNumber, setIdCardNumber] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [examDate, setExamDate] = useState<Date | null>(null);
+  const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEdhuruAward = selectedCategory.startsWith("އެދުރު އެވޯޑް");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -217,9 +226,94 @@ const CouncilAwardRegisterPage = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!fullName.trim()) {
+      toast({ title: "ފުރިހަމަ ނަން ލިޔުއްވާ", variant: "destructive" });
+      return;
+    }
+    if (!idCardNumber.trim() || idCardNumber.length < 2) {
+      toast({ title: "އައިޑީ ކާޑް ނަންބަރު ލިޔުއްވާ", variant: "destructive" });
+      return;
+    }
+    if (!selectedCategory) {
+      toast({ title: "ދާއިރާއެއް ނަންގަވާ", variant: "destructive" });
+      return;
+    }
+    if (!description.trim()) {
+      toast({ title: "ތަފްސީލު ލިޔުއްވާ", variant: "destructive" });
+      return;
+    }
+    if (isEdhuruAward && !examDate) {
+      toast({
+        title: "އިމްތިހާނު ނިމުނު ތާރީޚް ނަންގަވާ",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!isEdhuruAward && (!startDate || !endDate)) {
+      toast({
+        title: "ޚިދުމަތް ކުރި މުއްދަތު ނަންގަވާ",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await createCouncilAwardRegistration({
+        fullName: fullName.trim(),
+        idCardNumber: idCardNumber.trim(),
+        category: selectedCategory,
+        startDate: startDate ? formatDateISO(startDate) : undefined,
+        endDate: endDate ? formatDateISO(endDate) : undefined,
+        examDate: examDate ? formatDateISO(examDate) : undefined,
+        description: description.trim(),
+      });
+
+      if (result) {
+        setFullName("");
+        setIdCardNumber("");
+        setSelectedCategory("");
+        setStartDate(null);
+        setEndDate(null);
+        setExamDate(null);
+        setDescription("");
+        router.push("/");
+        toast({
+          title: `${result.fullName} ގެ ހުށަހެޅުން ރެޖިސްޓާ ކުރެވިއްޖެ`,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === "ALREADY_REGISTERED_THIS_YEAR"
+      ) {
+        toast({
+          title: "މި އައިޑީ ކާޑުން މިއަހަރު މިހާރު ހުށަހެޅިފައިވޭ",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "ހުށަހެޅުން ރެޖިސްޓާ ނުކުރެވުނު",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleIdCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/^A/, "").replace(/\D/g, "").slice(0, 6);
+    setIdCardNumber(`A${raw}`);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fb]">
-      {/* ── Compact top strip ── */}
+      {/* ── Banner ── */}
       <div className="relative bg-gradient-to-l from-teal-800 to-emerald-900 overflow-hidden">
         <div
           className="absolute inset-0 opacity-10"
@@ -246,8 +340,8 @@ const CouncilAwardRegisterPage = () => {
 
       {/* ── Form ── */}
       <div className="max-w-4xl mx-auto px-5 pt-6 pb-20" dir="rtl">
-        <form className="space-y-10">
-          {/* ─ Section: Name & ID ─ */}
+        <form className="space-y-10" onSubmit={handleSubmit}>
+          {/* ─ Name & ID ─ */}
           <section className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm">
             <h2 className="font-dhivehi text-xl md:text-2xl text-emerald-900 font-semibold mb-5">
               ހުށަހަޅާ ފަރާތުގެ މަޢުލޫމާތު
@@ -262,6 +356,8 @@ const CouncilAwardRegisterPage = () => {
                   dir="rtl"
                   lang="dv"
                   placeholder="ފުރިހަމަ ނަން"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right font-dhivehi text-slate-800 placeholder:text-slate-300 transition-all duration-200 hover:border-slate-300 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:bg-white"
                 />
               </div>
@@ -273,13 +369,15 @@ const CouncilAwardRegisterPage = () => {
                   type="text"
                   dir="ltr"
                   placeholder="A123456"
+                  value={idCardNumber}
+                  onChange={handleIdCardChange}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right text-slate-800 font-bold tracking-widest placeholder:text-slate-300 placeholder:font-normal placeholder:tracking-normal transition-all duration-200 hover:border-slate-300 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:bg-white"
                 />
               </div>
             </div>
           </section>
 
-          {/* ─ Section: Category ─ */}
+          {/* ─ Category ─ */}
           <section className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm">
             <h2 className="font-dhivehi text-xl md:text-2xl text-emerald-900 font-semibold mb-1">
               ދާއިރާ ނަންގަވާ
@@ -373,7 +471,7 @@ const CouncilAwardRegisterPage = () => {
             </div>
           </section>
 
-          {/* ─ Section 2: Date Range / Exam Date ─ */}
+          {/* ─ Date Range / Exam Date ─ */}
           <section className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm">
             {isEdhuruAward ? (
               <>
@@ -381,11 +479,11 @@ const CouncilAwardRegisterPage = () => {
                   އޭލެވެލް ނުވަތަ އޯލެވެލް ނިމުނު ތާރީޚް
                 </h2>
                 <p className="font-dhivehi text-sm text-slate-400 mb-5">
-                  އިމްތިހާނު ނިމުނު ތާރީޚް ހޮވާލައްވާ
+                  އިމްތިހާނު ނިމުނު ތާރީޚް ނަންގަވާ
                 </p>
                 <div className="max-w-sm">
                   <CustomDatePicker
-                    label="ތާރީޚް ހޮވާ"
+                    label="ތާރީޚް ނަންގަވާ"
                     value={examDate}
                     onChange={setExamDate}
                   />
@@ -394,7 +492,7 @@ const CouncilAwardRegisterPage = () => {
             ) : (
               <>
                 <h2 className="font-dhivehi text-xl md:text-2xl text-emerald-900 font-semibold mb-1">
-                  ޚިދުމަތް ކުރި މުއްދަތު
+                  ޚިދުމަތް ކޮށްދެއްވި މުއްދަތު
                 </h2>
                 <p className="font-dhivehi text-sm text-slate-400 mb-5">
                   ޚިދުމަތް ފެށި ތާރީޚާއި ނިމުނު ތާރީޚް
@@ -405,7 +503,7 @@ const CouncilAwardRegisterPage = () => {
                       ފެށުނު ތާރީޚް
                     </label>
                     <CustomDatePicker
-                      label="ތާރީޚް ހޮވާ"
+                      label="ތާރީޚް ނަންގަވާ"
                       value={startDate}
                       onChange={setStartDate}
                     />
@@ -415,7 +513,7 @@ const CouncilAwardRegisterPage = () => {
                       ނިމުނު ތާރީޚް
                     </label>
                     <CustomDatePicker
-                      label="ތާރީޚް ހޮވާ"
+                      label="ތާރީޚް ނަންގަވާ"
                       value={endDate}
                       onChange={setEndDate}
                     />
@@ -425,17 +523,19 @@ const CouncilAwardRegisterPage = () => {
             )}
           </section>
 
-          {/* ─ Section 3: Description ─ */}
+          {/* ─ Description ─ */}
           <section className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm">
             <h2 className="font-dhivehi text-xl md:text-2xl text-emerald-900 font-semibold mb-1">
               ތަފްސީލު
             </h2>
             <p className="font-dhivehi text-sm text-slate-400 mb-5">
-              ހޯއްދެވި ކާމިޔާބީ ތަކާއި ޚިދުމަތުގެ ތަފްސީލު ލިޔުއްވާ
+              ހޯއްދެވި ކާމިޔާބީ ތަކާއި ޚިދުމަތުގެ ތަފްސީލު
             </p>
             <textarea
               rows={7}
-              placeholder="މިތާނގައި ލިޔުއްވާ..."
+              placeholder="ކާމިޔާބީ ތަކާއި ޚިދުމަތުގެ ތަފްސީލު ލިޔުއްވާ..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right font-dhivehi text-slate-800 placeholder:text-slate-300 resize-none transition-all duration-200 hover:border-slate-300 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:bg-white"
             />
           </section>
@@ -444,9 +544,12 @@ const CouncilAwardRegisterPage = () => {
           <div className="flex justify-start">
             <button
               type="submit"
-              className="group relative px-12 py-4 rounded-xl bg-emerald-700 text-white font-dhivehi text-xl font-semibold overflow-hidden transition-all duration-300 hover:bg-emerald-800 active:scale-[0.97] shadow-lg shadow-emerald-700/20 hover:shadow-xl hover:shadow-emerald-700/30"
+              disabled={isSubmitting}
+              className="group relative px-12 py-4 rounded-xl bg-emerald-700 text-white font-dhivehi text-xl font-semibold overflow-hidden transition-all duration-300 hover:bg-emerald-800 active:scale-[0.97] shadow-lg shadow-emerald-700/20 hover:shadow-xl hover:shadow-emerald-700/30 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <span className="relative z-10">ހުށައެޅުއްވުން</span>
+              <span className="relative z-10">
+                {isSubmitting ? "ހުށަހެޅެނީ..." : "ހުށަހަޅުއްވާ"}
+              </span>
               <div className="absolute inset-0 bg-gradient-to-l from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
           </div>

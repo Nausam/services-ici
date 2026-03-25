@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   AlignJustify,
+  Award,
   BookOpen,
   KeyRound,
   LayoutDashboard,
@@ -31,6 +32,7 @@ export type AdminSection =
   | "quiz"
   | "bangi-huthuba-competition"
   | "madhaha-competition"
+  | "council-award"
   | "permission";
 
 export type AdminSidebarProps = {
@@ -50,6 +52,7 @@ const ITEMS: { key: AdminSection; label: string; icon: React.ElementType }[] = [
     icon: Mic2,
   },
   { key: "madhaha-competition", label: "މަދަޙަ މުބާރާތް", icon: AlignJustify },
+  { key: "council-award", label: "ކައުންސިލް އެވޯޑް", icon: Award },
   { key: "permission", label: "ހުއްދަ ރިކުއެސްޓް", icon: KeyRound },
 ];
 

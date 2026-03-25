@@ -27,4 +27,6 @@ export const appwriteConfig = {
     process.env.NEXT_PUBLIC_APPWRITE_HUTHUBA_BANGI_COMPETITION_COLLECTION!,
   permissionRequestsId:
     process.env.NEXT_PUBLIC_APPWRITE_PERMISSION_REQUESTS_COLLECTION!,
+  councilAwardCollectionId:
+    process.env.NEXT_PUBLIC_APPWRITE_COUNCIL_AWARD_COLLECTION!,
 };

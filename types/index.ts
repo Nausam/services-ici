@@ -84,6 +84,22 @@ export type HomeCard = {
 
 export type CompetitionType = "ޙުތުބާ" | "ބަންގި" | "ދެބައި";
 
+export type CouncilAwardRegistration = {
+  fullName: string;
+  idCardNumber: string;
+  category: string;
+  startDate?: string;
+  endDate?: string;
+  examDate?: string;
+  description: string;
+  year?: string;
+};
+
+export type CouncilAwardDocument = CouncilAwardRegistration & {
+  $id: string;
+  $createdAt?: string;
+};
+
 export type HuthubaBangiCompetitionRegistration = {
   fullName: string;
   address: string;
