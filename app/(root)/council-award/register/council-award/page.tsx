@@ -340,6 +340,16 @@ const CouncilAwardRegisterPage = () => {
 
       {/* ── Form ── */}
       <div className="max-w-4xl mx-auto px-5 pt-6 pb-20" dir="rtl">
+        {/* Note */}
+        <div className="mb-6 rounded-xl bg-amber-50 border border-amber-200 px-5 py-3.5">
+          <p className="font-dhivehi text-sm text-amber-800 leading-relaxed">
+            <span className="font-bold text-red-600">ނޯޓް : </span>
+            އިތުރު މައުލޫމާތު ހޯއްދެއްވުމަށް{" "}
+            <span dir="ltr" className="font-semibold text-amber-900">7981984</span>{" "}
+            އަށް ގުޅުއްވުން އެދެން!
+          </p>
+        </div>
+
         <form className="space-y-10" onSubmit={handleSubmit}>
           {/* ─ Name & ID ─ */}
           <section className="bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm">
