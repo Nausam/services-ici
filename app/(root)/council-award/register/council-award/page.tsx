@@ -7,17 +7,17 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
-  "އިސްލާމްދީނާއި ތަރުބިއްޔަތުގެ ދާއިރާ",
-  "ޞިއްޙަތާއި ކުޅިވަރުގެ ދާއިރާ",
-  "ޢުމްރާނީ ތަރައްޤީ އާއި އުފެއްދުންތެރިކަމުގެ ދާއިރާ",
-  "މަސައްކަތްތެރިކަމާއި ފަންނީ ހުނަރުގެ ދާއިރާ",
-  "ވިޔަފާރިއާއި އިޤްތިޞާދުގެ ދާއިރާ",
-  "ދިވެހި ތާރީޙާއި ޡަޤާފަތުގެ ދާއިރާ",
-  "ދިވެހި ބަހާއި އަދަބިއްޔާތުގެ ދާއިރާ",
-  "މީހުން ބިނާކުރުމާއި، ހިންގުމުގެ ދާއިރާ",
+  "އިސްލާމްދީނާއި ތަރުބިއްޔަތުގެ ދާއިރާ (މަދުވެގެން 10 އަހަރު)",
+  "ޞިއްޙަތާއި ކުޅިވަރުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
+  "ޢުމްރާނީ ތަރައްޤީ އާއި އުފެއްދުންތެރިކަމުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
+  "މަސައްކަތްތެރިކަމާއި ފަންނީ ހުނަރުގެ ދާއިރާ (މަދުވެގެން 20 އަހަރު)",
+  "ވިޔަފާރިއާއި އިޤްތިޞާދުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
+  "ދިވެހި ތާރީޙާއި ޡަޤާފަތުގެ ދާއިރާ (މަދުވެގެން 10 އަހަރު)",
+  "ދިވެހި ބަހާއި އަދަބިއްޔާތުގެ ދާއިރާ (މަދުވެގެން 10 އަހަރު)",
+  "މީހުން ބިނާކުރުމާއި، ހިންގުމުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
   "އައު ހޯދުންތަކާއި އީޖާދުގެ ދާއިރާ",
-  "ސައިންސާއި ޓެކްނޮލޮޖީގެ ދާއިރާ",
-  "ތަޢުލީމުގެ ދާއިރާ (މިހާރު ޚިދުމަތް ކުރަމުންދާ އަދި ޚިދުމަތް ކޮށްފައިވާ ފަރާތްތައް)",
+  "ސައިންސާއި ޓެކްނޮލޮޖީގެ ދާއިރާ (މަދުވެގެން 10 އަހަރު)",
+  "ތަޢުލީމުގެ ދާއިރާ (މިހާރު ޚިދުމަތް ކުރަމުންދާ އަދި ޚިދުމަތް ކޮށްފައިވާ ފަރާތްތައް. މަދުވެގެން 15 އަހަރު)",
   "އެދުރު އެވޯޑް (އޯލެވެލް އަދި އޭލެވެލް އިމްތިހާނުގެ ގަދަ 10 ގައި ހިމެނިފައިވާ އިންނަމާދޫ އަށް ނިސްބަތްވާ ދަރިވަރުންނަށް ހިތްވަރު ދިނުމުގެ ގޮތުން ދެވޭ އެވޯޑް)",
 ];
 
@@ -64,13 +64,20 @@ type CustomDatePickerProps = {
   onChange: (d: Date) => void;
 };
 
+type PickerView = "days" | "months" | "years";
+
+const YEAR_MIN = 1950;
+const YEAR_MAX = new Date().getFullYear() + 5;
+
 const CustomDatePicker = ({
   label,
   value,
   onChange,
 }: CustomDatePickerProps) => {
   const [open, setOpen] = useState(false);
+  const [pickerView, setPickerView] = useState<PickerView>("days");
   const ref = useRef<HTMLDivElement>(null);
+  const yearGridRef = useRef<HTMLDivElement>(null);
   const today = new Date();
   const [viewYear, setViewYear] = useState(
     value?.getFullYear() ?? today.getFullYear(),
@@ -81,12 +88,21 @@ const CustomDatePicker = ({
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
+      if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
+        setPickerView("days");
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    if (pickerView === "years" && yearGridRef.current) {
+      const activeBtn = yearGridRef.current.querySelector("[data-active]");
+      if (activeBtn) activeBtn.scrollIntoView({ block: "center" });
+    }
+  }, [pickerView]);
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
@@ -118,11 +134,19 @@ const CustomDatePicker = ({
     ? `${value.getDate()} ${MONTHS_DV[value.getMonth()]} ${value.getFullYear()}`
     : "";
 
+  const years = Array.from(
+    { length: YEAR_MAX - YEAR_MIN + 1 },
+    (_, i) => YEAR_MAX - i,
+  );
+
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          setOpen(!open);
+          if (open) setPickerView("days");
+        }}
         className={`w-full flex items-center justify-between rounded-xl border px-4 py-3.5 font-dhivehi transition-all duration-200 ${
           open
             ? "border-emerald-400 ring-2 ring-emerald-100 bg-white"
@@ -137,61 +161,144 @@ const CustomDatePicker = ({
 
       {open && (
         <div className="absolute z-50 mt-2 w-72 rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-900/10 p-4 left-0 sm:left-auto sm:right-0">
+          {/* Header */}
           <div className="flex items-center justify-between mb-3">
-            <button
-              type="button"
-              onClick={nextMonth}
-              className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              <ChevronRight className="w-4 h-4 text-slate-500" />
-            </button>
-            <span className="font-dhivehi text-sm font-semibold text-slate-700">
-              {MONTHS_DV[viewMonth]} {viewYear}
-            </span>
-            <button
-              type="button"
-              onClick={prevMonth}
-              className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4 text-slate-500" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-7 gap-0 mb-1">
-            {DAYS_DV.map((d) => (
-              <div
-                key={d}
-                className="text-center text-[11px] font-dhivehi text-slate-400 py-1"
-              >
-                {d}
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 gap-0">
-            {Array.from({ length: firstDay }).map((_, i) => (
-              <div key={`e-${i}`} />
-            ))}
-            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
+            {pickerView === "days" && (
               <button
-                key={day}
                 type="button"
-                onClick={() => {
-                  onChange(new Date(viewYear, viewMonth, day));
-                  setOpen(false);
-                }}
-                className={`mx-auto w-9 h-9 rounded-full text-sm flex items-center justify-center transition-all duration-150 ${
-                  isSelected(day)
-                    ? "bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/30"
-                    : isToday(day)
-                      ? "bg-emerald-50 text-emerald-700 font-semibold ring-1 ring-emerald-200"
-                      : "text-slate-700 hover:bg-slate-100"
-                }`}
+                onClick={nextMonth}
+                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                {day}
+                <ChevronRight className="w-4 h-4 text-slate-500" />
               </button>
-            ))}
+            )}
+
+            <button
+              type="button"
+              onClick={() =>
+                setPickerView(
+                  pickerView === "days"
+                    ? "years"
+                    : pickerView === "years"
+                      ? "days"
+                      : "days",
+                )
+              }
+              className="font-dhivehi text-sm font-semibold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded-lg transition-colors mx-auto"
+            >
+              {pickerView === "years"
+                ? "އަހަރެއް ނަންގަވާ"
+                : pickerView === "months"
+                  ? `${viewYear}`
+                  : `${MONTHS_DV[viewMonth]} ${viewYear}`}
+            </button>
+
+            {pickerView === "days" && (
+              <button
+                type="button"
+                onClick={prevMonth}
+                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 text-slate-500" />
+              </button>
+            )}
           </div>
+
+          {/* Year grid */}
+          {pickerView === "years" && (
+            <div
+              ref={yearGridRef}
+              className="grid grid-cols-4 gap-1 max-h-56 overflow-y-auto"
+            >
+              {years.map((y) => (
+                <button
+                  key={y}
+                  type="button"
+                  data-active={y === viewYear ? "" : undefined}
+                  onClick={() => {
+                    setViewYear(y);
+                    setPickerView("months");
+                  }}
+                  className={`py-2 rounded-lg text-sm transition-colors ${
+                    y === viewYear
+                      ? "bg-emerald-600 text-white font-bold"
+                      : y === today.getFullYear()
+                        ? "bg-emerald-50 text-emerald-700 font-semibold"
+                        : "text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Month grid */}
+          {pickerView === "months" && (
+            <div className="grid grid-cols-3 gap-1.5">
+              {MONTHS_DV.map((m, i) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => {
+                    setViewMonth(i);
+                    setPickerView("days");
+                  }}
+                  className={`py-2.5 rounded-lg font-dhivehi text-sm transition-colors ${
+                    i === viewMonth && viewYear === (value?.getFullYear() ?? today.getFullYear())
+                      ? "bg-emerald-600 text-white font-bold"
+                      : "text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Day grid */}
+          {pickerView === "days" && (
+            <>
+              <div className="grid grid-cols-7 gap-0 mb-1">
+                {DAYS_DV.map((d) => (
+                  <div
+                    key={d}
+                    className="text-center text-[11px] font-dhivehi text-slate-400 py-1"
+                  >
+                    {d}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-0">
+                {Array.from({ length: firstDay }).map((_, i) => (
+                  <div key={`e-${i}`} />
+                ))}
+                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(
+                  (day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => {
+                        onChange(new Date(viewYear, viewMonth, day));
+                        setOpen(false);
+                        setPickerView("days");
+                      }}
+                      className={`mx-auto w-9 h-9 rounded-full text-sm flex items-center justify-center transition-all duration-150 ${
+                        isSelected(day)
+                          ? "bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/30"
+                          : isToday(day)
+                            ? "bg-emerald-50 text-emerald-700 font-semibold ring-1 ring-emerald-200"
+                            : "text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  ),
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
