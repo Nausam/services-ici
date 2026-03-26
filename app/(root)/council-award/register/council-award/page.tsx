@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { CalendarDays, ChevronRight, ChevronLeft } from "lucide-react";
-import { createCouncilAwardRegistration } from "@/lib/actions/councilAward.actions";
 import { toast } from "@/hooks/use-toast";
+import { createCouncilAwardRegistration } from "@/lib/actions/councilAward.actions";
+import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 
 const CATEGORIES = [
   "އިސްލާމްދީނާއި ތަރުބިއްޔަތުގެ ދާއިރާ (މަދުވެގެން 10 އަހަރު)",
   "ޞިއްޙަތާއި ކުޅިވަރުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
-  "ޢުމްރާނީ ތަރައްޤީ އާއި އުފެއްދުންތެރިކަމުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
+  "ޢުމްރާނީ ތަރައްޤީ އާއި އުފެއްދުންތެރިކަމުގެ ދާއިރާ (މަދުވެގެން 20 އަހަރު)",
   "މަސައްކަތްތެރިކަމާއި ފަންނީ ހުނަރުގެ ދާއިރާ (މަދުވެގެން 20 އަހަރު)",
   "ވިޔަފާރިއާއި އިޤްތިޞާދުގެ ދާއިރާ (މަދުވެގެން 15 އަހަރު)",
   "ދިވެހި ތާރީޙާއި ޡަޤާފަތުގެ ދާއިރާ (މަދުވެގެން 10 އަހަރު)",
@@ -245,7 +245,8 @@ const CustomDatePicker = ({
                     setPickerView("days");
                   }}
                   className={`py-2.5 rounded-lg font-dhivehi text-sm transition-colors ${
-                    i === viewMonth && viewYear === (value?.getFullYear() ?? today.getFullYear())
+                    i === viewMonth &&
+                    viewYear === (value?.getFullYear() ?? today.getFullYear())
                       ? "bg-emerald-600 text-white font-bold"
                       : "text-slate-700 hover:bg-slate-100"
                   }`}
@@ -452,7 +453,9 @@ const CouncilAwardRegisterPage = () => {
           <p className="font-dhivehi text-sm text-amber-800 leading-relaxed">
             <span className="font-bold text-red-600">ނޯޓް : </span>
             އިތުރު މައުލޫމާތު ހޯއްދެއްވުމަށް{" "}
-            <span dir="ltr" className="font-semibold text-amber-900">7981984</span>{" "}
+            <span dir="ltr" className="font-semibold text-amber-900">
+              7981984
+            </span>{" "}
             އަށް ގުޅުއްވުން އެދެން!
           </p>
         </div>
