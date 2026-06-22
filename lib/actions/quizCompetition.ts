@@ -1,11 +1,15 @@
 "use server";
 
-import { createAdminClient } from "@/lib/appwrite";
-import { appwriteConfig } from "@/lib/appwrite/config";
+import { COLLECTIONS } from "@/lib/firebase/collections";
+import {
+  fromFirestoreDoc,
+  getPagedDocuments,
+  nowIso,
+  toFirestoreData,
+} from "@/lib/firebase/firestore";
+import { getFirestoreDb } from "@/lib/firebase/admin";
 import { QUIZ_COMPETITION_DEFAULT_YEAR } from "@/constants";
-import { ID, Query } from "node-appwrite";
 import { parseStringify } from "../utils";
-import * as XLSX from "xlsx";
 import { getQuranParticipantByIdCard } from "./madhaha.actions";
 
 interface QuizQuestion {
@@ -32,60 +36,63 @@ type QuizStatistics = {
   topIncorrect: TopUser[];
 };
 
+const getTodayMaldivesWindow = () => {
+  const maldivesNow = new Date();
+  maldivesNow.setUTCHours(maldivesNow.getUTCHours() + 5);
+
+  const todayStart = new Date(maldivesNow);
+  todayStart.setUTCHours(0, 0, 0, 0);
+
+  const todayEnd = new Date(maldivesNow);
+  todayEnd.setUTCHours(23, 59, 59, 999);
+
+  return {
+    formattedStart: todayStart.toISOString(),
+    formattedEnd: todayEnd.toISOString(),
+    todayStart,
+  };
+};
+
 export const getTodaysQuizQuestion = async () => {
   try {
-    const { databases } = await createAdminClient();
+    const db = getFirestoreDb();
+    const { formattedStart, formattedEnd } = getTodayMaldivesWindow();
 
-    // ✅ Convert to Maldives Time (UTC+5)
-    const maldivesNow = new Date();
-    maldivesNow.setUTCHours(maldivesNow.getUTCHours() + 5); // Shift to UTC+5
+    const result = await db
+      .collection(COLLECTIONS.quizQuestions)
+      .where("date", ">=", formattedStart)
+      .where("date", "<=", formattedEnd)
+      .orderBy("date", "asc")
+      .limit(1)
+      .get();
 
-    const todayStart = new Date(maldivesNow);
-    todayStart.setUTCHours(0, 0, 0, 0); // Start of the day in UTC+5
-
-    const todayEnd = new Date(maldivesNow);
-    todayEnd.setUTCHours(23, 59, 59, 999); // End of the day in UTC+5
-
-    // ✅ Convert to ISO format (UTC format for Appwrite)
-    const formattedStart = todayStart.toISOString();
-    const formattedEnd = todayEnd.toISOString();
-
-    // ✅ Query today's quiz based on Maldives Time
-    const result = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionId,
-      [
-        Query.greaterThanEqual("date", formattedStart),
-        Query.lessThanEqual("date", formattedEnd),
-      ]
-    );
-
-    if (result.total > 0) {
+    if (!result.empty) {
+      const question = result.docs[0].data();
       return {
-        date: result.documents[0].date,
-        question: result.documents[0].question,
-        questionNumber: result.documents[0].questionNumber,
-        correctAnswer: result.documents[0].correctAnswer,
-        options: result.documents[0].options || [],
+        date: question.date,
+        question: question.question,
+        questionNumber: question.questionNumber,
+        correctAnswer: question.correctAnswer,
+        options: question.options || [],
       };
     }
 
-    // ✅ If no quiz for today, fetch the next available quiz
-    const nextQuiz = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionId,
-      [Query.greaterThan("date", formattedEnd), Query.limit(1)]
-    );
+    const nextQuiz = await db
+      .collection(COLLECTIONS.quizQuestions)
+      .where("date", ">", formattedEnd)
+      .orderBy("date", "asc")
+      .limit(1)
+      .get();
 
-    if (nextQuiz.total > 0) {
+    if (!nextQuiz.empty) {
       return {
-        nextQuizDate: nextQuiz.documents[0].date,
+        nextQuizDate: nextQuiz.docs[0].data().date,
       };
     }
 
     return null;
   } catch (error) {
-    console.error("❌ Failed to fetch today's quiz question:", error);
+    console.error("Failed to fetch today's quiz question:", error);
     return null;
   }
 };
@@ -97,56 +104,37 @@ export const submitQuizForm = async (quizData: {
   answer: string;
 }) => {
   try {
-    const { databases } = await createAdminClient();
+    const db = getFirestoreDb();
+    const { formattedStart, formattedEnd, todayStart } =
+      getTodayMaldivesWindow();
 
-    // ✅ Convert current time to Maldives Time (UTC+5)
-    const maldivesNow = new Date();
-    maldivesNow.setUTCHours(maldivesNow.getUTCHours() + 5); // Shift to UTC+5
+    const quizResult = await db
+      .collection(COLLECTIONS.quizQuestions)
+      .where("date", ">=", formattedStart)
+      .where("date", "<=", formattedEnd)
+      .orderBy("date", "asc")
+      .limit(1)
+      .get();
 
-    const todayStart = new Date(maldivesNow);
-    todayStart.setUTCHours(0, 0, 0, 0); // Midnight start
-
-    const todayEnd = new Date(maldivesNow);
-    todayEnd.setUTCHours(23, 59, 59, 999); // Midnight end
-
-    // ✅ Convert to ISO format for Appwrite
-    const formattedStart = todayStart.toISOString();
-    const formattedEnd = todayEnd.toISOString();
-
-    // ✅ Query for today's quiz question
-    const quizResult = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionId,
-      [
-        Query.greaterThanEqual("date", formattedStart),
-        Query.lessThanEqual("date", formattedEnd),
-      ]
-    );
-
-    if (quizResult.total === 0) {
+    if (quizResult.empty) {
       throw new Error("No quiz question found for today.");
     }
 
-    const quizQuestion = quizResult.documents[0]; // Today's quiz
-    const correctAnswer = quizQuestion.correctAnswer; // Correct answer field from the database
-    const isCorrect = quizData.answer.trim() === correctAnswer.trim(); // Compare user's answer
-
+    const quizQuestion = quizResult.docs[0].data();
+    const correctAnswer = String(quizQuestion.correctAnswer || "");
+    const isCorrect = quizData.answer.trim() === correctAnswer.trim();
     const year = new Date(Date.now() + 5 * 60 * 60 * 1000).getUTCFullYear();
 
-    // ✅ Query for existing submissions matching idCardNumber + same day + same year
-    const idCardMatches = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionAnswersId,
-      [
-        Query.equal("idCardNumber", quizData.idCardNumber),
-        Query.equal("year", year),
-        Query.greaterThanEqual("submissionDate", formattedStart),
-        Query.lessThanEqual("submissionDate", formattedEnd),
-      ]
-    );
+    const idCardMatches = await db
+      .collection(COLLECTIONS.quizAnswers)
+      .where("idCardNumber", "==", quizData.idCardNumber)
+      .where("year", "==", year)
+      .where("submissionDate", ">=", formattedStart)
+      .where("submissionDate", "<=", formattedEnd)
+      .limit(1)
+      .get();
 
-    // ✅ If the user has already submitted today, prevent multiple submissions
-    if (idCardMatches.total > 0) {
+    if (!idCardMatches.empty) {
       return {
         success: false,
         message:
@@ -154,31 +142,30 @@ export const submitQuizForm = async (quizData: {
       };
     }
 
-    // ✅ Store new submission in Maldives Time (UTC+5) with year
-    const response = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionAnswersId,
-      "unique()", // Generate a unique document ID
-      {
+    const timestamp = nowIso();
+    const ref = db.collection(COLLECTIONS.quizAnswers).doc();
+    await ref.set(
+      toFirestoreData({
         fullName: quizData.fullName,
         contactNumber: quizData.contactNumber,
         idCardNumber: quizData.idCardNumber,
         answer: quizData.answer,
-        submissionDate: todayStart.toISOString(), // ✅ Corrected Maldives Time Submission Date
+        submissionDate: todayStart.toISOString(),
         questionNumber: quizQuestion.questionNumber,
         correct: isCorrect,
         year,
-      }
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      })
     );
 
-    return response;
+    return parseStringify(fromFirestoreDoc(await ref.get()));
   } catch (error) {
-    console.error("❌ Failed to submit quiz form:", error);
-    throw error; // Pass the error to the frontend for handling
+    console.error("Failed to submit quiz form:", error);
+    throw error;
   }
 };
 
-// GET ALL QUIZ SUBMISSIONS
 export const getAllQuizSubmissions = async (
   limit: number,
   offset: number,
@@ -186,44 +173,60 @@ export const getAllQuizSubmissions = async (
   selectedYear?: number
 ) => {
   try {
-    const { databases } = await createAdminClient();
-
-    const filters = [
-      Query.limit(limit),
-      Query.offset(offset),
-      Query.orderDesc("$createdAt"),
-    ];
-
-    if (selectedYear != null) {
-      filters.push(Query.equal("year", selectedYear));
-    }
-
     if (selectedDate) {
       const startDate = new Date(selectedDate);
       startDate.setUTCHours(0, 0, 0, 0);
       const endDate = new Date(selectedDate);
       endDate.setUTCHours(23, 59, 59, 999);
 
-      filters.push(
-        Query.greaterThanEqual("submissionDate", startDate.toISOString())
+      let query: FirebaseFirestore.Query = getFirestoreDb().collection(
+        COLLECTIONS.quizAnswers
       );
-      filters.push(
-        Query.lessThanEqual("submissionDate", endDate.toISOString())
-      );
+
+      if (selectedYear != null) {
+        query = query.where("year", "==", selectedYear);
+      }
+
+      const snapshot = await query.get();
+      const documents = snapshot.docs
+        .map((doc) => fromFirestoreDoc(doc))
+        .filter((doc: any) => {
+          const submissionDate = String(doc.submissionDate || "");
+          return (
+            submissionDate >= startDate.toISOString() &&
+            submissionDate <= endDate.toISOString()
+          );
+        })
+        .sort((a: any, b: any) => {
+          const aDate = String(a.submissionDate || a.createdAt || "");
+          const bDate = String(b.submissionDate || b.createdAt || "");
+          return bDate.localeCompare(aDate);
+        });
+
+      return parseStringify({
+        documents: documents.slice(offset, offset + limit),
+        total: documents.length,
+      });
     }
 
-    const quizSubmissions = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionAnswersId,
-      filters
+    let baseQuery: FirebaseFirestore.Query = getFirestoreDb().collection(
+      COLLECTIONS.quizAnswers
     );
 
-    return {
-      documents: parseStringify(quizSubmissions.documents),
-      total: quizSubmissions.total,
-    };
+    if (selectedYear != null) {
+      baseQuery = baseQuery.where("year", "==", selectedYear);
+    }
+
+    baseQuery = baseQuery.orderBy("createdAt", "desc");
+    const result = await getPagedDocuments({
+      baseQuery,
+      pagedQuery: baseQuery.limit(limit).offset(offset),
+    });
+
+    return parseStringify(result);
   } catch (error) {
-    console.error("Failed to fetch quiz submissions:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Failed to fetch quiz submissions:", message);
     throw new Error("Failed to fetch quiz submissions");
   }
 };
@@ -232,33 +235,29 @@ export const getQuizStatistics = async (
   year?: number | null
 ): Promise<QuizStatistics> => {
   try {
-    const { databases } = await createAdminClient();
-    const filterByYear = year != null;
+    const db = getFirestoreDb();
+    const questionsSnapshot = await db
+      .collection(COLLECTIONS.quizQuestions)
+      .limit(5000)
+      .get();
 
-    // ✅ Step 1: Get Total Number of Questions
-    const quizQuestions = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionId,
-      [Query.limit(5000)] // ⬆️ Increased limit for more data
-    );
-
-    const totalQuestionsCount = quizQuestions.total;
-    if (totalQuestionsCount === 0) {
+    if (questionsSnapshot.empty) {
       throw new Error("No quiz questions found.");
     }
 
-    // ✅ Step 2: Get All Submissions (filter by year only when year is provided)
-    const submissionFilters = [Query.limit(5000)];
-    if (filterByYear) {
-      submissionFilters.unshift(Query.equal("year", year as number));
+    let submissionsQuery: FirebaseFirestore.Query = db
+      .collection(COLLECTIONS.quizAnswers)
+      .limit(5000);
+    if (year != null) {
+      submissionsQuery = db
+        .collection(COLLECTIONS.quizAnswers)
+        .where("year", "==", year)
+        .limit(5000);
     }
-    const submissions = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionAnswersId,
-      submissionFilters
-    );
 
-    if (submissions.total === 0) {
+    const submissions = await submissionsQuery.get();
+
+    if (submissions.empty) {
       return {
         dailyStats: {},
         topUsers: [],
@@ -267,48 +266,39 @@ export const getQuizStatistics = async (
       };
     }
 
-    // ✅ Step 3: Initialize Stats
     const dailyStats: Record<
       string,
       { total: number; correct: number; incorrect: number }
     > = {};
-
     const userCorrectCount: Record<
       string,
       { fullName: string; count: number }
     > = {};
-
     const userIncorrectCount: Record<
       string,
       { fullName: string; count: number }
     > = {};
 
-    // ✅ Step 4: Process Submission Data
-    submissions.documents.forEach((submission: any) => {
-      let { questionNumber, correct, idCardNumber, fullName } = submission;
+    submissions.docs.forEach((submissionDoc) => {
+      const submission = submissionDoc.data();
+      const questionNumber = String(submission.questionNumber || "").trim();
+      const idCardNumber = String(submission.idCardNumber || "");
+      const fullName = String(submission.fullName || "");
 
-      // ✅ Clean Data
-      questionNumber = questionNumber.trim();
-
-      // ✅ Track daily stats
       if (!dailyStats[questionNumber]) {
         dailyStats[questionNumber] = { total: 0, correct: 0, incorrect: 0 };
       }
 
       dailyStats[questionNumber].total += 1;
 
-      if (correct) {
+      if (submission.correct) {
         dailyStats[questionNumber].correct += 1;
-
-        // ✅ Track user's correct count
         if (!userCorrectCount[idCardNumber]) {
           userCorrectCount[idCardNumber] = { fullName, count: 0 };
         }
         userCorrectCount[idCardNumber].count += 1;
       } else {
         dailyStats[questionNumber].incorrect += 1;
-
-        // ✅ Track user's incorrect count
         if (!userIncorrectCount[idCardNumber]) {
           userIncorrectCount[idCardNumber] = { fullName, count: 0 };
         }
@@ -316,23 +306,19 @@ export const getQuizStatistics = async (
       }
     });
 
-    // ✅ Step 5: Identify Current Question Day (based on answered questions)
     const currentDayCount = Math.max(
       0,
-      ...Object.keys(dailyStats).map((q) => parseInt(q, 10) || 0)
+      ...Object.keys(dailyStats).map((question) => parseInt(question, 10) || 0)
     );
 
-    // ✅ Step 6: Top Correct Answers (No Limit)
     const topCorrect: TopUser[] = Object.entries(userCorrectCount)
       .map(([idCardNumber, data]) => ({
         idCardNumber,
         name: data.fullName,
         count: data.count,
       }))
-      // ✅ Sort highest to lowest correct answers
       .sort((a, b) => b.count - a.count);
 
-    // ✅ Step 7: Keep Top Scorers Based on Current Day Count
     const highestCount =
       topCorrect.find((user) => user.count <= currentDayCount)?.count ||
       topCorrect[0]?.count ||
@@ -342,7 +328,6 @@ export const getQuizStatistics = async (
       (user) => user.count === highestCount
     );
 
-    // ✅ Step 8: Top Incorrect Answers (Top 5)
     const topIncorrect: TopUser[] = Object.entries(userIncorrectCount)
       .map(([idCardNumber, data]) => ({
         idCardNumber,
@@ -354,19 +339,21 @@ export const getQuizStatistics = async (
 
     return {
       dailyStats,
-      topUsers: filteredTopCorrect, // ✅ Show only highest-scoring participants
-      topCorrect: filteredTopCorrect, // ✅ Show only highest-scoring participants
+      topUsers: filteredTopCorrect,
+      topCorrect: filteredTopCorrect,
       topIncorrect,
     };
   } catch (error) {
-    console.error("❌ Failed to fetch quiz statistics:", error);
+    console.error("Failed to fetch quiz statistics:", error);
     throw new Error("Failed to fetch quiz statistics");
   }
 };
 
 export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
   try {
-    const { databases } = await createAdminClient();
+    const db = getFirestoreDb();
+    const batch = db.batch();
+    const timestamp = nowIso();
 
     for (const question of questions) {
       if (!Array.isArray(question.options)) {
@@ -375,25 +362,36 @@ export const uploadQuizQuestions = async (questions: QuizQuestion[]) => {
         );
       }
 
-      await databases.createDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.quizCompetitionId,
-        ID.unique(),
-        {
+      const ref = db.collection(COLLECTIONS.quizQuestions).doc();
+      batch.set(
+        ref,
+        toFirestoreData({
           questionNumber: question.questionNumber,
           question: question.question,
           options: question.options,
           correctAnswer: question.correctAnswer,
           date: question.date,
-        }
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        })
       );
     }
 
+    await batch.commit();
+
     return { success: true, message: "Quiz questions uploaded successfully!" };
   } catch (error) {
-    console.error("❌ Failed to upload quiz questions:", error);
+    console.error("Failed to upload quiz questions:", error);
     throw new Error("Failed to upload quiz questions.");
   }
+};
+
+const chunk = <T,>(items: T[], size: number) => {
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks;
 };
 
 export const getQuizSubmissionsById = async (
@@ -401,82 +399,78 @@ export const getQuizSubmissionsById = async (
   year?: number
 ) => {
   try {
-    const { databases } = await createAdminClient();
     const selectedYear = year ?? QUIZ_COMPETITION_DEFAULT_YEAR;
 
     if (!idCardNumber || Array.isArray(idCardNumber)) {
       throw new Error("Invalid ID card number provided.");
     }
 
-    // ✅ Fetch all submissions by the same user for the selected year
-    const submissionResult = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionAnswersId,
-      [
-        Query.equal("idCardNumber", idCardNumber),
-        Query.equal("year", selectedYear),
-        Query.limit(50),
-      ]
-    );
+    const submissionResult = await getFirestoreDb()
+      .collection(COLLECTIONS.quizAnswers)
+      .where("idCardNumber", "==", idCardNumber)
+      .where("year", "==", selectedYear)
+      .limit(50)
+      .get();
 
-    if (submissionResult.total === 0) {
+    if (submissionResult.empty) {
       throw new Error("No submissions found.");
     }
 
-    const submissions = submissionResult.documents;
-
-    // ✅ Fetch related questions for all submissions
-    const questionNumbers = submissions.map(
-      (submission) => submission.questionNumber
-    );
+    const submissions = submissionResult.docs.map((doc) => fromFirestoreDoc(doc));
+    const questionNumbers = Array.from(
+      new Set(submissions.map((submission: any) => submission.questionNumber))
+    ).filter(Boolean);
 
     if (questionNumbers.length === 0) {
       throw new Error("No questions found for submissions.");
     }
 
-    const questionResult = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionId,
-      [Query.equal("questionNumber", questionNumbers), Query.limit(50)]
-    );
+    const questionMap: Record<string, string> = {};
+    for (const group of chunk(questionNumbers, 30)) {
+      const questionResult = await getFirestoreDb()
+        .collection(COLLECTIONS.quizQuestions)
+        .where("questionNumber", "in", group)
+        .limit(50)
+        .get();
+      questionResult.docs.forEach((doc) => {
+        const question = doc.data();
+        questionMap[String(question.questionNumber)] = String(
+          question.question || ""
+        );
+      });
+    }
 
-    const questionMap = questionResult.documents.reduce((map, question) => {
-      map[question.questionNumber] = question.question;
-      return map;
-    }, {} as Record<string, string>);
-
-    // ✅ Attach questionText to each submission
-    const detailedSubmissions = submissions.map((submission) => ({
+    const detailedSubmissions = submissions.map((submission: any) => ({
       ...submission,
-      questionText: questionMap[submission.questionNumber] || "ސުވާލު ނުފެނުނު",
+      questionText:
+        questionMap[submission.questionNumber] || "ސުވާލު ނުފެނުނު",
     }));
 
-    return detailedSubmissions;
+    return parseStringify(detailedSubmissions);
   } catch (error) {
     console.error("Failed to fetch quiz submissions:", error);
     throw new Error("Failed to fetch quiz submissions.");
   }
 };
 
-/** Returns fullName and contactNumber for a participant by ID card (quiz answers first, then Quran competition). */
 export const getParticipantDetailsByIdCard = async (idCardNumber: string) => {
   try {
-    const { databases } = await createAdminClient();
     const normalized = idCardNumber.trim().toUpperCase();
     if (!normalized || normalized.length < 5) return null;
 
-    const quizResult = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCompetitionAnswersId,
-      [Query.equal("idCardNumber", normalized), Query.limit(1)]
-    );
-    if (quizResult.documents.length > 0) {
-      const doc = quizResult.documents[0] as any;
+    const quizResult = await getFirestoreDb()
+      .collection(COLLECTIONS.quizAnswers)
+      .where("idCardNumber", "==", normalized)
+      .limit(1)
+      .get();
+    if (!quizResult.empty) {
+      const doc = quizResult.docs[0].data();
       return {
         fullName: doc.fullName ?? "",
         contactNumber: doc.contactNumber ?? "",
       };
     }
+
     const quran = await getQuranParticipantByIdCard(normalized);
     if (quran) {
       const doc = quran as any;
@@ -499,19 +493,14 @@ export const getQuizCountdownSettings = async (): Promise<{
   countdownTargetAt: string | null;
 }> => {
   try {
-    if (!appwriteConfig.quizCountdownSettingsId) {
-      return { countdownEnabled: false, countdownTargetAt: null };
-    }
-    const { databases } = await createAdminClient();
-    const doc = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.quizCountdownSettingsId,
-      QUIZ_COUNTDOWN_CONFIG_DOC_ID
-    );
-    const d = doc as any;
+    const doc = await getFirestoreDb()
+      .collection(COLLECTIONS.quizCountdownSettings)
+      .doc(QUIZ_COUNTDOWN_CONFIG_DOC_ID)
+      .get();
+    const data = doc.data();
     return {
-      countdownEnabled: Boolean(d?.countdownEnabled),
-      countdownTargetAt: d?.countdownTargetAt ?? null,
+      countdownEnabled: Boolean(data?.countdownEnabled),
+      countdownTargetAt: (data?.countdownTargetAt as string | null) ?? null,
     };
   } catch {
     return { countdownEnabled: false, countdownTargetAt: null };
@@ -522,30 +511,22 @@ export const updateQuizCountdownSettings = async (settings: {
   countdownEnabled: boolean;
   countdownTargetAt: string | null;
 }) => {
-  if (!appwriteConfig.quizCountdownSettingsId) return;
   try {
-    const { databases } = await createAdminClient();
-    try {
-      await databases.updateDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.quizCountdownSettingsId,
-        QUIZ_COUNTDOWN_CONFIG_DOC_ID,
-        {
-          countdownEnabled: settings.countdownEnabled,
-          countdownTargetAt: settings.countdownTargetAt,
-        }
-      );
-    } catch {
-      await databases.createDocument(
-        appwriteConfig.databaseId,
-        appwriteConfig.quizCountdownSettingsId,
-        QUIZ_COUNTDOWN_CONFIG_DOC_ID,
-        {
-          countdownEnabled: settings.countdownEnabled,
-          countdownTargetAt: settings.countdownTargetAt,
-        }
-      );
-    }
+    const ref = getFirestoreDb()
+      .collection(COLLECTIONS.quizCountdownSettings)
+      .doc(QUIZ_COUNTDOWN_CONFIG_DOC_ID);
+    const snapshot = await ref.get();
+    const timestamp = nowIso();
+
+    await ref.set(
+      toFirestoreData({
+        countdownEnabled: settings.countdownEnabled,
+        countdownTargetAt: settings.countdownTargetAt,
+        createdAt: snapshot.exists ? snapshot.data()?.createdAt : timestamp,
+        updatedAt: timestamp,
+      }),
+      { merge: true }
+    );
   } catch (error) {
     console.error("Failed to update quiz countdown settings:", error);
   }

@@ -4,15 +4,15 @@ import React from "react";
 import { useUser } from "@/providers/UserProvider";
 import Image from "next/image";
 import Link from "next/link";
-import { signOutUser } from "@/lib/actions/user.actions";
+import { useClerk } from "@clerk/nextjs";
 
 const Header = () => {
   const { currentUser, isAdmin, loading } = useUser();
+  const { signOut } = useClerk();
 
   const handleSignOut = async () => {
     try {
-      await signOutUser();
-      window.location.href = "/sign-in";
+      await signOut({ redirectUrl: "/sign-in" });
     } catch (error) {
       console.error("Error signing out:", error);
     }

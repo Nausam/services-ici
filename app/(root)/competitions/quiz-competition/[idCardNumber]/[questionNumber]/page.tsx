@@ -3,18 +3,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { getQuizSubmissionsById } from "@/lib/actions/quizCompetition";
-import { Models } from "node-appwrite";
 import { QUIZ_COMPETITION_DEFAULT_YEAR } from "@/constants";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AppDocument } from "@/types";
 
 const QuizSubmissionDetails = () => {
   const { idCardNumber } = useParams();
   const searchParams = useSearchParams();
   const yearParam = searchParams.get("year");
   const year = yearParam ? parseInt(yearParam, 10) : QUIZ_COMPETITION_DEFAULT_YEAR;
-  const [submissions, setSubmissions] = useState<Models.Document[] | null>(
-    null
-  );
+  const [submissions, setSubmissions] = useState<AppDocument[] | null>(null);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,13 +122,25 @@ const QuizSubmissionDetails = () => {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
-                      }).format(new Date(submission.$createdAt))}{" "}
+                      }).format(
+                        new Date(
+                          submission.$createdAt ||
+                            submission.createdAt ||
+                            new Date().toISOString()
+                        )
+                      )}{" "}
                       -{" "}
                       {new Intl.DateTimeFormat("en-US", {
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: true,
-                      }).format(new Date(submission.$createdAt))}
+                      }).format(
+                        new Date(
+                          submission.$createdAt ||
+                            submission.createdAt ||
+                            new Date().toISOString()
+                        )
+                      )}
                     </span>
                   )}
                 </div>

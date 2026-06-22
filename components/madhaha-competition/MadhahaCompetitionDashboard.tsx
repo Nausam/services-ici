@@ -46,7 +46,7 @@ const MadhahaCompetitionDashboard = () => {
       );
 
       setRegistrations(
-        documents.map((doc) => ({
+        documents.map((doc: any) => ({
           $id: doc.$id,
           fullName: doc.fullName,
           address: doc.address,

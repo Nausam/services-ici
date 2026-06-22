@@ -7,6 +7,12 @@ export type Registration = {
   category: string;
 };
 
+export type AppDocument = Record<string, any> & {
+  $id: string;
+  $createdAt?: string;
+  $updatedAt?: string;
+};
+
 export type QuranCompetitionRegistration = {
   fullName: string;
   idCardNumber: string;

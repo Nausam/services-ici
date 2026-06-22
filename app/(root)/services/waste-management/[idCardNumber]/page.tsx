@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Models } from "node-appwrite";
 import { useParams } from "next/navigation";
 import { getWasteRegistrationById } from "@/lib/actions/waste.actions";
+import { AppDocument } from "@/types";
 
 const WasteParticipantDetails = () => {
   const { idCardNumber } = useParams();
-  const [registration, setRegistration] = useState<Models.Document[]>([]);
+  const [registration, setRegistration] = useState<AppDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

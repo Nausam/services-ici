@@ -3,12 +3,15 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, Phone, Building, FileText } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 const PermissionRequestPage = async ({ params }: Props) => {
-  const permissionRequest = await getPermissionRequestById(params.id);
+  const { id } = await params;
+  const permissionRequest = await getPermissionRequestById(id);
 
   if (!permissionRequest) {
     return (

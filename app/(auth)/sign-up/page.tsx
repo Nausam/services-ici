@@ -1,5 +1,9 @@
-import AuthForm from "../../../components/auth/AuthForm";
-import React from "react";
+import { SignUp } from "@clerk/nextjs";
 
-const SignUp = () => <AuthForm type="sign-up" />;
-export default SignUp;
+const SignUpPage = () => (
+  <div className="flex min-h-[calc(100vh-96px)] items-center justify-center px-4 py-10">
+    <SignUp routing="hash" signInUrl="/sign-in" />
+  </div>
+);
+
+export default SignUpPage;

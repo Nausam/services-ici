@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/providers/UserProvider";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "ICI Services Portal",
@@ -72,13 +73,15 @@ export default function RootLayout({
         />
       </head>
       <body className="font-geist antialiased">
-        <UserProvider>
-          <Header />
-          {children}
-          <div className="font-dhivehi">
-            <Toaster />
-          </div>
-        </UserProvider>
+        <ClerkProvider>
+          <UserProvider>
+            <Header />
+            {children}
+            <div className="font-dhivehi">
+              <Toaster />
+            </div>
+          </UserProvider>
+        </ClerkProvider>
         {/* <Footer /> */}
       </body>
     </html>

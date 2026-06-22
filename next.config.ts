@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
+const r2PublicUrl = process.env.R2_PUBLIC_BASE_URL
+  ? new URL(process.env.R2_PUBLIC_BASE_URL)
+  : null;
+
 const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
@@ -22,12 +26,19 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "img.freepik.com",
       },
-      {
-        protocol: "https",
-        hostname: "cloud.appwrite.io",
-        port: "",
-        pathname: "/v1/storage/buckets/**",
-      },
+      ...(r2PublicUrl
+        ? [
+            {
+              protocol: r2PublicUrl.protocol.replace(
+                ":",
+                ""
+              ) as "http" | "https",
+              hostname: r2PublicUrl.hostname,
+              port: r2PublicUrl.port,
+              pathname: "/**",
+            },
+          ]
+        : []),
     ],
   },
 };

@@ -1,24 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "./lib/actions/user.actions";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export async function middleware(request: NextRequest) {
-  const user = await getCurrentUser();
+const isProtectedRoute = createRouteMatcher([
+  "/admin(.*)",
+  "/competitions/quran-competition(.*)",
+  "/competitions/quiz-competition(.*)",
+  "/services/waste-management(.*)",
+  "/competitions/edit(.*)",
+  "/services/edit(.*)",
+  "/sign-up",
+]);
 
-  if (!user) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
   }
-
-  return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
-    "/admin/:path*",
-    "/competitions/quran-competition/:path*",
-    "/competitions/quiz-competition/:path*",
-    "/services/waste-management/:path*",
-    "/competitions/edit/:path*",
-    "/services/edit/:path*",
-    "/sign-up",
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
   ],
 };

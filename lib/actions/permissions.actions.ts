@@ -1,8 +1,13 @@
 "use server";
 
-import { createAdminClient } from "@/lib/appwrite";
-import { appwriteConfig } from "@/lib/appwrite/config";
-import { ID, Query } from "node-appwrite";
+import { COLLECTIONS } from "@/lib/firebase/collections";
+import {
+  fromFirestoreDoc,
+  getPagedDocuments,
+  nowIso,
+  toFirestoreData,
+} from "@/lib/firebase/firestore";
+import { getFirestoreDb } from "@/lib/firebase/admin";
 import { parseStringify } from "../utils";
 
 export const createPermissionRequest = async (requestData: {
@@ -15,34 +20,29 @@ export const createPermissionRequest = async (requestData: {
   endDate: string;
 }) => {
   try {
-    const { databases } = await createAdminClient();
+    const db = getFirestoreDb();
 
-    // Query to check if the same request already exists
-    const existingRequest = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.permissionRequestsId,
-      [
-        Query.equal("fullName", requestData.fullName),
-        Query.equal("contactNumber", requestData.contactNumber),
-        Query.equal("permissionType", requestData.permissionType),
-        Query.greaterThanEqual("startDate", requestData.startDate),
-        Query.lessThanEqual("endDate", requestData.endDate),
-      ]
-    );
+    const existingRequest = await db
+      .collection(COLLECTIONS.permissionRequests)
+      .where("fullName", "==", requestData.fullName)
+      .where("contactNumber", "==", requestData.contactNumber)
+      .where("permissionType", "==", requestData.permissionType)
+      .where("startDate", ">=", requestData.startDate)
+      .where("endDate", "<=", requestData.endDate)
+      .limit(1)
+      .get();
 
-    if (existingRequest.total > 0) {
+    if (!existingRequest.empty) {
       return {
         success: false,
         message: "A similar permission request already exists.",
       };
     }
 
-    // Create a new permission request document
-    const response = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.permissionRequestsId,
-      ID.unique(),
-      {
+    const timestamp = nowIso();
+    const ref = db.collection(COLLECTIONS.permissionRequests).doc();
+    await ref.set(
+      toFirestoreData({
         fullName: requestData.fullName,
         contactNumber: requestData.contactNumber,
         company: requestData.company || "",
@@ -50,58 +50,49 @@ export const createPermissionRequest = async (requestData: {
         reason: requestData.reason,
         startDate: requestData.startDate,
         endDate: requestData.endDate,
-        requestDate: new Date().toISOString(), // Store request timestamp
-      }
+        requestDate: timestamp,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      })
     );
 
-    return response;
+    return parseStringify(fromFirestoreDoc(await ref.get()));
   } catch (error) {
-    console.error("❌ Failed to submit permission request:", error);
+    console.error("Failed to submit permission request:", error);
     throw new Error("Failed to submit permission request");
   }
 };
 
-// GET ALL PERMISSION REQUESTS
 export const getAllPermissionRequests = async (
   limit: number,
   offset: number
 ) => {
   try {
-    const { databases } = await createAdminClient();
+    const baseQuery = getFirestoreDb()
+      .collection(COLLECTIONS.permissionRequests)
+      .orderBy("createdAt", "desc");
+    const result = await getPagedDocuments({
+      baseQuery,
+      pagedQuery: baseQuery.limit(limit).offset(offset),
+    });
 
-    const requests = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.permissionRequestsId,
-      [
-        Query.limit(limit),
-        Query.offset(offset),
-        Query.orderDesc("$createdAt"), // Latest first
-      ]
-    );
-
-    return {
-      documents: parseStringify(requests.documents),
-      total: requests.total,
-    };
+    return parseStringify(result);
   } catch (error) {
-    console.error("❌ Failed to fetch permission requests:", error);
+    console.error("Failed to fetch permission requests:", error);
     throw new Error("Failed to fetch permission requests");
   }
 };
 
 export const getPermissionRequestById = async (id: string) => {
   try {
-    const { databases } = await createAdminClient();
+    const request = await getFirestoreDb()
+      .collection(COLLECTIONS.permissionRequests)
+      .doc(id)
+      .get();
 
-    const request = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.permissionRequestsId,
-      id
-    );
-
-    return request;
+    return request.exists ? parseStringify(fromFirestoreDoc(request)) : null;
   } catch (error) {
-    console.error("❌ Failed to fetch permission request:", error);
+    console.error("Failed to fetch permission request:", error);
     return null;
   }
 };

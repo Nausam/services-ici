@@ -2,15 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { getQuranRegistrationById } from "@/lib/actions/quranCompetition.actions";
-import { Models } from "node-appwrite";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { AppDocument } from "@/types";
 
 const ParticipantDetails = () => {
   const { idCardNumber } = useParams();
-  const [registration, setRegistration] = useState<Models.Document | null>(
-    null
-  );
+  const [registration, setRegistration] = useState<AppDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
