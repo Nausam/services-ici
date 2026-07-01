@@ -81,6 +81,17 @@ export default function AdminPage() {
             </Card>
           )}
 
+          {section === "atm-quran-competition" && (
+            <Card className="border-0 shadow-none ring-0 bg-transparent">
+              <CardContent className="p-0">
+                <QuranCompetitionTable
+                  competitionType="atm-quran"
+                  title="އ.ތ.މ ކޮމެޓީގެ ޤުރުއާން މުބާރާތުގެ ބައިވެރިން"
+                />
+              </CardContent>
+            </Card>
+          )}
+
           {section === "quiz" && (
             <div className="space-y-6">
               <Card className="border-0 shadow-none ring-0 bg-transparent">

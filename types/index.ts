@@ -13,7 +13,10 @@ export type AppDocument = Record<string, any> & {
   $updatedAt?: string;
 };
 
+export type QuranCompetitionType = "council-quran" | "atm-quran";
+
 export type QuranCompetitionRegistration = {
+  $id?: string;
   fullName: string;
   idCardNumber: string;
   address: string;
@@ -48,6 +51,7 @@ export type QuranCompetitionRegistration = {
 
   idCard: string;
   year?: string;
+  competitionType?: QuranCompetitionType;
 };
 
 export type QuizQuestion = {

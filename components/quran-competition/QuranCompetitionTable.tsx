@@ -1,13 +1,27 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getAllQuranCompetitionRegistrations } from "@/lib/actions/quranCompetition.actions";
-import { QuranCompetitionRegistration } from "@/types";
+import {
+  deleteQuranCompetitionRegistration,
+  getAllQuranCompetitionRegistrations,
+} from "@/lib/actions/quranCompetition.actions";
+import {
+  QuranCompetitionRegistration,
+  QuranCompetitionType,
+} from "@/types";
 import JSZip from "jszip";
 import React, { useEffect, useState } from "react";
 import Q_ParticipantCard from "./Q_ParticipantCard";
 
-const QuranCompetitionDashboard = () => {
+type QuranCompetitionDashboardProps = {
+  competitionType?: QuranCompetitionType;
+  title?: string;
+};
+
+const QuranCompetitionDashboard = ({
+  competitionType = "council-quran",
+  title = "ޤުރުއާން މުބާރާތުގެ ބައިވެރިން",
+}: QuranCompetitionDashboardProps) => {
   const [registrations, setRegistrations] = useState<
     QuranCompetitionRegistration[]
   >([]);
@@ -24,7 +38,8 @@ const QuranCompetitionDashboard = () => {
       const { documents, total } = await getAllQuranCompetitionRegistrations(
         itemsPerPage,
         offset,
-        selectedYear || undefined
+        selectedYear || undefined,
+        competitionType
       );
       setRegistrations(documents);
       setTotalItems(total);
@@ -37,7 +52,7 @@ const QuranCompetitionDashboard = () => {
 
   useEffect(() => {
     fetchRegistrations(currentPage);
-  }, [currentPage, itemsPerPage, selectedYear]);
+  }, [currentPage, itemsPerPage, selectedYear, competitionType]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -169,6 +184,29 @@ const QuranCompetitionDashboard = () => {
     setCurrentPage(1);
   };
 
+  const handleDelete = async (documentId?: string) => {
+    if (!documentId) {
+      console.error("Missing Quran registration document id");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this participant?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteQuranCompetitionRegistration(documentId);
+      setRegistrations((prev) =>
+        prev.filter((reg: any) => reg.$id !== documentId)
+      );
+      setTotalItems((prev) => Math.max(prev - 1, 0));
+    } catch (error) {
+      console.error("Failed to delete participant:", error);
+    }
+  };
+
   const currentYear = new Date().getFullYear();
   const yearOptions = [
     { value: "", label: "ހުރިހާ އަހަރު" },
@@ -191,7 +229,7 @@ const QuranCompetitionDashboard = () => {
   return (
     <div className="p-4 mt-10">
       <h2 className="text-3xl font-dhivehi mb-10 text-right text-cyan-950">
-        ޤުރުއާން މުބާރާތުގެ ބައިވެރިން ({totalItems})
+        {title} ({totalItems})
       </h2>
       <div className="flex justify-start mb-4 gap-4">
         <Button
@@ -260,6 +298,7 @@ const QuranCompetitionDashboard = () => {
               contactNumber={reg.contactNumber}
               href={`/competitions/quran-competition/${reg.idCardNumber}`}
               idCardUrl={reg.idCard}
+              onDelete={() => handleDelete(reg.$id)}
             />
           ))
         )}

@@ -29,6 +29,7 @@ export type AdminSection =
   | "admin"
   | "waste"
   | "quran-competition"
+  | "atm-quran-competition"
   | "quiz"
   | "bangi-huthuba-competition"
   | "madhaha-competition"
@@ -42,6 +43,7 @@ export type AdminSidebarProps = {
 };
 
 const ITEMS: { key: AdminSection; label: string; icon: React.ElementType }[] = [
+  { key: "atm-quran-competition", label: "އ.ތ.މ ޤުރުއާން", icon: BookOpen },
   { key: "admin", label: "އެޑްމިން", icon: LayoutDashboard },
   { key: "waste", label: "ކުނި މެނޭޖްމަންޓް", icon: Trash2 },
   { key: "quran-competition", label: "ޤުރުއާން މުބާރާތް", icon: BookOpen },

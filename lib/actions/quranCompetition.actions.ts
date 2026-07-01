@@ -3,13 +3,15 @@
 import { COLLECTIONS } from "@/lib/firebase/collections";
 import {
   fromFirestoreDoc,
-  getPagedDocuments,
   nowIso,
   toFirestoreData,
 } from "@/lib/firebase/firestore";
 import { getFirestoreDb } from "@/lib/firebase/admin";
 import { parseStringify } from "@/lib/utils";
-import { QuranCompetitionRegistration } from "@/types";
+import {
+  QuranCompetitionRegistration,
+  QuranCompetitionType,
+} from "@/types";
 import { uploadFileToR2 } from "@/lib/r2/files";
 
 export const uploadImage = async (file: File): Promise<string> => {
@@ -22,13 +24,30 @@ export const uploadImage = async (file: File): Promise<string> => {
   }
 };
 
-const fetchQuranByIdAndYear = async (idCardNumber: string, year: string) =>
-  getFirestoreDb()
+const DEFAULT_QURAN_COMPETITION_TYPE: QuranCompetitionType = "council-quran";
+
+const effectiveCompetitionType = (
+  doc: { competitionType?: string | null } | undefined
+) =>
+  doc?.competitionType && String(doc.competitionType).trim()
+    ? String(doc.competitionType)
+    : DEFAULT_QURAN_COMPETITION_TYPE;
+
+const fetchQuranByIdYearAndType = async (
+  idCardNumber: string,
+  year: string,
+  competitionType: QuranCompetitionType
+) => {
+  const snapshot = await getFirestoreDb()
     .collection(COLLECTIONS.quranCompetitionRegistrations)
     .where("idCardNumber", "==", idCardNumber)
     .where("year", "==", year)
-    .limit(1)
     .get();
+
+  return snapshot.docs.find(
+    (doc) => effectiveCompetitionType(doc.data()) === competitionType
+  );
+};
 
 export const createQuranCompetitionRegistration = async (
   registration: QuranCompetitionRegistration
@@ -37,16 +56,23 @@ export const createQuranCompetitionRegistration = async (
     const db = getFirestoreDb();
     const currentYear = String(new Date().getFullYear());
     const idForCheck = (registration.idCardNumber || "").trim();
+    const competitionType =
+      registration.competitionType || DEFAULT_QURAN_COMPETITION_TYPE;
 
     if (idForCheck) {
-      let existing = await fetchQuranByIdAndYear(idForCheck, currentYear);
-      if (existing.empty && idForCheck.startsWith("A")) {
-        existing = await fetchQuranByIdAndYear(
+      let existing = await fetchQuranByIdYearAndType(
+        idForCheck,
+        currentYear,
+        competitionType
+      );
+      if (!existing && idForCheck.startsWith("A")) {
+        existing = await fetchQuranByIdYearAndType(
           idForCheck.replace(/^A/, ""),
-          currentYear
+          currentYear,
+          competitionType
         );
       }
-      if (!existing.empty) {
+      if (existing) {
         throw new Error("ALREADY_REGISTERED_THIS_YEAR");
       }
     }
@@ -56,6 +82,7 @@ export const createQuranCompetitionRegistration = async (
     await ref.set(
       toFirestoreData({
         ...registration,
+        competitionType,
         year: currentYear,
         createdAt: timestamp,
         updatedAt: timestamp,
@@ -78,22 +105,26 @@ export const createQuranCompetitionRegistration = async (
 export const getAllQuranCompetitionRegistrations = async (
   limit: number,
   offset: number,
-  year?: string
+  year?: string,
+  competitionType: QuranCompetitionType = DEFAULT_QURAN_COMPETITION_TYPE
 ) => {
   try {
-    const collection = getFirestoreDb().collection(
-      COLLECTIONS.quranCompetitionRegistrations
-    );
-    const baseQuery =
-      year && year.trim()
-        ? collection.where("year", "==", year)
-        : collection;
-    const result = await getPagedDocuments({
-      baseQuery,
-      pagedQuery: baseQuery.limit(limit).offset(offset),
-    });
+    const snapshot = await getFirestoreDb()
+      .collection(COLLECTIONS.quranCompetitionRegistrations)
+      .get();
+    const filtered = snapshot.docs
+      .map((doc) => fromFirestoreDoc(doc))
+      .filter((doc: any) => {
+        const matchesType = effectiveCompetitionType(doc) === competitionType;
+        const matchesYear =
+          year && year.trim() ? String(doc.year || "") === year : true;
+        return matchesType && matchesYear;
+      });
 
-    return parseStringify(result);
+    return parseStringify({
+      documents: filtered.slice(offset, offset + limit),
+      total: filtered.length,
+    });
   } catch (error) {
     console.error("Failed to fetch registrations:", error);
     throw new Error("Failed to fetch registrations");
@@ -113,8 +144,6 @@ export const getQuranRegistrationById = async (
       getFirestoreDb()
         .collection(COLLECTIONS.quranCompetitionRegistrations)
         .where("idCardNumber", "==", card)
-        .orderBy("createdAt", "desc")
-        .limit(1)
         .get();
 
     let response = await fetchByCard(id);
@@ -126,9 +155,43 @@ export const getQuranRegistrationById = async (
       throw new Error("Participant not found");
     }
 
-    return parseStringify(fromFirestoreDoc(response.docs[0]));
+    const [latest] = response.docs.sort((a, b) => {
+      const aCreated = String(a.data().createdAt || "");
+      const bCreated = String(b.data().createdAt || "");
+      return bCreated.localeCompare(aCreated);
+    });
+
+    return parseStringify(fromFirestoreDoc(latest));
   } catch (error) {
     console.error("Failed to fetch registration:", error);
     throw new Error("Failed to fetch participant details");
+  }
+};
+
+export const deleteQuranCompetitionRegistration = async (
+  documentId: string
+) => {
+  try {
+    const id = String(documentId || "").trim();
+
+    if (!id) {
+      throw new Error("Invalid document id provided.");
+    }
+
+    const ref = getFirestoreDb()
+      .collection(COLLECTIONS.quranCompetitionRegistrations)
+      .doc(id);
+    const doc = await ref.get();
+
+    if (!doc.exists) {
+      throw new Error("No document found for the given document id");
+    }
+
+    await ref.delete();
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete Quran registration:", error);
+    throw new Error("Failed to delete registration");
   }
 };

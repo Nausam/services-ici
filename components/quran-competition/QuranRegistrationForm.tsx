@@ -15,7 +15,10 @@ import { Button } from "@/components/ui/button";
 
 import { QuranCompetitionregistrationDefaultValues } from "@/constants";
 import { createQuranCompetitionRegistrationSchema } from "@/lib/validations";
-import { QuranCompetitionRegistration } from "@/types";
+import {
+  QuranCompetitionRegistration,
+  QuranCompetitionType,
+} from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -37,14 +40,23 @@ import QKeyStageDropDown from "./QKeyStageDropDown";
 type ProductFormProps = {
   type: "Create" | "Update";
   registration?: QuranCompetitionRegistration;
+  competitionType?: QuranCompetitionType;
 };
 
-const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
+const QuranRegistrationForm = ({
+  type,
+  registration,
+  competitionType = "council-quran",
+}: ProductFormProps) => {
   const [file, setFile] = useState<File | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
+  const successCompetitionName =
+    competitionType === "atm-quran"
+      ? "އ.ތ.މ ކޮމެޓީގެ 4 ވަނަ ޤުރުއާން މުބާރާތުގައި"
+      : "އިންނަމާދޫ ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތުގައި";
 
   // Use registration when provided (Update or Create with prefill from previous year)
   const initialValues = registration
@@ -75,13 +87,14 @@ const QuranRegistrationForm = ({ type, registration }: ProductFormProps) => {
         const newRegistration = await createQuranCompetitionRegistration({
           ...values,
           idCard,
+          competitionType,
         });
 
         if (newRegistration) {
           form.reset();
           router.push("/");
           toast({
-            title: ` އިންނަމާދޫ ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތުގައި     ${newRegistration.fullName} ރަޖިސްޓާ ކުރެވިއްޖެ`,
+            title: ` ${successCompetitionName}     ${newRegistration.fullName} ރަޖިސްޓާ ކުރެވިއްޖެ`,
             variant: "default",
           });
         }
