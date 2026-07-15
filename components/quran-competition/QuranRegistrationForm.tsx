@@ -53,8 +53,10 @@ const QuranRegistrationForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
+  const isAtmQuran = competitionType === "atm-quran";
+  const supportPhoneNumber = isAtmQuran ? "7408610" : "7981984";
   const successCompetitionName =
-    competitionType === "atm-quran"
+    isAtmQuran
       ? "އ.ތ.މ ކޮމެޓީގެ 4 ވަނަ ޤުރުއާން މުބާރާތުގައި"
       : "އިންނަމާދޫ ކައުންސިލްގެ 8 ވަނަ ޤުރުއާން މުބާރާތުގައި";
 
@@ -148,7 +150,7 @@ const QuranRegistrationForm = ({
         dir="rtl"
       >
         <div className="flex flex-col items-start">
-          {competitionType !== "atm-quran" && (
+          {!isAtmQuran && (
             <div className="flex gap-4">
               <Button
                 type="button"
@@ -170,7 +172,7 @@ const QuranRegistrationForm = ({
           <p className="font-dhivehi text-xl text-right text-red-600 mt-5">
             {" "}
             ނޯޓް: ކީބޯޑް ދިވެހިބަހަށް ބަދަލު ކުރުމަށްފަހު ލިޔުއްވާ! އިތުރު
-            މަޢުލޫމާތު ހޯއްދެވުމަށް 7981984 އަށް ގުޅުއްވުން އެދެން!
+            މަޢުލޫމާތު ހޯއްދެވުމަށް {supportPhoneNumber} އަށް ގުޅުއްވުން އެދެން!
           </p>
         </div>
 
@@ -661,126 +663,130 @@ const QuranRegistrationForm = ({
           </div>
         </div>
 
-        {/* 4️⃣ Final Round Baiverivaa Gofi */}
-        <div className="mt-10">
-          <p className="font-dhivehi text-2xl text-right text-cyan-800">
-            4. ފައިނަލް ބުރަށް ހޮވިއްޖެނަމަ އިޙްތިޔާރުކުރައްވާ ކޮޅު
-          </p>
-          <div className="mt-5">
-            <p className="font-dhivehi text-2xl text-right text-cyan-950">
-              ބަލައިގެން ކިޔެވުން
-            </p>
-            <div className="flex gap-2 mt-5">
-              <FormField
-                control={form.control}
-                name="finalRoundBalaigenKiyevunFeshey"
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-4 mt-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                      />
-                    </FormControl>
-                    {/* <FormLabel className="font-dhivehi text-lg text-right">
+        {!isAtmQuran && (
+          <>
+            {/* 4️⃣ Final Round Baiverivaa Gofi */}
+            <div className="mt-10">
+              <p className="font-dhivehi text-2xl text-right text-cyan-800">
+                4. ފައިނަލް ބުރަށް ހޮވިއްޖެނަމަ އިޙްތިޔާރުކުރައްވާ ކޮޅު
+              </p>
+              <div className="mt-5">
+                <p className="font-dhivehi text-2xl text-right text-cyan-950">
+                  ބަލައިގެން ކިޔެވުން
+                </p>
+                <div className="flex gap-2 mt-5">
+                  <FormField
+                    control={form.control}
+                    name="finalRoundBalaigenKiyevunFeshey"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-4 mt-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                          />
+                        </FormControl>
+                        {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
-                  </FormItem>
-                )}
-              />
-              <p className="font-dhivehi text-xl text-right text-cyan-950">
-                ފެށޭކޮޅު
-              </p>
-            </div>
+                        <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ފެށޭކޮޅު
+                  </p>
+                </div>
 
-            <div className="flex gap-2 mt-5">
-              <FormField
-                control={form.control}
-                name="finalRoundBalaigenKiyevunNimey"
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-4 mt-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                      />
-                    </FormControl>
-                    {/* <FormLabel className="font-dhivehi text-lg text-right">
+                <div className="flex gap-2 mt-5">
+                  <FormField
+                    control={form.control}
+                    name="finalRoundBalaigenKiyevunNimey"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-4 mt-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                          />
+                        </FormControl>
+                        {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
-                  </FormItem>
-                )}
-              />
-              <p className="font-dhivehi text-xl text-right text-cyan-950">
-                ނިމޭކޮޅު
-              </p>
-            </div>
-          </div>
+                        <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ނިމޭކޮޅު
+                  </p>
+                </div>
+              </div>
 
-          <div className="mt-5">
-            <p className="font-dhivehi text-2xl text-right text-cyan-950">
-              ނުބަލައި ކިޔެވުން
-            </p>
-            <div className="flex gap-2 mt-5">
-              <FormField
-                control={form.control}
-                name="finalRoundNubalaaKiyevunFeshey"
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-4 mt-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                      />
-                    </FormControl>
-                    {/* <FormLabel className="font-dhivehi text-lg text-right">
+              <div className="mt-5">
+                <p className="font-dhivehi text-2xl text-right text-cyan-950">
+                  ނުބަލައި ކިޔެވުން
+                </p>
+                <div className="flex gap-2 mt-5">
+                  <FormField
+                    control={form.control}
+                    name="finalRoundNubalaaKiyevunFeshey"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-4 mt-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                          />
+                        </FormControl>
+                        {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
-                  </FormItem>
-                )}
-              />
-              <p className="font-dhivehi text-xl text-right text-cyan-950">
-                ފެށޭކޮޅު
-              </p>
-            </div>
+                        <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ފެށޭކޮޅު
+                  </p>
+                </div>
 
-            <div className="flex gap-2 mt-5">
-              <FormField
-                control={form.control}
-                name="finalRoundNubalaaKiyevunNimey"
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-4 mt-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
-                      />
-                    </FormControl>
-                    {/* <FormLabel className="font-dhivehi text-lg text-right">
+                <div className="flex gap-2 mt-5">
+                  <FormField
+                    control={form.control}
+                    name="finalRoundNubalaaKiyevunNimey"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-4 mt-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="text-cyan-700 border-cyan-600 focus:ring-cyan-500"
+                          />
+                        </FormControl>
+                        {/* <FormLabel className="font-dhivehi text-lg text-right">
                     ފާހަގަ ޖައްސަވާ
                   </FormLabel> */}
-                    <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
-                  </FormItem>
-                )}
-              />
-              <p className="font-dhivehi text-xl text-right text-cyan-950">
-                ނިމޭކޮޅު
-              </p>
+                        <FormMessage className="font-dhivehi text-right text-base font-medium text-red-600" />
+                      </FormItem>
+                    )}
+                  />
+                  <p className="font-dhivehi text-xl text-right text-cyan-950">
+                    ނިމޭކޮޅު
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
 
         {/* 5️⃣ Bank Details */}
         <div className="mt-10">
           <p className="font-dhivehi text-2xl text-right text-cyan-800">
-            5. ބޭންކު އެކައުންޓްގެ މަޢުލޫމާތު
+            {isAtmQuran ? "4" : "5"}. ބޭންކު އެކައުންޓްގެ މަޢުލޫމާތު
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
             {/* Account Name */}
@@ -869,7 +875,7 @@ const QuranRegistrationForm = ({
         <div className="mt-10">
           <div className="flex flex-col gap-4">
             <p className="font-dhivehi text-2xl text-right text-cyan-800">
-              6. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
+              {isAtmQuran ? "5" : "6"}. ބައިވެރިވާން ނުވަތަ ބައިވެރިކުރަން އަދި ހުށަހަޅާ ފަރާތުގެ
               އިޤްރާރު
             </p>
 
