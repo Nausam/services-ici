@@ -367,13 +367,14 @@ const QuranRegistrationForm = ({
                 <FormItem>
                   <p className="font-dhivehi text-xl text-right text-cyan-950">
                     {" "}
-                    އުމުރުފުރާ{" "}
+                    {isAtmQuran ? "ގްރޭޑް" : "އުމުރުފުރާ"}{" "}
                   </p>
                   <FormControl>
                     <QKeyStageDropDown
                       value={field.value}
                       onChangeHandler={(val) => field.onChange(val)}
                       hasError={!!fieldState.error}
+                      variant={isAtmQuran ? "grade" : "age"}
                     />
                   </FormControl>
                   {form.formState.errors.keyStage?.message ? (

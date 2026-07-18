@@ -12,13 +12,22 @@ type DropdownProps = {
   value?: string;
   onChangeHandler?: (value: string) => void;
   hasError?: boolean;
+  variant?: "age" | "grade";
 };
 
 const QKeyStageDropDown = ({
   value,
   onChangeHandler,
   hasError,
+  variant = "age",
 }: DropdownProps) => {
+  const isGradeVariant = variant === "grade";
+  const gradeOptions = [
+    "އެލްކޭޖީ",
+    "ޔޫކޭޖީ",
+    ...Array.from({ length: 10 }, (_, index) => `ގްރޭޑް ${index + 1}`),
+  ];
+
   return (
     <Select
       value={value && value.trim() !== "" ? value : undefined}
@@ -30,64 +39,87 @@ const QKeyStageDropDown = ({
           hasError && "border-red-600 focus-visible:ring-red-500"
         )}
       >
-        <SelectValue className="text-slate-100" placeholder=" އުމުރުފުރާ " />
+        <SelectValue
+          className="text-slate-100"
+          placeholder={isGradeVariant ? " ގްރޭޑް " : " އުމުރުފުރާ "}
+        />
       </SelectTrigger>
       <SelectContent
         dir="rtl"
         className="font-dhivehi  text-slate-600 text-right"
       >
         <AlertDialog>
-          <SelectItem
-            className="cursor-pointer"
-            value="ޚާއްޞައެހީއަށް ބޭނުންވާ ފަރާތްތައް"
-          >
-            ޚާއްޞައެހީއަށް ބޭނުންވާ ފަރާތްތައް
-          </SelectItem>
-          <SelectItem className="cursor-pointer" value="ބޭބީ ނާސަރީ، ނާސަރީ">
-            ބޭބީ ނާސަރީ، ނާސަރީ
-          </SelectItem>
-          <SelectItem
-            className="cursor-pointer"
-            value="4 އަހަރާއި 6 އަހަރާއި ދެމެދު"
-          >
-            4 އަހަރާއި 6 އަހަރާއި ދެމެދު
-          </SelectItem>
-          <SelectItem
-            className="cursor-pointer"
-            value="6 އަހަރާއި 8 އަހަރާއި ދެމެދު"
-          >
-            6 އަހަރާއި 8 އަހަރާއި ދެމެދު
-          </SelectItem>
-          <SelectItem
-            className="cursor-pointer"
-            value="8 އަހަރާއި 10 އަހަރާއި ދެމެދު"
-          >
-            8 އަހަރާއި 10 އަހަރާއި ދެމެދު
-          </SelectItem>
-          <SelectItem
-            className="cursor-pointer"
-            value="10 އަހަރާއި 12 އަހަރާއި ދެމެދު"
-          >
-            10 އަހަރާއި 12 އަހަރާއި ދެމެދު
-          </SelectItem>
-          <SelectItem
-            className="cursor-pointer"
-            value="12 އަހަރާއި 14 އަހަރާއި ދެމެދު"
-          >
-            12 އަހަރާއި 14 އަހަރާއި ދެމެދު
-          </SelectItem>
-          <SelectItem
-            className="cursor-pointer"
-            value="14 އަހަރާއި 16 އަހަރާއި ދެމެދު"
-          >
-            14 އަހަރާއި 16 އަހަރާއި ދެމެދު
-          </SelectItem>
-          <SelectItem className="cursor-pointer" value="16 އަހަރުން މަތި">
-            16 އަހަރުން މަތި
-          </SelectItem>
-          <SelectItem className="cursor-pointer" value="ހާފިޘުންގެ ބައި">
-            ހާފިޘުންގެ ބައި
-          </SelectItem>
+          {isGradeVariant ? (
+            gradeOptions.map((option) => (
+              <SelectItem
+                key={option}
+                className="cursor-pointer"
+                value={option}
+              >
+                {option}
+              </SelectItem>
+            ))
+          ) : (
+            <>
+              <SelectItem
+                className="cursor-pointer"
+                value="ޚާއްޞައެހީއަށް ބޭނުންވާ ފަރާތްތައް"
+              >
+                ޚާއްޞައެހީއަށް ބޭނުންވާ ފަރާތްތައް
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="ބޭބީ ނާސަރީ، ނާސަރީ"
+              >
+                ބޭބީ ނާސަރީ، ނާސަރީ
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="4 އަހަރާއި 6 އަހަރާއި ދެމެދު"
+              >
+                4 އަހަރާއި 6 އަހަރާއި ދެމެދު
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="6 އަހަރާއި 8 އަހަރާއި ދެމެދު"
+              >
+                6 އަހަރާއި 8 އަހަރާއި ދެމެދު
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="8 އަހަރާއި 10 އަހަރާއި ދެމެދު"
+              >
+                8 އަހަރާއި 10 އަހަރާއި ދެމެދު
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="10 އަހަރާއި 12 އަހަރާއި ދެމެދު"
+              >
+                10 އަހަރާއި 12 އަހަރާއި ދެމެދު
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="12 އަހަރާއި 14 އަހަރާއި ދެމެދު"
+              >
+                12 އަހަރާއި 14 އަހަރާއި ދެމެދު
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="14 އަހަރާއި 16 އަހަރާއި ދެމެދު"
+              >
+                14 އަހަރާއި 16 އަހަރާއި ދެމެދު
+              </SelectItem>
+              <SelectItem
+                className="cursor-pointer"
+                value="16 އަހަރުން މަތި"
+              >
+                16 އަހަރުން މަތި
+              </SelectItem>
+              <SelectItem className="cursor-pointer" value="ހާފިޘުންގެ ބައި">
+                ހާފިޘުންގެ ބައި
+              </SelectItem>
+            </>
+          )}
         </AlertDialog>
       </SelectContent>
     </Select>
