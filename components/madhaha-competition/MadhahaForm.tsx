@@ -117,7 +117,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
 
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "/assets/files/Madhaha_Gavaidhu_2026.pdf";
+    link.href = "https://drive.google.com/file/d/11GRCdLYkaThctw-7awU0jL2uiB5FAECK/view";
     link.download = "Madhaha_Gavaidhu_2026.pdf";
     link.click();
   };
@@ -401,7 +401,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                   އުމުރުފުރާގެ ބައިވެރިން ހިމަނައިގެންވެސް ގްރޫޕް ހެދިދާނެ!
                 </p>
                 <p className="font-dhivehi text-xl text-cyan-950 leading-relaxed">
-                  (ގްރޫޕްގައި ބައިވެރިވެވޭނީ މަދުވެގެން 6 ބައިވެރިން އަދި
+                  (ގްރޫޕްގައި ބައިވެރިވެވޭނީ މަދުވެގެން 2 ބައިވެރިން އަދި
                   ގިނަވެގެން 12 ބައިވެރިންނަށް!)
                 </p>
               </div>
@@ -439,7 +439,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
                                   field.onChange(newMembers);
                                 }}
                                 className="bg-slate-300 text-white px-2 py-1 rounded-md text-sm "
-                                disabled={(field.value ?? []).length <= 5}
+                                disabled={(field.value ?? []).length <= 1}
                               >
                                 ❌
                               </Button>

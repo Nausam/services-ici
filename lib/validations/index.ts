@@ -86,16 +86,16 @@ export const madhahaSchema = z
     madhahaLyrics: z.string().optional(),
   })
 
-  // ✅ Require at least 6 group members (5 in array + leader) if groupOrSolo is "ގްރޫޕްކޮން"
+  // ✅ Require at least 2 group members (1 in array + leader) if groupOrSolo is "ގްރޫޕްކޮން"
   .refine(
     (data) => {
-      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 5) {
+      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 1) {
         return false;
       }
       return true;
     },
     {
-      message: " ގްރޫޕަށް މަދުވެގެން 6 ބައިވެރިން އިތުރު ކުރައްވާ!",
+      message: " ގްރޫޕަށް މަދުވެގެން 2 ބައިވެރިން އިތުރު ކުރައްވާ!",
       path: ["groupMembers"],
     },
   )

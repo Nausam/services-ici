@@ -28,7 +28,6 @@ const fetchMadhahaByIdAndYear = async (idCardNumber: string, year: string) =>
     .collection(COLLECTIONS.madhahaCompetitionRegistrations)
     .where("idCardNumber", "==", idCardNumber)
     .where("year", "==", year)
-    .limit(1)
     .get();
 
 export const createMadhahaCompetitionRegistration = async (
@@ -40,14 +39,21 @@ export const createMadhahaCompetitionRegistration = async (
     const idForCheck = (registration.idCardNumber || "").trim();
 
     if (idForCheck) {
-      let existing = await fetchMadhahaByIdAndYear(idForCheck, currentYear);
-      if (existing.empty && idForCheck.startsWith("A")) {
-        existing = await fetchMadhahaByIdAndYear(
-          idForCheck.replace(/^A/, ""),
-          currentYear
-        );
+      const idsToCheck = [idForCheck];
+      if (idForCheck.startsWith("A")) {
+        idsToCheck.push(idForCheck.replace(/^A/, ""));
       }
-      if (!existing.empty) {
+
+      const existingSnapshots = await Promise.all(
+        idsToCheck.map((id) => fetchMadhahaByIdAndYear(id, currentYear)),
+      );
+      const alreadyRegisteredForSameCategory = existingSnapshots.some((snapshot) =>
+        snapshot.docs.some(
+          (doc) => doc.data().groupOrSolo === registration.groupOrSolo,
+        ),
+      );
+
+      if (alreadyRegisteredForSameCategory) {
         throw new Error("ALREADY_REGISTERED_THIS_YEAR");
       }
     }
