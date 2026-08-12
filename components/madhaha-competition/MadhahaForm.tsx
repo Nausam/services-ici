@@ -117,7 +117,7 @@ const MadhahaCompetitionForm = ({ type, registration }: ProductFormProps) => {
 
   const handleDownloadRules = () => {
     const link = document.createElement("a");
-    link.href = "https://drive.google.com/file/d/11GRCdLYkaThctw-7awU0jL2uiB5FAECK/view";
+    link.href = "https://drive.google.com/file/d/1Ko4QBgIDhsipsOFxaUwuhJACl-Fh3Bsr/view?usp=sharing";
     link.download = "Madhaha_Gavaidhu_2026.pdf";
     link.click();
   };
