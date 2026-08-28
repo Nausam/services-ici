@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   ArrowLeft,
-  BadgeCheck,
   Check,
   CreditCard,
   FileCheck2,
@@ -16,7 +15,6 @@ import {
   Loader2,
   Phone,
   ShieldCheck,
-  Sparkles,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -259,16 +257,9 @@ const HomeCardRegistrationForm = ({
           <div className="absolute -bottom-24 right-1/3 size-52 rounded-full bg-teal-300/10 blur-3xl" />
           <div className="relative flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-1.5 font-dhivehi text-sm text-teal-50">
-                <Sparkles className="size-4 text-amber-300" />
-                އޮންލައިން ރަޖިސްޓްރޭޝަން
-              </div>
               <h2 className="font-dhivehi text-3xl font-normal leading-[1.7] sm:text-4xl">
                 ރެޖިސްޓާ ކުރުން
               </h2>
-              <p className="mt-2 font-dhivehi text-[15px] leading-8 text-teal-50/70">
-                އެދިފައިވާ މަޢުލޫމާތު ސައްހަކޮށް ފުރުމަށްފަހު ބޭނުންވާ ލިޔެކިޔުން ހުށަހަޅައްވާ.
-              </p>
             </div>
 
             <div className="flex w-full max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-black/10 p-4 backdrop-blur-sm lg:w-[390px]">
@@ -427,7 +418,7 @@ const HomeCardRegistrationForm = ({
                         </p>
                       </div>
                       <span className="mr-auto rounded-full bg-red-50 px-2.5 py-1 font-dhivehi text-xs text-red-600">
-                        މަޖުބޫރީ
+                        މަޖުބޫރު
                       </span>
                     </div>
                     <FormControl>
@@ -462,7 +453,7 @@ const HomeCardRegistrationForm = ({
                           </p>
                         </div>
                         <span className="mr-auto rounded-full bg-amber-50 px-2.5 py-1 font-dhivehi text-xs text-amber-700">
-                          މަޖުބޫރީ
+                          މަޖުބޫރު
                         </span>
                       </div>
                       <FormControl>
@@ -495,9 +486,6 @@ const HomeCardRegistrationForm = ({
             <div>
               <p className="font-dhivehi text-sm leading-7">
                 ހުށަހަޅާ މަޢުލޫމާތު ރަނގަޅުތޯ ބަލައި، ސައްހަ މަޢުލޫމާތު ކަމަށް ޔަގީން ކުރައްވާ.
-              </p>
-              <p className="mt-1 flex items-center gap-1.5 font-geist text-xs text-slate-400">
-                <BadgeCheck className="size-3.5" /> Secure registration form
               </p>
             </div>
           </div>

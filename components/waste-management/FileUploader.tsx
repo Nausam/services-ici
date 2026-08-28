@@ -96,7 +96,7 @@ export function FileUploader({
     <div
       className={cn(
         isRegistrationVariant
-          ? "group flex min-h-[210px] h-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] border-2 border-dashed border-slate-200 bg-slate-50/70 p-3 transition-all duration-300 hover:border-teal-400 hover:bg-teal-50/50"
+          ? "group flex min-h-[210px] h-auto cursor-pointer flex-col overflow-hidden rounded-[1.25rem] border-2 border-dashed border-slate-200 bg-slate-50/70 p-3 transition-all duration-300 hover:border-teal-400 hover:bg-teal-50/50 md:h-full"
           : "items-center justify-center h-64 flex p-3 cursor-pointer flex-col overflow-hidden rounded-md border-2 border-dashed border-cyan-600 bg-slate-100/50 hover:bg-cyan-600/10 transition-all duration-300"
       )}
       onDragOver={onDragOver}
