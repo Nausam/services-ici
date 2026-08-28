@@ -6,6 +6,7 @@ export const COLLECTIONS = {
   quizAnswers: "quizAnswers",
   quizCountdownSettings: "quizCountdownSettings",
   homeCards: "homeCards",
+  homeCardRegistrations: "homeCardRegistrations",
   madhahaCompetitionRegistrations: "madhahaCompetitionRegistrations",
   huthubaBangiCompetitionRegistrations:
     "huthubaBangiCompetitionRegistrations",

@@ -7,6 +7,7 @@ import AdminSidebar, {
 import { useState } from "react";
 
 import HomeCardForm from "@/components/admin/home-cards/HomeCardForm";
+import HomeCardRegistrationsDashboard from "@/components/admin/HomeCardRegistrationsDashboard";
 import ServiceTable from "@/components/admin/ServiceTable";
 import BangiHuthubaCompetitionDashboard from "@/components/huthuba-bangi-competition/BangiHuthubaCompetitionDashboard";
 import MadhahaCompetitionDashboard from "@/components/madhaha-competition/MadhahaCompetitionDashboard";
@@ -69,6 +70,14 @@ export default function AdminPage() {
             <Card className="border-0 shadow-none ring-0 bg-transparent">
               <CardContent className="p-0">
                 <ServiceTable />
+              </CardContent>
+            </Card>
+          )}
+
+          {section === "home-card-registrations" && (
+            <Card className="border-0 bg-transparent shadow-none ring-0">
+              <CardContent className="p-0">
+                <HomeCardRegistrationsDashboard />
               </CardContent>
             </Card>
           )}

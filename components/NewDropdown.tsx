@@ -5,12 +5,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 type DropdownProps = {
   value?: string;
   onChangeHandler?: (value: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  className?: string;
 };
 
 const NewDropdown = ({
@@ -18,12 +20,15 @@ const NewDropdown = ({
   onChangeHandler,
   options,
   placeholder,
+  className,
 }: DropdownProps) => {
   return (
-    <Select onValueChange={onChangeHandler} defaultValue={value}>
-      <SelectTrigger className="select-field flex justify-end font-dhivehi">
+    <Select dir="rtl" onValueChange={onChangeHandler} defaultValue={value}>
+      <SelectTrigger
+        className={cn("select-field font-dhivehi text-right", className)}
+      >
         <SelectValue
-          className="text-slate-100"
+          className="text-right"
           placeholder={placeholder || "ނަންގަވާ"}
         />
       </SelectTrigger>

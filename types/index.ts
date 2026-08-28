@@ -92,6 +92,23 @@ export type HomeCard = {
   category: string;
 };
 
+export type HomeCardRegistrationAge = "above18" | "below18";
+
+export type HomeCardRegistration = {
+  $id?: string;
+  homeCardId: string;
+  homeCardTitle: string;
+  homeCardLink: string;
+  fullName: string;
+  age: HomeCardRegistrationAge;
+  idCardNumber: string;
+  contactNumber: string;
+  idCard: string;
+  parentApprovalLetter?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type CompetitionType = "ޙުތުބާ" | "ބަންގި" | "ދެބައި";
 
 export type CouncilAwardRegistration = {

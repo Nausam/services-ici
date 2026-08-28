@@ -11,7 +11,7 @@ const CouncilAwards = () => {
   const [awardCards, setAwardCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { isAdmin, isSuperAdmin } = useUser();
+  const { isAdmin } = useUser();
 
   const fetchAwardCards = async () => {
     try {
@@ -39,7 +39,7 @@ const CouncilAwards = () => {
 
   useEffect(() => {
     fetchAwardCards();
-  }, []);
+  }, [isAdmin]);
 
   const handleVisibilityToggle = () => {
     fetchAwardCards();
@@ -71,7 +71,6 @@ const CouncilAwards = () => {
               imageId={card.imageId}
               hidden={card.hidden}
               isAdmin={isAdmin}
-              isSuperAdmin={isSuperAdmin}
               onVisibilityToggle={handleVisibilityToggle}
               onDelete={fetchAwardCards}
             />

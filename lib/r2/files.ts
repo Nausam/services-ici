@@ -9,7 +9,9 @@ export type UploadFolder =
   | "quran-competition/id-cards"
   | "madhaha/id-cards"
   | "huthuba-bangi/id-cards"
-  | "home-cards";
+  | "home-cards"
+  | "home-card-registrations/id-cards"
+  | "home-card-registrations/parent-approvals";
 
 const safeFileName = (name: string) =>
   name

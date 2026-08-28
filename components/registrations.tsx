@@ -12,7 +12,7 @@ const Registrations = () => {
   const [serviceCards, setServiceCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { isAdmin, isSuperAdmin } = useUser();
+  const { isAdmin } = useUser();
 
   const fetchCompetitionCards = async () => {
     try {
@@ -38,7 +38,7 @@ const Registrations = () => {
   // Fetch cards on component mount
   useEffect(() => {
     fetchCompetitionCards();
-  }, []);
+  }, [isAdmin]);
 
   // Callback to refresh cards when visibility changes
   const handleVisibilityToggle = () => {
@@ -71,7 +71,6 @@ const Registrations = () => {
               imageId={card.imageId}
               hidden={card.hidden}
               isAdmin={isAdmin}
-              isSuperAdmin={isSuperAdmin}
               onVisibilityToggle={handleVisibilityToggle}
               onDelete={fetchCompetitionCards}
             />

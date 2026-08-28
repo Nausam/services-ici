@@ -86,16 +86,16 @@ export const madhahaSchema = z
     madhahaLyrics: z.string().optional(),
   })
 
-  // ✅ Require at least 6 group members (5 in array + leader) if groupOrSolo is "ގްރޫޕްކޮން"
+  // ✅ Require at least 2 group members (1 in array + leader) if groupOrSolo is "ގްރޫޕްކޮން"
   .refine(
     (data) => {
-      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 5) {
+      if (data.groupOrSolo === "ގްރޫޕްކޮން" && data.groupMembers.length < 1) {
         return false;
       }
       return true;
     },
     {
-      message: " ގްރޫޕަށް މަދުވެގެން 6 ބައިވެރިން އިތުރު ކުރައްވާ!",
+      message: " ގްރޫޕަށް މަދުވެގެން 2 ބައިވެރިން އިތުރު ކުރައްވާ!",
       path: ["groupMembers"],
     },
   )
@@ -147,3 +147,27 @@ export const huthubaBangiSchema = z.object({
   competitionType: z.enum(["ޙުތުބާ", "ބަންގި", "ދެބައި"]),
   ageGroup: z.string().min(1, "އުމުރުފުރާ ނަންގަވާ!"),
 });
+
+// HOME CARD REGISTRATION FORM SCHEMA
+export const homeCardRegistrationSchema = z
+  .object({
+    fullName: z.string().trim().min(1, "ފުރިހަމަ ނަން ލިޔުއްވާ!"),
+    age: z.enum(["above18", "below18"], {
+      required_error: "އުމުރު ނަންގަވާ!",
+      invalid_type_error: "އުމުރު ނަންގަވާ!",
+    }),
+    idCardNumber: z.string().trim().min(1, "އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ!"),
+    contactNumber: z.string().trim().min(7, "ފޯނު ނަންބަރު ރަނގަޅަށް ލިޔުއްވާ!"),
+    idCard: z.string().trim().min(1, "އައިޑީކާޑުގެ ކޮޕީ އަޕްލޯޑް ކުރައްވާ!"),
+    parentApprovalLetter: z.string().trim().optional(),
+  })
+  .superRefine((data, context) => {
+    if (data.age === "below18" && !data.parentApprovalLetter) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["parentApprovalLetter"],
+        message:
+          "18 އަހަރު ނުފުރޭނަމަ ބެލެނިވެރިޔާގެ ސިޓީ ހުށަހަޅާ!",
+      });
+    }
+  });
