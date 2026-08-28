@@ -105,7 +105,7 @@ const HomeCardRoutePage = async ({ params }: HomeCardRouteProps) => {
               href="#registration-form"
               className="mt-7 inline-flex w-fit items-center gap-2 font-dhivehi text-sm text-teal-700 transition hover:text-teal-900"
             >
-              ފޯމަށް ދާ
+              ފޯމްއަށް ދޭ
               <span className="flex size-8 items-center justify-center rounded-full bg-teal-50">
                 <ArrowDown className="size-4" />
               </span>
