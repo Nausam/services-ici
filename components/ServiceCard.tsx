@@ -34,7 +34,6 @@ type ServiceCardProps = {
   imageId?: string;
   hidden?: boolean;
   isAdmin?: boolean;
-  isSuperAdmin?: boolean;
   onVisibilityToggle?: () => void;
   onDelete?: () => void;
 };
@@ -49,7 +48,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   image,
   hidden,
   isAdmin = false,
-  isSuperAdmin = false,
   onVisibilityToggle,
   onDelete,
   imageId,
@@ -230,7 +228,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           </Link>
 
           {/* Update Button - edit the competition card (title, link, due date, etc.) */}
-          {isSuperAdmin && (
+          {isAdmin && (
             <Link href={`/services/edit/${id}`}>
               <Button
                 size="lg"
@@ -242,7 +240,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           )}
 
           {/* Hide Button (Visible to Admins Only) */}
-          {isSuperAdmin && (
+          {isAdmin && (
             <Button
               size="lg"
               className="shadow-md font-dhivehi text-xl bg-gradient-to-br from-orange-500 text-white to-orange-700 hover:bg-gradient-to-br hover:from-orange-700 hover:to-orange-500 "
@@ -252,7 +250,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </Button>
           )}
 
-          {isSuperAdmin && (
+          {isAdmin && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button

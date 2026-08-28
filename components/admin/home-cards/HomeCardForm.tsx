@@ -31,7 +31,7 @@ const quizSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, " ސުރުހީ ލިޔުއްވާ! "),
   description: z.string().min(7, " އިތުރު ތަފްސީލު ލިޔުއްވާ! "),
-  link: z.string().min(5, " އައިޑީކާޑް ނަންބަރު ލިޔުއްވާ! "),
+  link: z.string().trim().optional(),
   buttonText: z.string().min(1, "އެންމެން ޖަހައްސަވާނެ"),
   dueDate: z.string().min(1, "އެންމެން ޖަހައްސަވާނެ"),
   image: z.string().min(1, "އެންމެން ޖަހައްސަވާނެ"),
@@ -54,7 +54,7 @@ const HomeCardForm = ({ type, HomeCard }: HomeCardFormProps) => {
 
   const { id } = useParams();
 
-  const { isAdmin, isSuperAdmin } = useUser();
+  const { isAdmin } = useUser();
 
   const form = useForm<z.infer<typeof quizSchema>>({
     resolver: zodResolver(quizSchema),
@@ -103,6 +103,7 @@ const HomeCardForm = ({ type, HomeCard }: HomeCardFormProps) => {
           router.push("/"); // Redirect after creation
           toast({
             title: `${newHomeCard.title} ކްރިއޭޓް ކުރެވިއްޖެ`,
+            description: newHomeCard.link,
             variant: "default",
           });
         }
@@ -141,7 +142,7 @@ const HomeCardForm = ({ type, HomeCard }: HomeCardFormProps) => {
 
   return (
     <>
-      {isSuperAdmin ? (
+      {isAdmin ? (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}

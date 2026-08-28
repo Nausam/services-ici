@@ -46,9 +46,7 @@ const Header = () => {
               <div className="bg-slate-300 animate-pulse h-12 w-20 rounded-lg"></div>
             </div>
           ) : currentUser ? (
-            <>
-              {isAdmin && (
-                <div className="flex gap-4">
+            <div className="flex gap-4">
                   <button
                     onClick={handleSignOut}
                     className="bg-rose-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-500 transition duration-300 font-dhivehi text-lg"
@@ -56,14 +54,14 @@ const Header = () => {
                     ލޮގް-އައުޓް
                   </button>
 
-                  <Link href="/admin">
+              {isAdmin && (
+                <Link href="/admin">
                     <div className="bg-cyan-700 text-white px-6 py-2 rounded-lg shadow-md hover:bg-cyan-600 transition duration-300 font-dhivehi text-lg">
                       އެޑްމިން
                     </div>
-                  </Link>
-                </div>
+                </Link>
               )}
-            </>
+            </div>
           ) : (
             <Link href="/sign-in">
               <div className="bg-cyan-700 text-white px-6 py-2 rounded-lg shadow-md hover:bg-cyan-600 transition duration-300 font-dhivehi text-lg">

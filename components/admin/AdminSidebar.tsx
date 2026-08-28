@@ -16,6 +16,7 @@ import {
   AlignJustify,
   Award,
   BookOpen,
+  FileText,
   KeyRound,
   LayoutDashboard,
   ListChecks,
@@ -27,6 +28,7 @@ import { useMemo, useState } from "react";
 
 export type AdminSection =
   | "admin"
+  | "home-card-registrations"
   | "waste"
   | "quran-competition"
   | "atm-quran-competition"
@@ -45,6 +47,11 @@ export type AdminSidebarProps = {
 const ITEMS: { key: AdminSection; label: string; icon: React.ElementType }[] = [
   { key: "atm-quran-competition", label: "އ.ތ.މ ޤުރުއާން", icon: BookOpen },
   { key: "admin", label: "އެޑްމިން", icon: LayoutDashboard },
+  {
+    key: "home-card-registrations",
+    label: "ހޯމް ކާޑް ރެޖިސްޓްރޭޝަން",
+    icon: FileText,
+  },
   { key: "waste", label: "ކުނި މެނޭޖްމަންޓް", icon: Trash2 },
   { key: "quran-competition", label: "ޤުރުއާން މުބާރާތް", icon: BookOpen },
   { key: "quiz", label: "ސުވާލު މުބާރާތް", icon: ListChecks },

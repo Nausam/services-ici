@@ -53,7 +53,7 @@ const Home = () => {
                 value="council-awards"
                 className="font-dhivehi text-2xl"
               >
-                ކައުންސިލް އެވޯރޑް
+                އެހެނިހެން
               </TabsTrigger>
             </TabsList>
             <TabsContent value="competitions" className="w-full ">
